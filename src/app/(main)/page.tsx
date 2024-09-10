@@ -34,23 +34,6 @@ export default function MainPage() {
     { name: "Localhost", host: "localhost" },
   ];
 
-  const queryKeyspace = useAction(queryKeyspaceAction, {
-    onExecute: () => {},
-    onSuccess: ({ data }) => {
-      console.log(`On the client, yes: ${data}`);
-      setResult(data as Result);
-    },
-    onError: () => {
-      toast.error("Failed to query keyspace.");
-    },
-  });
-
-  function handleConnection() {
-    queryKeyspace.execute({
-      keyspace: "ecommerce",
-    });
-  }
-
   return (
     <div>
       <Card className="w-full h-fit max-w-7xl">
@@ -82,7 +65,7 @@ export default function MainPage() {
               ))}
             </TableBody>
           </Table>
-          <Button className="mt-4" onClick={handleConnection}>
+          <Button className="mt-4">
             <Plus className="mr-2 h-4 w-4" /> New Connection
           </Button>
         </CardContent>

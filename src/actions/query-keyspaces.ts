@@ -5,26 +5,16 @@ import { z } from "zod";
 
 import { Cluster } from "@lambda-group/scylladb";
 
-export const queryKeyspaceAction = actionClient.schema(
-  z.object({
-    keyspace: z.string().min(1).max(255),
-  })
-).action(async ({
-  parsedInput: {
-    keyspace
-  }
-}) => {
-  const cluster = new Cluster({
-    nodes: ["localhost:9042"]
+export const queryKeyspaceAction = actionClient
+  .schema(z.object({}))
+  .action(async ({ parsedInput }) => {
+    const cluster = new Cluster({
+      nodes: ["localhost:9042"],
+    });
+
+    const session = await cluster.connect();
+    const clusterData = await session.getClusterData();
+    const keyspaces = clusterData.getKeyspaceInfo();
+
+    return { keyspaces };
   });
-
-  const session = await cluster.connect("system");
-
-  const clients = await session.execute("SELECT * FROM clients");
-
-  console.log(clients);
-
-  return {
-    clients
-  };
-});
