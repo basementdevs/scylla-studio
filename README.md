@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Scylla Studio
+
+**Scylla Studio** is a front-end application designed for the ScyllaDB ecosystem, inspired by tools like Drizzle and Prisma Studio. It provides an intuitive interface for managing your ScyllaDB keyspaces and tables, integrating essential performance metrics, and offering a unified solution to interact with both local and cloud-based ScyllaDB clusters.
+
+## Key Features
+
+- **Visual Management of Keyspaces and Tables:**
+  Create, edit, and visualize keyspaces and tables directly from the interface.
+  
+- **Integrated Metrics Monitoring:**
+  Leverages ScyllaDB's Prometheus and Grafana integrations to display important metrics within the app.
+
+- **Cluster Connectivity:**
+  Easily connect to your local cluster using `https://local.scylladb.studio` or manage cloud-based clusters.
+
+- **NextJS 14 Frontend:**
+  Built using NextJS 14 for optimal performance, scalability, and a seamless developer experience.
+
+- **Third-Party ScyllaDB JavaScript Driver:**
+  Powered by the [daniel-boll/scylla-javascript-driver](https://github.com/daniel-boll/scylla-javascript-driver), a Rust-wrapped library for high-performance ScyllaDB interactions.
+
+## Technologies Used
+
+- **NextJS 14** - The latest version of NextJS for front-end development.
+- **ScyllaDB** - Distributed database system for high-throughput workloads.
+- **Prometheus & Grafana** - For monitoring ScyllaDB metrics.
+- **Rust & JavaScript Driver** - A community-driven driver for ScyllaDB, wrapped in Rust for performance.
 
 ## Getting Started
 
-First, run the development server:
+1. **Clone the Repository:**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+   ```bash
+   git clone https://github.com/basementdevs/scylla-studio.git
+   cd scylla-studio
+   ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. **Install Dependencies:**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+   ```bash
+   pnpm i
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. **Start Development Server:**
 
-## Learn More
+   ```bash
+   pnpm dev
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+4. **Access the Studio:**
+   Once the server is up, visit [https://localhost:3000](https://localhost:3000) to start interacting with your ScyllaDB clusters.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Roadmap
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Support for Indexes and Materialized Views:**
+  Future versions will include advanced schema management for indexes and materialized views.
+  
+- **User Authentication & Roles:**
+  Role-based access control for managing permissions across team members.
 
-## Deploy on Vercel
+- **Enhanced Metrics Dashboard:**
+  Deeper integration with Grafana for real-time monitoring and custom alerts.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Contributing
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Scylla Studio is an open-source project in collaboration with the **Basement Devs**, a community focused on helping people access better opportunities in Europe and the USA.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
