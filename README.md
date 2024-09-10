@@ -1,4 +1,6 @@
-# Scylla Studio
+<h1 align="center"> Scylla Studio </h1>
+
+<img src="./.github/assets/logo.png" width=90 align="left" />
 
 **Scylla Studio** is a front-end application designed for the ScyllaDB ecosystem, inspired by tools like Drizzle and Prisma Studio. It provides an intuitive interface for managing your ScyllaDB keyspaces and tables, integrating essential performance metrics, and offering a unified solution to interact with both local and cloud-based ScyllaDB clusters.
 
