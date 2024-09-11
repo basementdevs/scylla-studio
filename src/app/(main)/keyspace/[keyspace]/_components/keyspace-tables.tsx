@@ -1,0 +1,123 @@
+import {Card, CardContent, CardHeader, CardTitle} from "@scylla-studio/components/ui/card"
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@scylla-studio/components/ui/table"
+import {Badge} from "@scylla-studio/components/ui/badge"
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@scylla-studio/components/ui/tooltip"
+import {Button} from "@scylla-studio/components/ui/button"
+import {ArrowDownIcon, DatabaseIcon, EyeIcon, FilterIcon, KeyIcon, LayersIcon, TableIcon, TrashIcon} from "lucide-react"
+import React from "react";
+
+export default function KeyspaceTables() {
+    const keyspaceTables = [
+        {type: "table", name: "users", partitionKeys: 2, clusteringKeys: 1},
+        {type: "table", name: "events", partitionKeys: 1, clusteringKeys: 2},
+        {type: "table", name: "products", partitionKeys: 1, clusteringKeys: 0},
+        {type: "materialized_view", name: "orders", partitionKeys: 2, clusteringKeys: 3},
+        {type: "table", name: "logs", partitionKeys: 1, clusteringKeys: 1},
+    ]
+
+    return (
+        <Card className="dark:from-gray-800 dark:to-gray-900">
+            <CardHeader>
+                <CardTitle className="text-3xl font-bold flex items-center gap-2">
+                    <DatabaseIcon className="w-8 h-8"/>
+                    Schema
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+                    <Table>
+                        <TableHeader>
+                            <TableRow className="bg-purple-100 dark:bg-purple-900">
+                                <TableHead className="font-bold text-purple-700 dark:text-purple-300">
+                                    Type</TableHead>
+                                <TableHead className="font-bold text-purple-700 dark:text-purple-300">Table
+                                    Name</TableHead>
+                                <TableHead className="font-bold text-purple-700 dark:text-purple-300">Keys</TableHead>
+                                <TableHead
+                                    className="font-bold text-purple-700 dark:text-purple-300">Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {keyspaceTables.map((table) => (
+                                <TableRow key={table.name}
+                                          className="hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors">
+                                    <TableCell className="font-medium">
+                                        {
+                                            table.type === "table" ?
+                                                <Badge variant="secondary"
+                                                       className="gap-2 bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200">
+                                                    <TableIcon className="w-5 h-5"/>
+                                                    {table.name}
+                                                </Badge> :
+                                                <Badge variant="secondary"
+                                                       className="gap-2 bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
+                                                    <FilterIcon className="w-5 h-5"/>
+                                                    {table.name}
+                                                </Badge>
+                                        }
+                                    </TableCell>
+
+                                    <TableCell>
+                                        <div className="flex gap-2">
+                                            <Badge variant="secondary"
+                                                   className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                                                <KeyIcon className="w-3 h-3 mr-1"/>
+                                                {table.partitionKeys} Partition
+                                            </Badge>
+                                            <Badge variant="secondary"
+                                                   className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                                <ArrowDownIcon className="w-3 h-3 mr-1"/>
+                                                {table.clusteringKeys} Clustering
+                                            </Badge>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex gap-2">
+                                            <TooltipProvider>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <Button variant="outline" size="sm">
+                                                            <EyeIcon className="w-4 h-4"/>
+                                                        </Button>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <p>View Data</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
+                                            <TooltipProvider>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <Button variant="outline" size="sm">
+                                                            <LayersIcon className="w-4 h-4"/>
+                                                        </Button>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <p>Generate MV</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
+                                            <TooltipProvider>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <Button variant="outline" size="sm">
+                                                            <TrashIcon className="w-4 h-4"/>
+                                                        </Button>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <p>Drop Table</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
+
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
+            </CardContent>
+        </Card>
+    )
+}
