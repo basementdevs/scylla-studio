@@ -14,15 +14,6 @@ interface KeyspaceInfoProps {
 export default function KeyspaceDefinitions({keyspace}: KeyspaceInfoProps) {
     const tables = Array.from(keyspace.tables, ([name, table]) => ({name, table}));
 
-
-    const keyspaceTables = [
-        {type: "table", name: "users", partitionKeys: 2, clusteringKeys: 1},
-        {type: "table", name: "events", partitionKeys: 1, clusteringKeys: 2},
-        {type: "table", name: "products", partitionKeys: 1, clusteringKeys: 0},
-        {type: "materialized_view", name: "orders", partitionKeys: 2, clusteringKeys: 3},
-        {type: "table", name: "logs", partitionKeys: 1, clusteringKeys: 1},
-    ]
-
     return (
         <Card className="dark:from-gray-800 dark:to-gray-900">
             <CardHeader>
@@ -107,7 +98,6 @@ export default function KeyspaceDefinitions({keyspace}: KeyspaceInfoProps) {
                                                     </TooltipContent>
                                                 </Tooltip>
                                             </TooltipProvider>
-
                                         </div>
                                     </TableCell>
                                 </TableRow>

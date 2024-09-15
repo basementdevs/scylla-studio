@@ -1,55 +1,26 @@
 import {CardContent, CardHeader, CardTitle} from "@scylla-studio/components/ui/card"
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@scylla-studio/components/ui/tooltip"
-import {CodeIcon, DatabaseIcon, NetworkIcon, SettingsIcon, TabletIcon, Trash} from "lucide-react"
-import {Badge} from "@scylla-studio/components/ui/badge";
+import {CodeIcon, DatabaseIcon, Trash} from "lucide-react"
+import {TableDefinition} from "@scylla-studio/lib/cql-parser/table-parser";
 
-export default function TableGeneralInfo() {
-    const keyspaceInfo = {
-        name: "excalibur",
-        replication: {
-            class: "NetworkTopologyStrategy",
-            replication_factor: 3,
-        },
-        tablets: {
-            initial: 2048,
-        },
-        durable_writes: true,
-        storage_usage: {
-            total_size: "500 GB",
-            used_size: "350 GB",
-            free_size: "150 GB",
-        },
-    }
+interface TableGeneralInfoProps {
+    table: TableDefinition
+}
+
+export default function TableGeneralInfo({table}: TableGeneralInfoProps) {
+
     return (
         <div>
-            <div className="flex flex-row space-x-2 mx-4 mt-4">
-                <Badge className="bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200 text-1xl">
-                    Keyspace: {keyspaceInfo.name}
-                </Badge>
-                <Badge className="bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 text-1xl">
-                    <NetworkIcon className="w-5 h-5 mr-3"/>
-                    {keyspaceInfo.replication.replication_factor}
-                </Badge>
-                <Badge className="bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 text-1xl">
-                    <TabletIcon className="w-5 h-5 mr-3"/>
-                    {keyspaceInfo.tablets.initial}
-                </Badge>
-                <Badge className="bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 text-1xl">
-                    <SettingsIcon className="w-5 h-5 mr-3"/>
-                    {keyspaceInfo.durable_writes ? "Enabled" : "Disabled"}
-                </Badge>
-            </div>
             <CardHeader className="flex-row justify-between pb-0">
-
                 <div className="flex flex-col space-y-3">
                     <CardTitle
                         className="text-3xl font-bold flex items-center gap-2 text-indigo-700 dark:text-indigo-300">
                         <DatabaseIcon className="w-8 h-8"/>
-                        Table: fodase
+                        Table: { table.tableName}
                     </CardTitle>
                 </div>
                 <div className="flex flex-row space-x-3">
-                    <KeyspaceCQLTooltip keyspaceInfo={keyspaceInfo}/>
+                    <TableCQLTooltip cql={table.rawQuery}/>
                     <DeleteKeyspaceButton/>
                 </div>
             </CardHeader>
@@ -72,14 +43,8 @@ function KeyspaceInfoItem({icon, label, value}: any) {
     )
 }
 
-function KeyspaceCQLTooltip({keyspaceInfo}: any) {
-    const cql = `CREATE KEYSPACE ${keyspaceInfo.name}
-WITH replication = {
-    'class': '${keyspaceInfo.replication.class}',
-    'replication_factor': ${keyspaceInfo.replication.replication_factor}
-} AND tablets = {
-    'initial': ${keyspaceInfo.tablets.initial}
-} AND durable_writes = ${keyspaceInfo.durable_writes};`
+function TableCQLTooltip({cql}: { cql: string }) {
+
 
     return (
         <TooltipProvider>
