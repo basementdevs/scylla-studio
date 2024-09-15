@@ -24,20 +24,19 @@ export interface TableDefinition {
 }
 
 interface TableOptions {
-    rawQuery?: string;
     clusteringOrder: string[];
-    bloomFilterFpChance?: number;
-    caching?: Record<string, string>;
-    comment?: string;
-    compaction?: Record<string, string>;
-    compression?: Record<string, string>;
-    crcCheckChance?: number;
-    defaultTimeToLive?: number;
-    gcGraceSeconds?: number;
-    maxIndexInterval?: number;
-    memtableFlushPeriodInMs?: number;
-    minIndexInterval?: number;
-    speculativeRetry?: string;
+    bloomFilterFpChance: number;
+    caching: Record<string, string>;
+    comment: string;
+    compaction: Record<string, string>;
+    compression: Record<string, string>;
+    crcCheckChance: number;
+    defaultTimeToLive: number;
+    gcGraceSeconds: number;
+    maxIndexInterval: number;
+    memtableFlushPeriodInMs: number;
+    minIndexInterval: number;
+    speculativeRetry: string;
 }
 
 
@@ -64,7 +63,7 @@ export const parseTable = (row: DescriptionRow): TableDefinition => {
 };
 
 const parseTableOptions = (optionsPart: string): TableOptions => {
-    const options: TableOptions = { clusteringOrder: [] };
+    const options = {  } as TableOptions;
 
     // Parse clustering order
     const clusteringOrderMatch = optionsPart.match(/CLUSTERING ORDER BY\s*\(([^)]+)\)/);
@@ -153,6 +152,11 @@ function parseTableKeys(create_table_cql: string) {
     const partitionKeys: string[] = [];
     const clusteringKeys: string[] = [];
 
+    if (!keysPart?.includes(",")) {
+        let partitionKeys = keysPart?.split(")") || [];
+        return { partitionKeys, clusteringKeys };
+    }
+
     if (keysPart?.startsWith("(")) {
         partitionKeys.push(
             ...keysPart.split("(")[1].split(")")[0].split(", ").map((key) => key.trim())
@@ -177,5 +181,5 @@ function getColumnDefinitions(create_table_cql: string): ColumnDefinition[] {
         .map((column) => {
             const [name, type] = column.trim().split(" ");
             return { name, type };
-        });
+        }).slice(0,-1);
 }
