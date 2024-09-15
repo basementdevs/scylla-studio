@@ -24,6 +24,7 @@ export interface TableDefinition {
 }
 
 interface TableOptions {
+    rawQuery?: string;
     clusteringOrder: string[];
     bloomFilterFpChance?: number;
     caching?: Record<string, string>;
