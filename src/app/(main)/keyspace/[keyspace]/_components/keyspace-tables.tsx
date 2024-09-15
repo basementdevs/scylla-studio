@@ -3,10 +3,18 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@sc
 import {Badge} from "@scylla-studio/components/ui/badge"
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@scylla-studio/components/ui/tooltip"
 import {Button} from "@scylla-studio/components/ui/button"
-import {ArrowDownIcon, DatabaseIcon, EyeIcon, FilterIcon, KeyIcon, LayersIcon, TableIcon, TrashIcon} from "lucide-react"
+import {ArrowDownIcon, EyeIcon, KeyIcon, LayersIcon, Table2Icon, TableIcon, TrashIcon} from "lucide-react"
 import React from "react";
+import {KeyspaceDefinition} from "@scylla-studio/lib/cql-parser/keyspace-parser";
 
-export default function KeyspaceTables() {
+interface KeyspaceInfoProps {
+    keyspace: KeyspaceDefinition
+}
+
+export default function KeyspaceDefinitions({keyspace}: KeyspaceInfoProps) {
+    const tables = Array.from(keyspace.tables, ([name, table]) => ({name, table}));
+
+
     const keyspaceTables = [
         {type: "table", name: "users", partitionKeys: 2, clusteringKeys: 1},
         {type: "table", name: "events", partitionKeys: 1, clusteringKeys: 2},
@@ -19,7 +27,7 @@ export default function KeyspaceTables() {
         <Card className="dark:from-gray-800 dark:to-gray-900">
             <CardHeader>
                 <CardTitle className="text-3xl font-bold flex items-center gap-2">
-                    <DatabaseIcon className="w-8 h-8"/>
+                    <Table2Icon className="w-8 h-8"/>
                     Schema
                 </CardTitle>
             </CardHeader>
@@ -28,8 +36,6 @@ export default function KeyspaceTables() {
                     <Table>
                         <TableHeader>
                             <TableRow className="bg-purple-100 dark:bg-purple-900">
-                                <TableHead className="font-bold text-purple-700 dark:text-purple-300">
-                                    Type</TableHead>
                                 <TableHead className="font-bold text-purple-700 dark:text-purple-300">Table
                                     Name</TableHead>
                                 <TableHead className="font-bold text-purple-700 dark:text-purple-300">Keys</TableHead>
@@ -38,23 +44,15 @@ export default function KeyspaceTables() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {keyspaceTables.map((table) => (
-                                <TableRow key={table.name}
+                            {tables.map(({name, table}) => (
+                                <TableRow key={table.tableName}
                                           className="hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors">
                                     <TableCell className="font-medium">
-                                        {
-                                            table.type === "table" ?
-                                                <Badge variant="secondary"
-                                                       className="gap-2 bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200">
-                                                    <TableIcon className="w-5 h-5"/>
-                                                    {table.name}
-                                                </Badge> :
-                                                <Badge variant="secondary"
-                                                       className="gap-2 bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
-                                                    <FilterIcon className="w-5 h-5"/>
-                                                    {table.name}
-                                                </Badge>
-                                        }
+                                        <Badge variant="secondary"
+                                               className="gap-2 bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200">
+                                            <TableIcon className="w-5 h-5"/>
+                                            {table.tableName}
+                                        </Badge>
                                     </TableCell>
 
                                     <TableCell>
@@ -62,12 +60,12 @@ export default function KeyspaceTables() {
                                             <Badge variant="secondary"
                                                    className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
                                                 <KeyIcon className="w-3 h-3 mr-1"/>
-                                                {table.partitionKeys} Partition
+                                                {table.primaryKey.length} Partition
                                             </Badge>
                                             <Badge variant="secondary"
                                                    className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                                                 <ArrowDownIcon className="w-3 h-3 mr-1"/>
-                                                {table.clusteringKeys} Clustering
+                                                {table.clusteringKeys.length} Clustering
                                             </Badge>
                                         </div>
                                     </TableCell>

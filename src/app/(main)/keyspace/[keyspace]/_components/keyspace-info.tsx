@@ -1,34 +1,33 @@
 import {Card, CardContent, CardHeader, CardTitle} from "@scylla-studio/components/ui/card"
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@scylla-studio/components/ui/tooltip"
 import {CodeIcon, DatabaseIcon, HashIcon, NetworkIcon, SettingsIcon, Trash} from "lucide-react"
+import {KeyspaceDefinition} from "@scylla-studio/lib/cql-parser/keyspace-parser";
+import {Badge} from "@scylla-studio/components/ui/badge";
 
-export default function KeyspaceInfo() {
-    const keyspaceInfo = {
-        name: "excalibur",
-        replication: {
-            class: "NetworkTopologyStrategy",
-            replication_factor: 3,
-        },
-        tablets: {
-            initial: 2048,
-        },
-        durable_writes: true,
-        storage_usage: {
-            total_size: "500 GB",
-            used_size: "350 GB",
-            free_size: "150 GB",
-        },
+interface KeyspaceInfoProps {
+    keyspace: KeyspaceDefinition
+}
+
+export default function KeyspaceInfo({keyspace}: KeyspaceInfoProps) {
+
+    const datacenters = keyspace.replication.datacenters;
+
+    let replicationSizes = Object.entries(Object.fromEntries(datacenters));
+
+    if (replicationSizes.length === 0) {
+        replicationSizes = [["Replication Factor", 0]];
     }
+
     return (
         <Card>
             <CardHeader className="flex-row justify-between">
                 <CardTitle
                     className="text-3xl font-bold flex items-center gap-2 text-indigo-700 dark:text-indigo-300">
                     <DatabaseIcon className="w-8 h-8"/>
-                    Keyspace: {keyspaceInfo.name}
+                    Keyspace: {keyspace.name}
                 </CardTitle>
                 <div className="flex flex-row space-x-3">
-                    <KeyspaceCQLTooltip keyspaceInfo={keyspaceInfo}/>
+                    <KeyspaceCQLTooltip keyspaceInfo={keyspace}/>
                     <DeleteKeyspaceButton/>
                 </div>
             </CardHeader>
@@ -36,22 +35,40 @@ export default function KeyspaceInfo() {
                 <div className="grid grid-cols-12 gap-6">
                     <div className="col-span-12">
 
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-4 gap-4">
                             <KeyspaceInfoItem
                                 icon={<NetworkIcon className="w-5 h-5"/>}
                                 label="Replication Strategy"
-                                value={keyspaceInfo.replication.class}
+                                value={keyspace.replication.class.replace("org.apache.cassandra.locator.", "")}
                             />
-                            <KeyspaceInfoItem
-                                icon={<HashIcon className="w-5 h-5"/>}
-                                label="Replication Factor"
-                                value={keyspaceInfo.replication.replication_factor}
-                            />
+                            <div className="flex items-center space-x-3 p-3 bg-white dark:bg-gray-800 rounded-md ">
+                                <div className="bg-blue-100 dark:bg-blue-900 p-2 rounded-full">
+                                    <HashIcon className="w-5 h-5"/>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                                        Replication Sizes
+                                    </p>
+                                    <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                                        {replicationSizes.map(([key, value]) => (
+                                            <Badge variant="secondary"
+                                                   className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                                <span key={key}>{key}: {value}</span>
+                                            </Badge>
 
+                                        ))}
+                                    </p>
+                                </div>
+                            </div>
                             <KeyspaceInfoItem
                                 icon={<SettingsIcon className="w-5 h-5"/>}
                                 label="Durable Writes"
-                                value={keyspaceInfo.durable_writes ? "Enabled" : "Disabled"}
+                                value={keyspace.durableWrites ? "Enabled" : "Disabled"}
+                            />
+                            <KeyspaceInfoItem
+                                icon={<SettingsIcon className="w-5 h-5"/>}
+                                label="Tablets"
+                                value={keyspace.tablets ? "Enabled" : "Disabled"}
                             />
                         </div>
                     </div>
@@ -74,14 +91,14 @@ function KeyspaceInfoItem({icon, label, value}: any) {
     )
 }
 
-function KeyspaceCQLTooltip({keyspaceInfo}: any) {
+function KeyspaceCQLTooltip({keyspaceInfo}: { keyspaceInfo: KeyspaceDefinition }) {
     const cql = `CREATE KEYSPACE ${keyspaceInfo.name}
 WITH replication = {
-    'class': '${keyspaceInfo.replication.class}',
-    'replication_factor': ${keyspaceInfo.replication.replication_factor}
+    'class': '${keyspaceInfo?.replication}',
+    'replication_factor': 0
 } AND tablets = {
-    'initial': ${keyspaceInfo.tablets.initial}
-} AND durable_writes = ${keyspaceInfo.durable_writes};`
+    'enabled': ${keyspaceInfo.tablets}
+} AND durable_writes = ${keyspaceInfo.durableWrites};`
 
     return (
         <TooltipProvider>

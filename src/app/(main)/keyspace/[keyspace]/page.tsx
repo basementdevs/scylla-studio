@@ -3,35 +3,18 @@
 
 import KeyspaceInfo from "./_components/keyspace-info";
 import KeyspaceTables from "./_components/keyspace-tables";
+import {useLayout} from "@scylla-studio/hooks/layout";
 
-export default function Component() {
-    const tableInfo = {
-        name: "fodase.tabela",
-        columns: [
-            {name: "id", type: "int", isPrimaryKey: true},
-            {name: "name", type: "text", isPrimaryKey: false},
-        ],
-        settings: {
-            bloomFilterFpChance: 0.01,
-            caching: {keys: "ALL", rowsPerPartition: "ALL"},
-            compaction: {class: "SizeTieredCompactionStrategy"},
-            compression: {sstableCompression: "org.apache.cassandra.io.compress.LZ4Compressor"},
-            crcCheckChance: 1,
-            defaultTimeToLive: 0,
-            gcGraceSeconds: 864000,
-            maxIndexInterval: 2048,
-            memtableFlushPeriodInMs: 0,
-            minIndexInterval: 128,
-            speculativeRetry: "99.0PERCENTILE",
-            tombstoneGc: {mode: "timeout", propagationDelayInSeconds: 3600},
-        },
-    }
+export default function KeyspacePage({params: {keyspace}}: { params: { keyspace: string } }) {
+    const {betterKeyspaces} = useLayout();
+
+    const selectedFodase = Object.values(betterKeyspaces).find((value) => value.name === keyspace);
+    console.log(selectedFodase)
 
     return (
         <div className="container mx-auto p-4 space-y-6">
-            <KeyspaceInfo/>
-            <KeyspaceTables/>
-            <marquee>TODO: UDT spot with expandable CQL (?)</marquee>
+            {selectedFodase && <KeyspaceInfo keyspace={selectedFodase}/>}
+            {selectedFodase && <KeyspaceTables keyspace={selectedFodase}/>}
         </div>
     )
 }
