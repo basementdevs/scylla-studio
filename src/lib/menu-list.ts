@@ -1,11 +1,11 @@
+import { useLayout } from "@scylla-studio/hooks/layout";
 import {
-  Tag,
   Users,
   Settings,
-  Bookmark,
-  SquarePen,
   LayoutGrid,
-  LucideIcon
+  LucideIcon,
+  Cable,
+  TableProperties
 } from "lucide-react";
 
 type Submenu = {
@@ -28,52 +28,52 @@ type Group = {
 };
 
 export function getMenuList(pathname: string): Group[] {
+  const { keyspaces } = useLayout();
+
+  const keyspaceList = Object.entries(keyspaces).map(([keyspaceName]) => {
+    const keyspacePath = `/keyspace/${keyspaceName}`;
+    return {
+      href: keyspacePath, // TODO: handle tables too
+      label: keyspaceName,
+      active: pathname === keyspacePath, // Exact match of the keyspace path
+    };
+  });
+
   return [
     {
       groupLabel: "",
       menus: [
         {
-          href: "/dashboard",
+          href: "/",
           label: "Dashboard",
-          active: pathname.includes("/dashboard"),
+          active: pathname === "/",
           icon: LayoutGrid,
           submenus: []
         }
       ]
     },
     {
-      groupLabel: "Contents",
+      groupLabel: "Database",
       menus: [
         {
           href: "",
-          label: "Posts",
-          active: pathname.includes("/posts"),
-          icon: SquarePen,
-          submenus: [
-            {
-              href: "/posts",
-              label: "All Posts",
-              active: pathname === "/posts"
-            },
-            {
-              href: "/posts/new",
-              label: "New Post",
-              active: pathname === "/posts/new"
-            }
-          ]
+          label: "Keyspaces",
+          active: pathname.includes("/keyspace"),
+          icon: TableProperties,
+          submenus: keyspaceList
         },
         {
-          href: "/categories",
-          label: "Categories",
-          active: pathname.includes("/categories"),
-          icon: Bookmark,
+          href: "/connections",
+          label: "Connections",
+          active: pathname.includes("/connections"),
+          icon: Cable,
           submenus: []
         },
         {
           href: "/tags",
-          label: "Tags",
+          label: "Users",
           active: pathname.includes("/tags"),
-          icon: Tag,
+          icon: Users,
           submenus: []
         }
       ]
