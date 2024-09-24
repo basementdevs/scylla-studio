@@ -1,6 +1,7 @@
 "use client";
 
 
+import { ContentLayout } from "@scylla-studio/components/composed/sidebar/content-layout";
 import KeyspaceInfo from "./_components/keyspace-info";
 import KeyspaceTables from "./_components/keyspace-tables";
 import { useLayout } from "@scylla-studio/hooks/layout";
@@ -8,14 +9,15 @@ import { useLayout } from "@scylla-studio/hooks/layout";
 export default function KeyspacePage({ params: { keyspace } }: { params: { keyspace: string } }) {
   const { betterKeyspaces } = useLayout();
 
-  const selectedFodase = Object.values(betterKeyspaces).find((value) => value.name === keyspace);
-  console.log(selectedFodase)
+  const selectedKeyspace = Object.values(betterKeyspaces).find((value) => value.name === keyspace);
 
   return (
-    <div className="container mx-auto p-4 space-y-6">
-      {selectedFodase && <KeyspaceInfo keyspace={selectedFodase} />}
-      {selectedFodase && <KeyspaceTables keyspace={selectedFodase} />}
-    </div>
+    <ContentLayout title={selectedKeyspace?.name ?? "Keyspace"}>
+      <div className="container mx-auto p-4 space-y-6">
+        {selectedKeyspace && <KeyspaceInfo keyspace={selectedKeyspace} />}
+        {selectedKeyspace && <KeyspaceTables keyspace={selectedKeyspace} />}
+      </div>
+    </ContentLayout>
   )
 }
 

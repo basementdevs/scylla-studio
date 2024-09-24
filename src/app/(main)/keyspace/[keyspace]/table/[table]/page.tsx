@@ -1,5 +1,6 @@
 "use client";
 
+import { ContentLayout } from "@scylla-studio/components/composed/sidebar/content-layout";
 import TableGeneralInfo from "./_components/table-general-info";
 import TableStructure from "./_components/table-structure";
 import { Card } from "@scylla-studio/components/ui/card";
@@ -12,12 +13,14 @@ export default function TableInfo({ params: { keyspace, table } }: { params: { k
   const selectedTable = selectedKeyspace?.tables.get(table);
 
   return (
-    <div className="container mx-auto p-4 space-y-6">
-      <Card>
-        {selectedTable && <TableGeneralInfo table={selectedTable} />}
-        {selectedTable && <TableStructure table={selectedTable} />}
-      </Card>
-    </div>
+    <ContentLayout title={selectedTable?.tableName ?? "Table information"}>
+      <div className="container mx-auto p-4 space-y-6">
+        <Card>
+          {selectedTable && <TableGeneralInfo table={selectedTable} />}
+          {selectedTable && <TableStructure table={selectedTable} />}
+        </Card>
+      </div>
+    </ContentLayout>
   )
 }
 

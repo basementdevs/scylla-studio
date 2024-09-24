@@ -70,9 +70,9 @@ export function getMenuList(pathname: string): Group[] {
           submenus: []
         },
         {
-          href: "/tags",
+          href: "/users",
           label: "Users",
-          active: pathname.includes("/tags"),
+          active: pathname.includes("/users"),
           icon: Users,
           submenus: []
         }
