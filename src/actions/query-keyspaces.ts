@@ -3,7 +3,10 @@
 import { actionClient } from "@scylla-studio/lib/safe-actions";
 import { z } from "zod";
 
-import { Cluster } from "@lambda-group/scylladb";
+import { BatchStatement, Cluster, Query } from "@lambda-group/scylladb";
+import { parseKeyspaces } from "@scylla-studio/lib/cql-parser/parser";
+
+
 
 export const queryKeyspaceAction = actionClient
   .schema(z.object({}))
@@ -16,5 +19,7 @@ export const queryKeyspaceAction = actionClient
     const clusterData = await session.getClusterData();
     const keyspaces = clusterData.getKeyspaceInfo();
 
-    return { keyspaces };
+    let betterKeyspaces = await parseKeyspaces(session);
+
+    return { keyspaces, betterKeyspaces };
   });

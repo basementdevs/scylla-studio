@@ -1,31 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@scylla-studio/components/ui/select";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@scylla-studio/components/ui/accordion";
-import {
-  Database,
-  Table as TableIcon,
-  Eye,
-  Search,
-  X,
-  Plus,
-  Github,
-  Table,
-} from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@scylla-studio/components/ui/select";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, } from "@scylla-studio/components/ui/accordion";
+import { Database, Github, Table as TableIcon, } from "lucide-react";
 import { useLayout } from "@scylla-studio/hooks/layout";
-import { Button } from "@scylla-studio/components/ui/button";
+import Link from "next/link";
 
 export function Sidebar() {
   const { keyspaces } = useLayout();
@@ -56,9 +36,9 @@ export function Sidebar() {
           <ul className="space-y-1">
             <li>
               {/* biome-ignore lint/a11y/useValidAnchor: tmp */}
-              <a href="#" className="text-blue-600 hover:underline">
+              <Link href="/keyspace" className="text-blue-600 hover:underline">
                 Manage Connections
-              </a>
+              </Link>
             </li>
             <li>
               {/* biome-ignore lint/a11y/useValidAnchor: tmp */}
@@ -94,9 +74,9 @@ export function Sidebar() {
               <AccordionItem value={keyspaceName} key={keyspaceName}>
                 <AccordionTrigger className="flex gap-2 justify-start overflow-hidden">
                   <Database className="size-4 flex-shrink-0" />
-                  <p title={keyspaceName} className="truncate">
+                  <Link href={"/keyspace/" + keyspaceName} title={keyspaceName} className="truncate">
                     {keyspaceName}
-                  </p>
+                  </Link>
                 </AccordionTrigger>
 
                 <AccordionContent>
@@ -104,8 +84,8 @@ export function Sidebar() {
                     {Object.entries(keyspaceInfo.tables).map(
                       ([tableName, tableInfo]) => (
                         <li key={tableName}>
-                          <Button
-                            variant="ghost"
+                          <Link
+                            href={"/keyspace/" + keyspaceName + "/table/" + tableName}
                             className="w-full justify-start text-sm gap-2 flex"
                             onClick={() =>
                               handleItemClick(keyspaceName, "table", tableName)
@@ -113,7 +93,7 @@ export function Sidebar() {
                           >
                             <TableIcon className="size-4 flex-shrink-0" />
                             {tableName}
-                          </Button>
+                          </Link>
                         </li>
                       ),
                     )}

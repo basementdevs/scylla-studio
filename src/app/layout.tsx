@@ -33,7 +33,7 @@ export default function RootLayout({
     >
       <body>
         <Providers>
-          <div className="flex h-dvh text-primary">{children}</div>
+          <div className="flex flex-col h-dvh text-primary">{children}</div>
           <Toaster richColors />
         </Providers>
       </body>
