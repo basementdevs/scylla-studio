@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@lambda-group/scylladb": "^0.5.1",
+    "@monaco-editor/react": "^4.6.0",
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-avatar": "^1.1.0",
     "@radix-ui/react-collapsible": "^1.1.0",
@@ -24,6 +25,7 @@
     "@radix-ui/react-tooltip": "^1.1.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.439.0",
     "next": "14.2.13",
     "next-safe-action": "^7.9.2",
@@ -39,13 +41,16 @@
     "zustand": "5.0.0-rc.2"
   },
   "devDependencies": {
+    "@types/lodash.debounce": "^4.0.9",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "14.2.9",
+    "monaco-editor": "^0.52.0",
     "postcss": "^8",
     "tailwindcss": "^3.4.13",
     "typescript": "^5"
-  }
+  },
+  "packageManager": "pnpm@9.11.0+sha512.0a203ffaed5a3f63242cd064c8fb5892366c103e328079318f78062f24ea8c9d50bc6a47aa3567cabefd824d170e78fa2745ed1f16b132e16436146b7688f19b"
 }
