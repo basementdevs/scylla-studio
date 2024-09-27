@@ -16,7 +16,7 @@ export const getFullQueryAtCursor = (editor: editor.IStandaloneCodeEditor, monac
   // find the line with the semicolon
   let found = false;
   let endLineIdx = position.lineNumber;
-  while (model.getLineCount() > endLineIdx) {
+  while (model.getLineCount() >= endLineIdx) {
     const currentLine = model.getLineContent(endLineIdx);
     if (currentLine.includes(";")) { found = true; break; }
     endLineIdx++;

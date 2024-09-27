@@ -3,7 +3,7 @@ import { CqlEditor } from "./_components/cql-editor";
 
 export default function QueryRunnerPage() {
   return (
-    <ContentLayout className="p-0 sm:p-0" title="Query Runner">
+    <ContentLayout nav={{ className: "shadow-none" }} className="p-0 sm:p-0 flex" title="Query Runner">
       <CqlEditor />
     </ContentLayout>
   );
