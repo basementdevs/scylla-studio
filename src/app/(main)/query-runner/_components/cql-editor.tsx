@@ -30,7 +30,8 @@ export function CqlEditor() {
     onError: ({ error }) => {
       console.error("Failed to execute query", error);
       toast.error("Failed to execute query", {
-        description: error?.serverError ?? error?.validationErrors?._errors ?? error?.bindArgsValidationErrors ?? "SIM",
+        description: error?.serverError ?? error?.validationErrors?._errors ?? error?.bindArgsValidationErrors ?? "",
+        closeButton: true,
       });
     },
   });
@@ -94,6 +95,12 @@ export function CqlEditor() {
         executeQuery.execute(fullQuery.query);
       }
     });
+
+    // Shift+Enter to execute all queries
+    editor.addCommand(monaco.KeyMod.Shift | monaco.KeyCode.Enter, () => {
+      const statements = editor.getModel()?.getValue().split(";").filter((stmt) => stmt.trim() !== "");
+      statements?.forEach(executeQuery.execute);
+    });
   };
 
   const handleExecute = (executeType: ExecuteType) => {
@@ -120,8 +127,20 @@ export function CqlEditor() {
             <DropdownMenu>
               <DropdownMenuTrigger className="bg-green-600 rounded p-1"><Play size={16} /></DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => handleExecute(ExecuteType.CURRENT)}>Execute current query</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleExecute(ExecuteType.ALL)}>Execute all</DropdownMenuItem>
+                <DropdownMenuItem className="flex justify-between" onClick={() => handleExecute(ExecuteType.CURRENT)}>
+                  <span>Run current query</span>
+                  <kbd className="ml-2 pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                    <span className="text-xs">Ctrl + Enter</span>
+                  </kbd>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="flex justify-between" onClick={() => handleExecute(ExecuteType.ALL)}>
+                  <span>
+                    Run all
+                  </span>
+                  <kbd className="ml-2 pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                    <span className="text-xs">Shift + Enter</span>
+                  </kbd>
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
