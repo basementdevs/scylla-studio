@@ -31,7 +31,7 @@ export default function NewConnectionModal({ onSave }) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [form, setForm] = useState(initialFormState);
-  const [errors, _] = useState<newConnectionErrors>({});
+  const [errors, setErrors] = useState<newConnectionErrors>({});
 
   const handleInputChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -55,8 +55,13 @@ export default function NewConnectionModal({ onSave }) {
     const validationErrors = validateForm();
 
     if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
     } else {
       startTransition(async () => {
+        await onSave(form); 
+        setForm(initialFormState); 
+        setErrors({}); 
+        setOpen(false);
       });
     }
   };
