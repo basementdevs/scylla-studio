@@ -5,7 +5,8 @@ import {
   LayoutGrid,
   LucideIcon,
   Cable,
-  TableProperties
+  TableProperties,
+  CodeSquare,
 } from "lucide-react";
 
 type Submenu = {
@@ -48,6 +49,13 @@ export function getMenuList(pathname: string): Group[] {
           label: "Dashboard",
           active: pathname === "/",
           icon: LayoutGrid,
+          submenus: []
+        },
+        {
+          href: "/query-runner",
+          label: "Query Runner",
+          active: pathname === "/query-runner",
+          icon: CodeSquare,
           submenus: []
         }
       ]
