@@ -94,12 +94,8 @@ export default function ConnectionTableServer() {
                     <ContextMenu key={`${conn.name}-${key}`}>
                       <ContextMenuTrigger asChild>
                         <TableCell>
-                          {key === "password"
-                            ? "••••••••"
-                            : key === "dc" // since dc will be retrived from the driver it is hardcoded for now
-                            ? 3
-                            : (conn as any)[key]}
-                        </TableCell>  
+                          {key === "password" ? "••••••••" : (conn as any)[key]}
+                        </TableCell>
                       </ContextMenuTrigger>
                       <ContextMenuContent>
                         <ContextMenuItem

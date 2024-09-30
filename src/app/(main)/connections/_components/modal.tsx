@@ -17,15 +17,15 @@ import { z } from "zod";
 
 const formSchema = z
   .object({
-    name: z
+    name: z.string().trim().min(1, { message: "Name is required." }),
+    host: z.string().ip(),
+    username: z
       .string()
       .trim()
-      .min(1, { message: "Name is required." })
+      .min(1, { message: "Username is required." })
       .refine((value) => !/\s/.test(value), {
         message: "Name cannot contain spaces.",
       }),
-    host: z.string().ip(),
-    username: z.string().min(1, { message: "Username is required." }),
     password: z.string().min(1, { message: "Password is required." }),
     nodes: z.number().min(1, { message: "Nodes must be at least 1." }),
   })
@@ -138,19 +138,6 @@ export default function NewConnectionModal({
                       placeholder="Enter password"
                       {...field}
                     />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              name="dc"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Data Center</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter data center" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

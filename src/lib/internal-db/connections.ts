@@ -9,7 +9,7 @@ db.exec(`
     host TEXT,
     username TEXT,
     password TEXT,
-    dc TEXT,
+    dc INTEGER,
     nodes INTEGER
   )
 `);
@@ -28,7 +28,7 @@ export function addConnection(connection: connection) {
     INSERT INTO connections (name, host, username, password, dc, nodes)
     VALUES (?, ?, ?, ?, ?, ?)
   `);
-  stmt.run(name, host, username, password, dc, nodes);
+  stmt.run(name, host, username, password, 3, nodes);
 }
 
 export function updateConnectionById(
