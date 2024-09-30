@@ -9,13 +9,17 @@ db.exec(`
     host TEXT,
     username TEXT,
     password TEXT,
-    dc TEXT,
+    dc INTEGER,
     nodes INTEGER
   )
 `);
 
 export function getAllConnections(): connection[] {
-  return db.prepare("SELECT * FROM connections").all() as connection[];
+  return db
+    .prepare(
+      "SELECT id, name, host, username, password, dc, nodes FROM connections"
+    )
+    .all() as connection[];
 }
 
 export function addConnection(connection: connection) {
@@ -24,15 +28,35 @@ export function addConnection(connection: connection) {
     INSERT INTO connections (name, host, username, password, dc, nodes)
     VALUES (?, ?, ?, ?, ?, ?)
   `);
-  stmt.run(name, host, username, password, dc, nodes);
+  stmt.run(name, host, username, password, 3, nodes);
+}
+
+export function updateConnectionById(
+  connectionId: number,
+  updatedConnection: connection
+) {
+  const { name, host, username, password, dc, nodes } = updatedConnection;
+  const stmt = db.prepare(`
+    UPDATE connections
+    SET name = ?, host = ?, username = ?, password = ?, dc = ?, nodes = ?
+    WHERE id = ?
+  `);
+  stmt.run(name, host, username, password, dc, nodes, connectionId);
+}
+
+export function deleteConnectionById(connectionId: number) {
+  const stmt = db.prepare(`
+    DELETE FROM connections WHERE id = ?
+  `);
+  stmt.run(connectionId);
 }
 
 export type connection = {
-  id: number;
+  id?: number;
   name: string;
   host: string;
   username: string;
   password: string;
-  dc: string;
+  dc?: string;
   nodes: number;
 };

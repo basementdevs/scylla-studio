@@ -1,5 +1,3 @@
-"use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@scylla-studio/components/ui/button";
 import {
@@ -13,38 +11,36 @@ import {
 import { Input } from "@scylla-studio/components/ui/input";
 import { Modal } from "@scylla-studio/components/ui/modal";
 import { Plus } from "lucide-react";
-import { ReactNode, useState, useTransition } from "react";
+import { ReactNode, useEffect, useState, useTransition } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 
-const formSchema = z.object({
-  name: z.string().min(1, { message: "Name is required." }),
-  host: z
-    .string()
-    .min(1, { message: "Host is required." })
-    .regex(/^[a-zA-Z0-9.-]+$/, "Invalid host format."),
-  username: z.string().min(1, { message: "Username is required." }),
-  password: z.string().min(1, { message: "Password is required." }),
-  dc: z.string().min(1, { message: "Data center (DC) is required." }),
-  nodes: z.number().min(1, { message: "Nodes must be at least 1." }),
-});
+const formSchema = z
+  .object({
+    name: z.string().trim().min(1, { message: "Name is required." }),
+    host: z.string().ip(),
+    username: z
+      .string()
+      .trim()
+      .min(1, { message: "Username is required." })
+      .refine((value) => !/\s/.test(value), {
+        message: "Name cannot contain spaces.",
+      }),
+    password: z.string().min(1, { message: "Password is required." }),
+    nodes: z.number().min(1, { message: "Nodes must be at least 1." }),
+  })
+  .required();
 
 interface FormWrapperProps {
   children: ReactNode;
   onSubmit: (data: z.infer<typeof formSchema>) => void;
+  defaultValues?: Partial<z.infer<typeof formSchema>>;
 }
 
-function FormWrapper({ children, onSubmit }: FormWrapperProps) {
+function FormWrapper({ children, onSubmit, defaultValues }: FormWrapperProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      host: "",
-      username: "",
-      password: "",
-      dc: "",
-      nodes: 0,
-    },
+    defaultValues,
   });
 
   return (
@@ -56,9 +52,23 @@ function FormWrapper({ children, onSubmit }: FormWrapperProps) {
   );
 }
 
-export default function NewConnectionModal({ onSave }) {
+interface NewConnectionModalProps {
+  onSave: (data: z.infer<typeof formSchema>) => Promise<void>;
+  connectionToEdit?: Partial<z.infer<typeof formSchema>> | null;
+}
+
+export default function NewConnectionModal({
+  onSave,
+  connectionToEdit,
+}: NewConnectionModalProps) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    if (connectionToEdit) {
+      setOpen(true);
+    }
+  }, [connectionToEdit]);
 
   const handleSave = (data: z.infer<typeof formSchema>) => {
     startTransition(async () => {
@@ -73,7 +83,10 @@ export default function NewConnectionModal({ onSave }) {
         <Plus className="mr-2 h-4 w-4" /> New Connection
       </Button>
       <Modal open={open} onClose={() => setOpen(false)}>
-        <FormWrapper onSubmit={handleSave}>
+        <FormWrapper
+          onSubmit={handleSave}
+          defaultValues={connectionToEdit || undefined}
+        >
           <div className="space-y-5">
             <FormField
               name="name"
@@ -132,19 +145,6 @@ export default function NewConnectionModal({ onSave }) {
             />
 
             <FormField
-              name="dc"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>DC</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter data center" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
               name="nodes"
               render={({ field }) => (
                 <FormItem>
@@ -158,17 +158,17 @@ export default function NewConnectionModal({ onSave }) {
                         const value = e.target.value;
                         field.onChange(value === "" ? "" : Number(value));
                       }}
-                      value={field.value === "" ? "" : field.value.toString()}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            <Button type="submit" disabled={isPending}>
+              {connectionToEdit ? "Update Connection" : "Save Connection"}
+            </Button>
           </div>
-          <Button type="submit" className="mt-4" disabled={isPending}>
-            {isPending ? "Saving..." : "Save"}
-          </Button>
         </FormWrapper>
       </Modal>
     </>
