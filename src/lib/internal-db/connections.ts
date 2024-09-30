@@ -57,6 +57,6 @@ export type connection = {
   host: string;
   username: string;
   password: string;
-  dc: string;
+  dc?: string;
   nodes: number;
 };
