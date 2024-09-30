@@ -1,69 +1,70 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@scylla-studio/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@scylla-studio/components/ui/form";
 import { Input } from "@scylla-studio/components/ui/input";
 import { Modal } from "@scylla-studio/components/ui/modal";
-import { connection } from "@scylla-studio/lib/internal-db/connections";
 import { Plus } from "lucide-react";
-import { useState, useTransition } from "react";
-import { Label } from "recharts";
+import { ReactNode, useState, useTransition } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { z } from "zod";
 
-type newConnectionErrors = {
-    name?: string;
-    host?: string;
-    username?: string;
-    password?: string;
-    dc?: string;
-    nodes?: string;
-};
+const formSchema = z.object({
+  name: z.string().min(1, { message: "Name is required." }),
+  host: z
+    .string()
+    .min(1, { message: "Host is required." })
+    .regex(/^[a-zA-Z0-9.-]+$/, "Invalid host format."),
+  username: z.string().min(1, { message: "Username is required." }),
+  password: z.string().min(1, { message: "Password is required." }),
+  dc: z.string().min(1, { message: "Data center (DC) is required." }),
+  nodes: z.number().min(1, { message: "Nodes must be at least 1." }),
+});
 
+interface FormWrapperProps {
+  children: ReactNode;
+  onSubmit: (data: z.infer<typeof formSchema>) => void;
+}
+
+function FormWrapper({ children, onSubmit }: FormWrapperProps) {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      host: "",
+      username: "",
+      password: "",
+      dc: "",
+      nodes: 0,
+    },
+  });
+
+  return (
+    <FormProvider {...form}>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>{children}</form>
+      </Form>
+    </FormProvider>
+  );
+}
 
 export default function NewConnectionModal({ onSave }) {
-  const initialFormState: Omit<connection, 'id'> = {
-    name: "",
-    host: "",
-    username: "",
-    password: "",
-    dc: "",
-    nodes: 0,
-  };
-
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const [form, setForm] = useState(initialFormState);
-  const [errors, setErrors] = useState<newConnectionErrors>({});
 
-  const handleInputChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const validateForm = () => {
-    const newErrors: newConnectionErrors = {};
-
-    if (!form.name) newErrors.name = "Name is required.";
-    if (!form.host) newErrors.host = "Host is required.";
-    if (!/^[a-zA-Z0-9.-]+$/.test(form.host)) newErrors.host = "Invalid host format.";
-    if (!form.username) newErrors.username = "Username is required.";
-    if (!form.password) newErrors.password = "Password is required.";
-    if (!form.dc) newErrors.dc = "Data center (DC) is required.";
-    if (form.nodes < 1) newErrors.nodes = "Nodes must be at least 1.";
-
-    return newErrors;
-  };
-
-  const handleSave = () => {
-    const validationErrors = validateForm();
-
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-    } else {
-      startTransition(async () => {
-        await onSave(form); 
-        setForm(initialFormState); 
-        setErrors({}); 
-        setOpen(false);
-      });
-    }
+  const handleSave = (data: z.infer<typeof formSchema>) => {
+    startTransition(async () => {
+      await onSave(data);
+      setOpen(false);
+    });
   };
 
   return (
@@ -72,73 +73,103 @@ export default function NewConnectionModal({ onSave }) {
         <Plus className="mr-2 h-4 w-4" /> New Connection
       </Button>
       <Modal open={open} onClose={() => setOpen(false)}>
-        <div>
-          <Label>Name/Alias</Label>
-          <Input
-            name="name"
-            value={form.name}
-            onChange={handleInputChange}
-            placeholder="Enter name or alias"
-            className="mb-2"
-          />
-          {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
+        <FormWrapper onSubmit={handleSave}>
+          <div className="space-y-5">
+            <FormField
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name/Alias</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter name or alias" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <Label>Host</Label>
-          <Input
-            name="host"
-            value={form.host}
-            onChange={handleInputChange}
-            placeholder="Enter host"
-            className="mb-2"
-          />
-          {errors.host && <p className="text-red-500 text-sm">{errors.host}</p>}
+            <FormField
+              name="host"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Host</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter host" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <Label>Username</Label>
-          <Input
-            name="username"
-            value={form.username}
-            onChange={handleInputChange}
-            placeholder="Enter username"
-            className="mb-2"
-          />
-          {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
+            <FormField
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter username" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <Label>Password</Label>
-          <Input
-            name="password"
-            type="password"
-            value={form.password}
-            onChange={handleInputChange}
-            placeholder="Enter password"
-            className="mb-2"
-          />
-          {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
+            <FormField
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="Enter password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <Label>DC</Label>
-          <Input
-            name="dc"
-            value={form.dc}
-            onChange={handleInputChange}
-            placeholder="Enter data center"
-            className="mb-2"
-          />
-          {errors.dc && <p className="text-red-500 text-sm">{errors.dc}</p>}
+            <FormField
+              name="dc"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>DC</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter data center" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <Label>Nodes</Label>
-          <Input
-            name="nodes"
-            type="number"
-            value={form.nodes}
-            onChange={handleInputChange}
-            placeholder="Enter number of nodes"
-            className="mb-2"
-          />
-          {errors.nodes && <p className="text-red-500 text-sm">{errors.nodes}</p>}
-
-          <Button onClick={handleSave} className="mt-4" disabled={isPending}>
+            <FormField
+              name="nodes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nodes</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Enter number of nodes"
+                      {...field}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        field.onChange(value === "" ? "" : Number(value));
+                      }}
+                      value={field.value === "" ? "" : field.value.toString()}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <Button type="submit" className="mt-4" disabled={isPending}>
             {isPending ? "Saving..." : "Save"}
           </Button>
-        </div>
+        </FormWrapper>
       </Modal>
     </>
   );
