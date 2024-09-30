@@ -11,19 +11,25 @@ import {
 import { Input } from "@scylla-studio/components/ui/input";
 import { Modal } from "@scylla-studio/components/ui/modal";
 import { Plus } from "lucide-react";
-import React from "react";
 import { ReactNode, useEffect, useState, useTransition } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 
-const formSchema = z.object({
-  name: z.string().min(1, { message: "Name is required." }),
-  host: z.string().ip(),
-  username: z.string().min(1, { message: "Username is required." }),
-  password: z.string().min(1, { message: "Password is required." }),
-  dc: z.string().min(1, { message: "Data center (DC) is required." }),
-  nodes: z.number().min(1, { message: "Nodes must be at least 1." }),
-});
+const formSchema = z
+  .object({
+    name: z
+      .string()
+      .trim()
+      .min(1, { message: "Name is required." })
+      .refine((value) => !/\s/.test(value), {
+        message: "Name cannot contain spaces.",
+      }),
+    host: z.string().ip(),
+    username: z.string().min(1, { message: "Username is required." }),
+    password: z.string().min(1, { message: "Password is required." }),
+    nodes: z.number().min(1, { message: "Nodes must be at least 1." }),
+  })
+  .required();
 
 interface FormWrapperProps {
   children: ReactNode;
