@@ -1,6 +1,17 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@scylla-studio/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@scylla-studio/components/ui/table";
 
-export const ResultsRender = ({ data }: { data: Array<Record<string, unknown>> }) => {
+export const ResultsRender = ({
+  data,
+}: {
+  data: Array<Record<string, unknown>>;
+}) => {
   if (!data || data.length === 0) {
     return null;
   }
@@ -18,6 +29,7 @@ export const ResultsRender = ({ data }: { data: Array<Record<string, unknown>> }
       </TableHeader>
       <TableBody className="overflow-auto">
         {data.map((row, rowIndex) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: it needs to be
           <TableRow key={rowIndex}>
             {headers.map((header) => (
               <TableCell key={`${rowIndex}-${header}`}>
@@ -29,4 +41,4 @@ export const ResultsRender = ({ data }: { data: Array<Record<string, unknown>> }
       </TableBody>
     </Table>
   );
-}
+};
