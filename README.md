@@ -49,7 +49,25 @@
    pnpm dev
    ```
 
-4. **Access the Studio:**
+4. **Run a ScyllaDB Instance:**
+
+    ```bash
+     docker run --name scylla --network ws-scylla -p "9042:9042" -d scylladb/scylla:6.1.2 \
+      --overprovisioned 1 \
+      --smp 1
+    ```
+
+5. **Check your ScyllaDB Instance:**
+
+    ```bash
+    # Check for UN status
+    docker exec -it scylla nodetool status
+    
+    # Check if the Shell works
+    docker exec -it scylla cqlsh
+    ```
+
+5. **Access the Studio:**
    Once the server is up, visit [https://localhost:3000](https://localhost:3000) to start interacting with your ScyllaDB clusters.
 
 ## Roadmap
