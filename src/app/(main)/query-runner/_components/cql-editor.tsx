@@ -17,7 +17,7 @@ import {
   ResizablePanelGroup,
 } from "@scylla-studio/components/ui/resizable";
 import debounce from "lodash.debounce";
-import { Braces, Play, SearchCode } from "lucide-react";
+import { Braces, ChartArea, Play, SearchCode } from "lucide-react";
 import type { editor } from "monaco-editor";
 import { useAction } from "next-safe-action/hooks";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -27,6 +27,7 @@ import { getFullQueryAtCursor } from "./utils";
 import { Tabs, TabsList, TabsTrigger } from "@scylla-studio/components/ui/tabs";
 import { cn } from "@scylla-studio/lib/utils";
 import { TracingRender } from "./tracing-render";
+import QueryDashboard from "./tracing-dashboard-render";
 
 enum ExecuteType {
   ALL = 0,
@@ -36,6 +37,7 @@ enum ExecuteType {
 enum DisplayTabs {
   RESULT = "result",
   TRACING = "tracing",
+  DASHBOARD = "dashboard",
 }
 
 export function CqlEditor() {
@@ -163,6 +165,12 @@ export function CqlEditor() {
     }
   };
 
+  const renderTabs = {
+    [DisplayTabs.RESULT]: <ResultsRender data={queryResult} />,
+    [DisplayTabs.TRACING]: <TracingRender data={queryTracing} />,
+    [DisplayTabs.DASHBOARD]: <QueryDashboard tracingInfo={queryTracing} />,
+  }
+
   return (
     <div className="h-[calc(100vh-112px)] w-full flex flex-col">
       <ResizablePanelGroup direction="vertical">
@@ -243,14 +251,20 @@ export function CqlEditor() {
                 >
                   <SearchCode size={18} />
                 </TabsTrigger>
+
+                <TabsTrigger
+                  value={DisplayTabs.DASHBOARD}
+                  className={cn(
+                    "w-full justify-center rounded-none px-4 py-2 text-left hover:bg-white/10",
+                    activeTab === DisplayTabs.DASHBOARD && "bg-white",
+                  )}
+                >
+                  <ChartArea size={18} />
+                </TabsTrigger>
               </TabsList>
             </Tabs>
           )}
-          {activeTab === DisplayTabs.TRACING ? (
-            <TracingRender data={queryTracing} />
-          ) : (
-            <ResultsRender data={queryResult} />
-          )}
+          {renderTabs[activeTab as DisplayTabs]}
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>
