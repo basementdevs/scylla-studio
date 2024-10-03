@@ -1,4 +1,3 @@
-import type { TracingResult } from "@scylla-studio/actions/execute-query";
 import {
   Popover,
   PopoverContent,
@@ -12,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@scylla-studio/components/ui/table";
+import type { TracingResult } from "@scylla-studio/lib/execute-query";
 
 export const TracingRender = ({ data }: { data: TracingResult }) => {
   if (!data || data.events.length === 0) return null;

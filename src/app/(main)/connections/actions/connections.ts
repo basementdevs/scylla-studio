@@ -2,23 +2,23 @@
 
 import {
   addConnection,
-  connection,
+  type Connection,
   deleteConnectionById,
   getAllConnections,
   updateConnectionById,
 } from "@scylla-studio/lib/internal-db/connections";
 
-export async function fetchConnections(): Promise<connection[]> {
+export async function fetchConnections(): Promise<Connection[]> {
   return await getAllConnections();
 }
 
-export async function saveNewConnection(newConnection: connection) {
+export async function saveNewConnection(newConnection: Connection) {
   await addConnection(newConnection);
 }
 
 export async function updateConnection(
   connectionId: number,
-  updatedConnection: connection
+  updatedConnection: Connection
 ) {
   await updateConnectionById(connectionId, updatedConnection);
 }
