@@ -14,15 +14,15 @@ db.exec(`
   )
 `);
 
-export function getAllConnections(): connection[] {
+export async function getAllConnections(): Promise<Connection[]> {
   return db
     .prepare(
       "SELECT id, name, host, username, password, dc, nodes FROM connections"
     )
-    .all() as connection[];
+    .all() as Connection[];
 }
 
-export function addConnection(connection: connection) {
+export function addConnection(connection: Connection) {
   const { name, host, username, password, dc, nodes } = connection;
   const stmt = db.prepare(`
     INSERT INTO connections (name, host, username, password, dc, nodes)
@@ -33,7 +33,7 @@ export function addConnection(connection: connection) {
 
 export function updateConnectionById(
   connectionId: number,
-  updatedConnection: connection
+  updatedConnection: Connection
 ) {
   const { name, host, username, password, dc, nodes } = updatedConnection;
   const stmt = db.prepare(`
@@ -51,7 +51,7 @@ export function deleteConnectionById(connectionId: number) {
   stmt.run(connectionId);
 }
 
-export type connection = {
+export type Connection = {
   id?: number;
   name: string;
   host: string;

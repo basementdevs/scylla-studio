@@ -19,7 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@scylla-studio/components/ui/table";
-import { connection } from "@scylla-studio/lib/internal-db/connections";
+import type { Connection } from "@scylla-studio/lib/internal-db/connections";
 import { useEffect, useState, useTransition } from "react";
 import {
   deleteConnection,
@@ -30,9 +30,9 @@ import {
 import NewConnectionModal from "./modal";
 
 export default function ConnectionTableServer() {
-  const [connections, setConnections] = useState<connection[]>([]);
+  const [connections, setConnections] = useState<Connection[]>([]);
   const [selectedConnection, setSelectedConnection] =
-    useState<connection | null>(null);
+    useState<Connection | null>(null);
   const [_, startTransition] = useTransition();
 
   useEffect(() => {
@@ -42,7 +42,7 @@ export default function ConnectionTableServer() {
     });
   }, []);
 
-  const handleSave = async (newConnection: connection) => {
+  const handleSave = async (newConnection: Connection) => {
     startTransition(async () => {
       if (selectedConnection && selectedConnection?.id) {
         await updateConnection(selectedConnection.id, newConnection);
@@ -55,7 +55,7 @@ export default function ConnectionTableServer() {
     });
   };
 
-  const handleDelete = async (conn: connection) => {
+  const handleDelete = async (conn: Connection) => {
     if (conn?.id) {
       startTransition(async () => {
         await deleteConnection(conn.id!);
@@ -65,7 +65,7 @@ export default function ConnectionTableServer() {
     }
   };
 
-  const handleUpdateClick = (conn: connection) => {
+  const handleUpdateClick = (conn: Connection) => {
     setSelectedConnection(conn);
   };
 
