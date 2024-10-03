@@ -8,7 +8,7 @@
 
 - **Visual Management of Keyspaces and Tables:**
   Create, edit, and visualize keyspaces and tables directly from the interface.
-  
+
 - **Integrated Metrics Monitoring:**
   Leverages ScyllaDB's Prometheus and Grafana integrations to display important metrics within the app.
 
@@ -49,7 +49,13 @@
    pnpm dev
    ```
 
-4. **Run a ScyllaDB Instance:**
+4. **Create a Docker Network:**
+
+    ```bash
+    docker network create ws-scylla
+    ```
+
+5. **Run a ScyllaDB Instance:**
 
     ```bash
      docker run --name scylla --network ws-scylla -p "9042:9042" -d scylladb/scylla:6.1.2 \
@@ -57,24 +63,24 @@
       --smp 1
     ```
 
-5. **Check your ScyllaDB Instance:**
+6. **Check your ScyllaDB Instance:**
 
     ```bash
     # Check for UN status
     docker exec -it scylla nodetool status
-    
+
     # Check if the Shell works
     docker exec -it scylla cqlsh
     ```
 
-5. **Access the Studio:**
+7. **Access the Studio:**
    Once the server is up, visit [https://localhost:3000](https://localhost:3000) to start interacting with your ScyllaDB clusters.
 
 ## Roadmap
 
 - **Support for Indexes and Materialized Views:**
   Future versions will include advanced schema management for indexes and materialized views.
-  
+
 - **User Authentication & Roles:**
   Role-based access control for managing permissions across team members.
 
