@@ -33,9 +33,6 @@ export async function getAllConnections(): Promise<Connection[]> {
 export function addConnection(connection: Connection) {
   const {name, host, port, username, password, dc, nodes} = connection;
 
-  // TODO: validate later why the port isn't working properly :0
-  console.log(port);
-
   const stmt = db.prepare(`
     INSERT INTO connections (name, host, port, username, password, dc, nodes)
     VALUES (?, ?, ?, ?, ?, ?, ?)

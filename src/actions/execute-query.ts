@@ -85,7 +85,6 @@ export const getSession = async (inputConnection: Partial<Connection>) => {
 			...(inputConnection as Connection),
 			session,
 		});
-
 		return session;
 	}
 
