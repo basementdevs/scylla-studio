@@ -7,6 +7,7 @@ db.exec(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT,
     host TEXT,
+    port TEXT,
     username TEXT,
     password TEXT,
     dc INTEGER,
@@ -17,31 +18,31 @@ db.exec(`
 export async function getAllConnections(): Promise<Connection[]> {
   return db
     .prepare(
-      "SELECT id, name, host, username, password, dc, nodes FROM connections"
+      "SELECT id, name, host, port, username, password, dc, nodes FROM connections"
     )
     .all() as Connection[];
 }
 
 export function addConnection(connection: Connection) {
-  const { name, host, username, password, dc, nodes } = connection;
+  const {name, host, port, username, password, dc, nodes} = connection;
   const stmt = db.prepare(`
-    INSERT INTO connections (name, host, username, password, dc, nodes)
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO connections (name, host, port, username, password, dc, nodes)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   `);
-  stmt.run(name, host, username, password, 3, nodes);
+  stmt.run(name, host, port, username, password, 3, nodes);
 }
 
 export function updateConnectionById(
   connectionId: number,
   updatedConnection: Connection
 ) {
-  const { name, host, username, password, dc, nodes } = updatedConnection;
+  const {name, host, username, password, dc, nodes, port} = updatedConnection;
   const stmt = db.prepare(`
     UPDATE connections
-    SET name = ?, host = ?, username = ?, password = ?, dc = ?, nodes = ?
+    SET name = ?, host = ?, username = ?, password = ?, dc = ?, nodes = ?, port = ?
     WHERE id = ?
   `);
-  stmt.run(name, host, username, password, dc, nodes, connectionId);
+  stmt.run(name, host, username, password, dc, nodes, port, connectionId);
 }
 
 export function deleteConnectionById(connectionId: number) {
@@ -55,8 +56,9 @@ export type Connection = {
   id?: number;
   name: string;
   host: string;
-  username: string;
-  password: string;
+  port: number;
+  username?: string;
+  password?: string;
   dc?: string;
-  nodes: number;
+  nodes?: number;
 };
