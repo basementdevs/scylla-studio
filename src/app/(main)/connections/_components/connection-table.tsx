@@ -20,7 +20,7 @@ import {
   TableRow,
 } from "@scylla-studio/components/ui/table";
 import type {Connection} from "@scylla-studio/lib/internal-db/connections";
-import {useEffect, useState, useTransition} from "react";
+import { useEffect, useState, useTransition } from "react";
 import {
   deleteConnection,
   fetchConnections,

@@ -42,7 +42,7 @@ export function getMenuList(pathname: string): Group[] {
 
   return [
     {
-      groupLabel: "",
+      groupLabel: "General",
       menus: [
         {
           href: "/",
@@ -57,7 +57,14 @@ export function getMenuList(pathname: string): Group[] {
           active: pathname === "/query-runner",
           icon: CodeSquare,
           submenus: []
-        }
+        },
+        {
+          href: "/connections",
+          label: "Connections",
+          active: pathname.includes("/connections"),
+          icon: Cable,
+          submenus: []
+        },
       ]
     },
     {
@@ -70,40 +77,7 @@ export function getMenuList(pathname: string): Group[] {
           icon: TableProperties,
           submenus: keyspaceList
         },
-        {
-          href: "/connections",
-          label: "Connections",
-          active: pathname.includes("/connections"),
-          icon: Cable,
-          submenus: []
-        },
-        {
-          href: "/users",
-          label: "Users",
-          active: pathname.includes("/users"),
-          icon: Users,
-          submenus: []
-        }
       ]
     },
-    {
-      groupLabel: "Settings",
-      menus: [
-        {
-          href: "/users",
-          label: "Users",
-          active: pathname.includes("/users"),
-          icon: Users,
-          submenus: []
-        },
-        {
-          href: "/account",
-          label: "Account",
-          active: pathname.includes("/account"),
-          icon: Settings,
-          submenus: []
-        }
-      ]
-    }
   ];
 }

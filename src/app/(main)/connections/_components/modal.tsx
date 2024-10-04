@@ -61,9 +61,9 @@ interface NewConnectionModalProps {
 }
 
 export default function NewConnectionModal({
-                                             onSave,
-                                             connectionToEdit,
-                                           }: NewConnectionModalProps) {
+  onSave,
+  connectionToEdit,
+}: NewConnectionModalProps) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 

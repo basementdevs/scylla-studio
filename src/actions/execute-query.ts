@@ -60,20 +60,16 @@ export const executeQueryAction = actionClient
  */
 export const getSession = async (inputConnection: Partial<Connection>) => {
 	const connection = connections.find((c) => c.id === inputConnection.id);
-	console.log(`${inputConnection.host}:${inputConnection.port}`);
 	let session = connection?.session;
 
 	// prepare the object for upcomming connections
 	let connectionObject = {
 		nodes: [`${inputConnection.host}:${inputConnection.port}`],
-	} as ClusterConfig;
-
-	if (inputConnection.username && inputConnection.password) {
-		connectionObject.auth = {
+		auth: ((inputConnection.username && inputConnection.password) && {
 			username: inputConnection.username,
 			password: inputConnection.password
-		} as Auth;
-	}
+		} as Auth || undefined),
+	} as ClusterConfig;
 
 	// TODO: add support for tls
 
