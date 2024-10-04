@@ -1,5 +1,5 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@scylla-studio/components/ui/button";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {Button} from "@scylla-studio/components/ui/button";
 import {
   Form,
   FormControl,
@@ -8,26 +8,29 @@ import {
   FormLabel,
   FormMessage,
 } from "@scylla-studio/components/ui/form";
-import { Input } from "@scylla-studio/components/ui/input";
-import { Modal } from "@scylla-studio/components/ui/modal";
-import { Plus } from "lucide-react";
-import { ReactNode, useEffect, useState, useTransition } from "react";
-import { FormProvider, useForm } from "react-hook-form";
-import { z } from "zod";
+import {Input} from "@scylla-studio/components/ui/input";
+import {Modal} from "@scylla-studio/components/ui/modal";
+import {Plus} from "lucide-react";
+import {ReactNode, useEffect, useState, useTransition} from "react";
+import {FormProvider, useForm} from "react-hook-form";
+import {z} from "zod";
 
 const formSchema = z
   .object({
-    name: z.string().trim().min(1, { message: "Name is required." }),
-    host: z.string().ip(),
-    username: z
-      .string()
-      .trim()
-      .min(1, { message: "Username is required." })
-      .refine((value) => !/\s/.test(value), {
-        message: "Name cannot contain spaces.",
-      }),
-    password: z.string().min(1, { message: "Password is required." }),
-    nodes: z.number().min(1, { message: "Nodes must be at least 1." }),
+    name: z.string().trim().min(1, {message: "Name is required."}),
+    host: z.string().refine((value) => {
+      // Regex for matching localhost:port
+      const localhostRegex = /^localhost$/;
+      // Regex for matching IPv4 addresses
+      const ipv4Regex = /^(25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})\.(25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})\.(25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})\.(25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})$/;
+      // Regex for matching domain-style address (example: node-0.aws-sa-east-1.1695b05c8e05b5237178.clusters.scylla.cloud)
+      const domainRegex = /^[a-zA-Z0-9-]+\.[a-zA-Z0-9.-]+$/;
+
+      return localhostRegex.test(value) || ipv4Regex.test(value) || domainRegex.test(value);
+    }),
+    port: z.coerce.number().min(1).max(65545),
+    username: z.string().nullable().default(null),
+    password: z.string().nullable().default(null),
   })
   .required();
 
@@ -37,7 +40,7 @@ interface FormWrapperProps {
   defaultValues?: Partial<z.infer<typeof formSchema>>;
 }
 
-function FormWrapper({ children, onSubmit, defaultValues }: FormWrapperProps) {
+function FormWrapper({children, onSubmit, defaultValues}: FormWrapperProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues,
@@ -80,7 +83,7 @@ export default function NewConnectionModal({
   return (
     <>
       <Button onClick={() => setOpen(true)} className="mt-4">
-        <Plus className="mr-2 h-4 w-4" /> New Connection
+        <Plus className="mr-2 h-4 w-4"/> New Connection
       </Button>
       <Modal open={open} onClose={() => setOpen(false)}>
         <FormWrapper
@@ -90,46 +93,58 @@ export default function NewConnectionModal({
           <div className="space-y-5">
             <FormField
               name="name"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem>
                   <FormLabel>Name/Alias</FormLabel>
                   <FormControl>
                     <Input placeholder="Enter name or alias" {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage/>
                 </FormItem>
               )}
             />
 
             <FormField
               name="host"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem>
                   <FormLabel>Host</FormLabel>
                   <FormControl>
                     <Input placeholder="Enter host" {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage/>
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="port"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>Port</FormLabel>
+                  <FormControl>
+                    <Input type={"number"} placeholder="Enter port: 9042" {...field} />
+                  </FormControl>
+                  <FormMessage/>
                 </FormItem>
               )}
             />
 
             <FormField
               name="username"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
                     <Input placeholder="Enter username" {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage/>
                 </FormItem>
               )}
             />
 
             <FormField
               name="password"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
@@ -139,28 +154,7 @@ export default function NewConnectionModal({
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              name="nodes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nodes</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="Enter number of nodes"
-                      {...field}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        field.onChange(value === "" ? "" : Number(value));
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
+                  <FormMessage/>
                 </FormItem>
               )}
             />

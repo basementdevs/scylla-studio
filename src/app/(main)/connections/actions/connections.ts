@@ -13,6 +13,10 @@ export async function fetchConnections(): Promise<Connection[]> {
 }
 
 export async function saveNewConnection(newConnection: Connection) {
+
+  // TODO: validate the connection status before saving
+
+
   await addConnection(newConnection);
 }
 

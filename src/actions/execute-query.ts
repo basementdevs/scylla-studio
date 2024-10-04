@@ -1,6 +1,6 @@
 "use server";
 
-import { Cluster } from "@lambda-group/scylladb";
+import {Auth, Cluster, ClusterConfig} from "@lambda-group/scylladb";
 import { connections } from "@scylla-studio/lib/connections";
 import type { QueryResult } from "@scylla-studio/lib/execute-query";
 import type { Connection } from "@scylla-studio/lib/internal-db/connections";
@@ -13,11 +13,21 @@ export const executeQueryAction = actionClient
 			query: z.string(),
 			limit: z.number().optional(),
 			connection: z.object({
-				host: z.string(),
+				host: z.string().refine((value) => {
+					// Regex for matching localhost:port
+					const localhostRegex = /^localhost$/;
+					// Regex for matching IPv4 addresses
+					const ipv4Regex = /^(25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})\.(25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})\.(25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})\.(25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})$/;
+					// Regex for matching domain-style address (example: node-0.aws-sa-east-1.1695b05c8e05b5237178.clusters.scylla.cloud)
+					const domainRegex = /^[a-zA-Z0-9-]+\.[a-zA-Z0-9.-]+$/;
+
+					return localhostRegex.test(value) || ipv4Regex.test(value) || domainRegex.test(value);
+				}),
 				id: z.number().optional(),
 				name: z.string().optional(),
-				username: z.string().optional(),
-				password: z.string().optional(),
+				port: z.coerce.number().optional(),
+				username: z.string().nullable(),
+				password: z.string().nullable(),
 				nodes: z.any().optional(),
 				dc: z.any().optional(),
 			}),
@@ -50,20 +60,27 @@ export const executeQueryAction = actionClient
  */
 export const getSession = async (inputConnection: Partial<Connection>) => {
 	const connection = connections.find((c) => c.id === inputConnection.id);
-
 	let session = connection?.session;
+
+	// prepare the object for upcomming connections
+	let connectionObject = {
+		nodes: [`${inputConnection.host}:${inputConnection.port}`],
+		auth: ((inputConnection.username && inputConnection.password) && {
+			username: inputConnection.username,
+			password: inputConnection.password
+		} as Auth || undefined),
+	} as ClusterConfig;
+
+	// TODO: add support for tls
 
 	// if a connection was never open and stored, then create a new connection
 	if (!connection) {
-		const cluster = new Cluster({
-			nodes: [`${inputConnection.host}:9042`],
-		});
+		const cluster = new Cluster(connectionObject);
 		session = await cluster.connect();
 		connections.push({
 			...(inputConnection as Connection),
 			session,
 		});
-
 		return session;
 	}
 
@@ -73,9 +90,7 @@ export const getSession = async (inputConnection: Partial<Connection>) => {
 
 	// if the session is not valid, then create a new connection
 	if (!healthCheck) {
-		const cluster = new Cluster({
-			nodes: [`${inputConnection.host}:9042`],
-		});
+		const cluster = new Cluster(connectionObject);
 		const newSession = await cluster.connect();
 		connection.session = newSession;
 

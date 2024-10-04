@@ -19,7 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@scylla-studio/components/ui/table";
-import type { Connection } from "@scylla-studio/lib/internal-db/connections";
+import type {Connection} from "@scylla-studio/lib/internal-db/connections";
 import { useEffect, useState, useTransition } from "react";
 import {
   deleteConnection,
@@ -80,6 +80,7 @@ export default function ConnectionTableServer() {
             <TableRow>
               <TableHead>Name/Alias</TableHead>
               <TableHead>Host</TableHead>
+              <TableHead>Port</TableHead>
               <TableHead>Username</TableHead>
               <TableHead>Password</TableHead>
               <TableHead>DC</TableHead>
@@ -89,7 +90,7 @@ export default function ConnectionTableServer() {
           <TableBody>
             {connections.map((conn) => (
               <TableRow key={conn.name}>
-                {["name", "host", "username", "password", "dc", "nodes"].map(
+                {["name", "host", "port", "username", "password", "dc", "nodes"].map(
                   (key) => (
                     <ContextMenu key={`${conn.name}-${key}`}>
                       <ContextMenuTrigger asChild>
