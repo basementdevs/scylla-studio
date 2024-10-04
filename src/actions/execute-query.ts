@@ -1,6 +1,6 @@
 "use server";
 
-import { Cluster } from "@lambda-group/scylladb";
+import {Auth, Cluster, ClusterConfig} from "@lambda-group/scylladb";
 import { connections } from "@scylla-studio/lib/connections";
 import type { QueryResult } from "@scylla-studio/lib/execute-query";
 import type { Connection } from "@scylla-studio/lib/internal-db/connections";
@@ -63,11 +63,23 @@ export const getSession = async (inputConnection: Partial<Connection>) => {
 	console.log(`${inputConnection.host}:${inputConnection.port}`);
 	let session = connection?.session;
 
+	// prepare the object for upcomming connections
+	let connectionObject = {
+		nodes: [`${inputConnection.host}:${inputConnection.port}`],
+	} as ClusterConfig;
+
+	if (inputConnection.username && inputConnection.password) {
+		connectionObject.auth = {
+			username: inputConnection.username,
+			password: inputConnection.password
+		} as Auth;
+	}
+
+	// TODO: add support for tls
+
 	// if a connection was never open and stored, then create a new connection
 	if (!connection) {
-		const cluster = new Cluster({
-			nodes: [`${inputConnection.host}:${inputConnection.port}`],
-		});
+		const cluster = new Cluster(connectionObject);
 		session = await cluster.connect();
 		connections.push({
 			...(inputConnection as Connection),
@@ -83,9 +95,7 @@ export const getSession = async (inputConnection: Partial<Connection>) => {
 
 	// if the session is not valid, then create a new connection
 	if (!healthCheck) {
-		const cluster = new Cluster({
-			nodes: [`${inputConnection.host}:${inputConnection.port}`],
-		});
+		const cluster = new Cluster(connectionObject);
 		const newSession = await cluster.connect();
 		connection.session = newSession;
 
