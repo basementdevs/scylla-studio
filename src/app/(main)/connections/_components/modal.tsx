@@ -18,7 +18,6 @@ import {z} from "zod";
 const formSchema = z
   .object({
     name: z.string().trim().min(1, {message: "Name is required."}),
-    port: z.number().min(1).max(65545).default(9042),
     host: z.string().refine((value) => {
       // Regex for matching localhost:port
       const localhostRegex = /^localhost$/;
@@ -29,14 +28,9 @@ const formSchema = z
 
       return localhostRegex.test(value) || ipv4Regex.test(value) || domainRegex.test(value);
     }),
-    username: z
-      .string()
-      .trim()
-      .refine((value) => !/\s/.test(value), {
-        message: "Name cannot contain spaces.",
-      }).optional(),
-    password: z.string().optional(),
-    nodes: z.number().int().min(1).default(3),
+    port: z.coerce.number().min(1).max(65545),
+    username: z.string().nullable().default(null),
+    password: z.string().nullable().default(null),
   })
   .required();
 
@@ -128,7 +122,7 @@ export default function NewConnectionModal({
                 <FormItem>
                   <FormLabel>Port</FormLabel>
                   <FormControl>
-                    <Input type={"number"} placeholder="Enter port" {...field} />
+                    <Input type={"number"} placeholder="Enter port: 9042" {...field} />
                   </FormControl>
                   <FormMessage/>
                 </FormItem>

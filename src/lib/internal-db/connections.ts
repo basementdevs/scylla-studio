@@ -7,13 +7,20 @@ db.exec(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT,
     host TEXT,
-    port TEXT,
+    port INTEGER,
     username TEXT,
     password TEXT,
     dc INTEGER,
     nodes INTEGER
   )
 `);
+
+db.exec(`
+  INSERT OR IGNORE INTO connections 
+    (id, name, host, port, username, password, dc, nodes)
+  VALUES 
+    (1, 'ScyllaDB Localhost', 'localhost', '9042', null, null, 'local', 1) 
+`)
 
 export async function getAllConnections(): Promise<Connection[]> {
   return db
@@ -25,6 +32,10 @@ export async function getAllConnections(): Promise<Connection[]> {
 
 export function addConnection(connection: Connection) {
   const {name, host, port, username, password, dc, nodes} = connection;
+
+  // TODO: validate later why the port isn't working properly :0
+  console.log(port);
+
   const stmt = db.prepare(`
     INSERT INTO connections (name, host, port, username, password, dc, nodes)
     VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -57,8 +68,8 @@ export type Connection = {
   name: string;
   host: string;
   port: number;
-  username?: string;
-  password?: string;
+  username?: string | null;
+  password?: string | null;
   dc?: string;
   nodes?: number;
 };
