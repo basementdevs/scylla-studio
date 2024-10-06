@@ -34,7 +34,7 @@ export function Menu({ isOpen }: MenuProps) {
                 <p className="text-sm font-medium text-muted-foreground px-4 pb-2 max-w-[248px] truncate">
                   {groupLabel}
                 </p>
-              ) : !isOpen && true && groupLabel ? (
+              ) : !isOpen && isOpen !== undefined && groupLabel ? (
                 <TooltipProvider>
                   <Tooltip delayDuration={100}>
                     <TooltipTrigger className="w-full">
