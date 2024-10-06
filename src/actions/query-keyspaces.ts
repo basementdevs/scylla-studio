@@ -20,15 +20,18 @@ export const queryKeyspaceAction = actionClient
     .action(async ({ parsedInput }) => {
         const { host, port, username, password } = parsedInput;
 
-        const cluster = new Cluster({
+        const clusterConfig: any = {
             nodes: [`${host}:${port}`],
-            auth: {
-                username: username || "",
-                password: password || "",
-            }
-        });
+        };
 
-        const session = await cluster.connect();
+        if (username && password) {
+            clusterConfig.auth = {
+                username,
+                password,
+            };
+        }
+
+        const session = await new Cluster(clusterConfig).connect();
         const clusterData = await session.getClusterData();
         const keyspaces = clusterData.getKeyspaceInfo();
         let betterKeyspaces = await parseKeyspaces(session);

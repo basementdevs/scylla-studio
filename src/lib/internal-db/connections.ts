@@ -65,8 +65,8 @@ export type Connection = {
   name: string;
   host: string;
   port: number;
-  username?: string | null;
-  password?: string | null;
+  username: string | null;
+  password: string | null;
   dc?: string;
   nodes?: number;
 };

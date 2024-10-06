@@ -60,8 +60,8 @@ export function LayoutProvider({ children }: { children: React.ReactNode }) {
       queryKeyspace.execute({
         host: selectedConnection.host,
         port: selectedConnection.port,
-        password: selectedConnection.password || null,
-        username: selectedConnection.username || null,
+        password: selectedConnection.password,
+        username: selectedConnection.username,
       });
     }
   }, [queryKeyspace.execute, selectedConnection]);
