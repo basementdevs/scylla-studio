@@ -12,18 +12,23 @@ export const queryKeyspaceAction = actionClient
     .schema(
         z.object({
             host: z.string().min(1, "Host is required"),
-            port: z.number().min(1, "port is required"),
+            port: z.number().min(1, "Port is required"),
+            username: z.string().nullable(),
+            password: z.string().nullable(),
         })
     )
     .action(async ({ parsedInput }) => {
-        const { host, port } = parsedInput;
+        const { host, port, username, password } = parsedInput;
 
         const cluster = new Cluster({
-            nodes :[`${host}:${port}`],
+            nodes: [`${host}:${port}`],
+            auth: {
+                username: username || "",
+                password: password || "",
+            }
         });
 
         const session = await cluster.connect();
-
         const clusterData = await session.getClusterData();
         const keyspaces = clusterData.getKeyspaceInfo();
         let betterKeyspaces = await parseKeyspaces(session);

@@ -49,6 +49,8 @@ export function LayoutProvider({ children }: { children: React.ReactNode }) {
     onError: (err) => {
       console.log(err)
       toast.error("Failed to query keyspaces.");
+      setSelectedConnection(undefined)
+      setKeyspaces({})
     },
   });
 
@@ -56,8 +58,10 @@ export function LayoutProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if(selectedConnection){
       queryKeyspace.execute({
-        host:"localhost",
-        port: 9043,
+        host: selectedConnection.host,
+        port: selectedConnection.port,
+        password: selectedConnection.password || null,
+        username: selectedConnection.username || null,
       });
     }
   }, [queryKeyspace.execute, selectedConnection]);
