@@ -96,9 +96,17 @@ export function CqlEditor() {
 			fetchSizeRef.current === "unset" || !fetchSizeRef.current
 				? undefined
 				: Number.parseInt(fetchSizeRef.current);
+
+		const { username, password, ...rest } = currentConnectionRef.current;
+		const connection = {
+			...rest,
+			username: username ?? null,
+			password: password ?? null,
+		};
+
 		queryExecutor.execute({
 			query,
-			connection: currentConnectionRef.current,
+			connection,
 			limit,
 		});
 	};
