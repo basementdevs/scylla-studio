@@ -8,24 +8,29 @@ type SelectKeySpaceProps = {
     selectedConnection: Connection | undefined
 }
 
-export const SelectKeySpace = ({setSelectedConnection, connections, selectedConnection}: SelectKeySpaceProps) => {
+export const SelectKeySpace = ({ setSelectedConnection, connections, selectedConnection }: SelectKeySpaceProps) => {
     const handleChange = (value: string) => {
-        const selectedConn = connections.find((conn: any) => conn.name === value);
+        const selectedConn = connections.find((conn: Connection) => conn.id === Number(value));
         setSelectedConnection(selectedConn);
     };
 
     return (
-        <Select onValueChange={handleChange} value={selectedConnection?.name || ""}>
-            <SelectTrigger >
-                <SelectValue placeholder="Select a connection"/>
-            </SelectTrigger>
-            <SelectContent>
-                {connections.map((conn: any) => (
-                    <SelectItem key={conn.name} value={conn.name}>
-                        {conn.name}
-                    </SelectItem>
-                ))}
-            </SelectContent>
-        </Select>
+        <div className="w-11/12 ml-px">
+            <Select onValueChange={handleChange} value={String(selectedConnection?.id) || ""}>
+                <SelectTrigger>
+                    <SelectValue placeholder="Select a connection">
+                        {selectedConnection ? selectedConnection.name : "Select a connection"}
+                    </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                    {connections.map((conn: any) => (
+                        <SelectItem key={conn.id} value={conn.id}>
+                            {conn.name}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+        </div>
     );
 };
+
