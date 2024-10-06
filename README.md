@@ -76,6 +76,32 @@
 7. **Access the Studio:**
    Once the server is up, visit [https://localhost:3000](https://localhost:3000) to start interacting with your ScyllaDB clusters.
 
+## Running Scylla Studio via Docker
+
+You can run Scylla Studio directly through Docker without setting up the entire environment. To do this, run the following one-liner:
+
+```bash
+docker run --rm --name scylla-studio --network="host" ghcr.io/basementdevs/scylla-studio:latest
+```
+
+### Persistent Volumes
+
+If you'd like to keep the session data and logs between runs, you can use Docker volumes:
+
+```bash
+docker run --rm --name scylla-studio --network="host" \
+  -v scylla-studio-data:/usr/app/data \
+  ghcr.io/basementdevs/scylla-studio:latest
+```
+
+This will create a persistent volume named `scylla-studio-data` for the application's data.
+
+To remove the volume later:
+
+```bash
+docker volume rm scylla-studio-data
+```
+
 ## Roadmap
 
 - **Support for Indexes and Materialized Views:**
