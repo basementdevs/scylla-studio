@@ -1,5 +1,5 @@
-import {zodResolver} from "@hookform/resolvers/zod";
-import {Button} from "@scylla-studio/components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@scylla-studio/components/ui/button";
 import {
   Form,
   FormControl,
@@ -8,16 +8,16 @@ import {
   FormLabel,
   FormMessage,
 } from "@scylla-studio/components/ui/form";
-import {Input} from "@scylla-studio/components/ui/input";
-import {Modal} from "@scylla-studio/components/ui/modal";
-import {Plus} from "lucide-react";
-import {ReactNode, useEffect, useState, useTransition} from "react";
-import {FormProvider, useForm} from "react-hook-form";
-import {z} from "zod";
+import { Input } from "@scylla-studio/components/ui/input";
+import { Modal } from "@scylla-studio/components/ui/modal";
+import { Plus } from "lucide-react";
+import { ReactNode, useEffect, useState, useTransition } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { z } from "zod";
 
 const formSchema = z
   .object({
-    name: z.string().trim().min(1, {message: "Name is required."}),
+    name: z.string().trim().min(1, { message: "Name is required." }),
     host: z.string().refine((value) => {
       // Regex for matching localhost:port
       const localhostRegex = /^localhost$/;
@@ -40,7 +40,7 @@ interface FormWrapperProps {
   defaultValues?: Partial<z.infer<typeof formSchema>>;
 }
 
-function FormWrapper({children, onSubmit, defaultValues}: FormWrapperProps) {
+function FormWrapper({ children, onSubmit, defaultValues }: FormWrapperProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues,
@@ -83,7 +83,7 @@ export default function NewConnectionModal({
   return (
     <>
       <Button onClick={() => setOpen(true)} className="mt-4">
-        <Plus className="mr-2 h-4 w-4"/> New Connection
+        <Plus className="mr-2 h-4 w-4" /> New Connection
       </Button>
       <Modal open={open} onClose={() => setOpen(false)}>
         <FormWrapper
@@ -93,58 +93,58 @@ export default function NewConnectionModal({
           <div className="space-y-5">
             <FormField
               name="name"
-              render={({field}) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Name/Alias</FormLabel>
                   <FormControl>
                     <Input placeholder="Enter name or alias" {...field} />
                   </FormControl>
-                  <FormMessage/>
+                  <FormMessage />
                 </FormItem>
               )}
             />
 
             <FormField
               name="host"
-              render={({field}) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Host</FormLabel>
                   <FormControl>
                     <Input placeholder="Enter host" {...field} />
                   </FormControl>
-                  <FormMessage/>
+                  <FormMessage />
                 </FormItem>
               )}
             />
             <FormField
               name="port"
-              render={({field}) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Port</FormLabel>
                   <FormControl>
                     <Input type={"number"} placeholder="Enter port: 9042" {...field} />
                   </FormControl>
-                  <FormMessage/>
+                  <FormMessage />
                 </FormItem>
               )}
             />
 
             <FormField
               name="username"
-              render={({field}) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
                     <Input placeholder="Enter username" {...field} />
                   </FormControl>
-                  <FormMessage/>
+                  <FormMessage />
                 </FormItem>
               )}
             />
 
             <FormField
               name="password"
-              render={({field}) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
@@ -154,7 +154,7 @@ export default function NewConnectionModal({
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage/>
+                  <FormMessage />
                 </FormItem>
               )}
             />
