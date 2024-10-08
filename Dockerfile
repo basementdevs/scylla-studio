@@ -1,48 +1,32 @@
-# Switch to a Debian-based image
-FROM node:22-bullseye AS base
+FROM cgr.dev/chainguard/node:latest-dev AS base
 
-# Install dependencies only when needed
-FROM base AS deps
-RUN apt-get update && apt-get install -y \
-  libc6-dev libssl-dev pkg-config sqlite3 build-essential python3
 WORKDIR /app
+COPY package.json pnpm-lock.yaml ./
+# NOTE: We also install dev deps as TypeScript is needed in build
+RUN pnpm install
 
-# Install dependencies based on the preferred package manager
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
-RUN corepack enable pnpm && pnpm install
-
-# Rebuild the source code only when needed
 FROM base AS builder
+
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+ENV NEXT_TELEMETRY_DISABLED=1
+COPY --from=base /app/node_modules ./node_modules
 COPY . .
+RUN pnpm build --no-lint
 
-ENV NEXT_TELEMETRY_DISABLED 1
-RUN corepack enable pnpm && pnpm build --no-lint
-
-# Production image
-FROM base AS runner
+FROM cgr.dev/chainguard/node:latest AS runner
 WORKDIR /app
 
-ENV NEXT_TELEMETRY_DISABLED 1
-
-RUN apt-get update && apt-get install -y curl
-
-RUN groupadd --system --gid 1001 nodejs
-RUN useradd --system --uid 1001 nextjs
-
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
-
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-RUN chown -R nextjs:nodejs /app
-
-USER nextjs
-
+ENV NODE_ENV=production
 EXPOSE 3000
+ENV PORT=3000
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV HOSTNAME="0.0.0.0"
 
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
+# Copy from build
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+# COPY --from=builder /app/node_modules ./node_modules
 
-CMD ["node", "server.js"]
+# Run app command
+ENTRYPOINT [""]
+CMD ["dumb-init", "node", "server.js"]
