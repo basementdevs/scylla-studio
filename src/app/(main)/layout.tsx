@@ -2,13 +2,13 @@ import SidebarLayout from "@scylla-studio/components/composed/sidebar/admin-pane
 import { LayoutProvider } from "@scylla-studio/contexts/layout";
 
 export default async function MainLayout({
-	children,
+  children,
 }: Readonly<{
-	children: React.ReactNode;
+  children: React.ReactNode;
 }>) {
-	return (
-		<LayoutProvider>
-			<SidebarLayout>{children}</SidebarLayout>
-		</LayoutProvider>
-	);
+  return (
+    <LayoutProvider>
+      <SidebarLayout>{children}</SidebarLayout>
+    </LayoutProvider>
+  );
 }
