@@ -2,7 +2,7 @@ import { SelectKeySpace } from "@scylla-studio/components/composed/select-databa
 import { useLayout } from "@scylla-studio/hooks/layout";
 import {
   Cable,
-  CodeSquare,
+  CodeSquare, HomeIcon,
   LayoutGrid,
   LucideIcon,
   TableProperties,
@@ -65,9 +65,9 @@ export function useGetMenuList(pathname: string): Group[] {
       menus: [
         {
           href: "/",
-          label: "Dashboard",
+          label: "Home",
           active: pathname === "/",
-          icon: LayoutGrid,
+          icon: HomeIcon,
           submenus: [],
         },
         {

@@ -69,5 +69,61 @@
     "tailwindcss": "^3.4.13",
     "typescript": "^5"
   },
-  "packageManager": "pnpm@9.11.0+sha512.0a203ffaed5a3f63242cd064c8fb5892366c103e328079318f78062f24ea8c9d50bc6a47aa3567cabefd824d170e78fa2745ed1f16b132e16436146b7688f19b"
+  "packageManager": "pnpm@9.11.0+sha512.0a203ffaed5a3f63242cd064c8fb5892366c103e328079318f78062f24ea8c9d50bc6a47aa3567cabefd824d170e78fa2745ed1f16b132e16436146b7688f19b",
+  "contributors": [
+    {
+      "name": "Daniel Reis",
+      "github": "danielhe4rt",
+      "linkedin": "danielheart",
+      "openToWork": false,
+      "core": true
+    },
+    {
+      "name": "Felipi Matozinho",
+      "github": "Matozinho",
+      "linkedin": "felipi-matozinho",
+      "openToWork": true,
+      "core": true
+    },
+    {
+      "name": "Daniel Boll",
+      "github": "daniel-boll",
+      "linkedin": "daniel-boll",
+      "openToWork": true,
+      "core": true
+    },
+    {
+      "name": "Gabriel Vieira",
+      "github": "gvieira18",
+      "linkedin": "gvieira18",
+      "openToWork": false,
+      "core": true
+    },
+    {
+      "name": "Diego Reis",
+      "github": "diegoreis42",
+      "linkedin": "diego-reis-42",
+      "openToWork": true,
+      "core": false
+    },
+    {
+      "name": "Void",
+      "github": "void-hr",
+      "openToWork": false,
+      "core": false
+    },
+    {
+      "name": "Pedro Fellipe",
+      "github": "PedroFelli",
+      "openToWork": false,
+      "core": false
+    },
+    {
+      "name": "Lucas Queiroz",
+      "github": "lucasqueiroz",
+      "openToWork": false,
+      "core": false
+    }
+  ]
 }
+
