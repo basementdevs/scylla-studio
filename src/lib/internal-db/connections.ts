@@ -1,13 +1,21 @@
 import Database from "better-sqlite3";
 
-const databse_ = new Database("./connections.db");
+const db = new Database("./connections.db");
 
-databse_.exec(`
+// Available Status: Connected, Refused, Offline
+// -> Connected: Successfully connected to the database
+// -> Refused: Connection refused by the database (wrong credentials, etc)
+// -> Offline: Database is offline
+
+type ConnectionStatus = "Connected" | "Refused" | "Offline";
+
+db.exec(`
   CREATE TABLE IF NOT EXISTS connections (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT,
     host TEXT,
     port INTEGER,
+    status TEXT,
     username TEXT,
     password TEXT,
     dc INTEGER,
@@ -15,46 +23,58 @@ databse_.exec(`
   )
 `);
 
-databse_.exec(`
+db.exec(`
   INSERT OR IGNORE INTO connections
-    (id, name, host, port, username, password, dc, nodes)
+    (id, name, status, host, port, username, password, dc, nodes)
   VALUES
-    (1, 'ScyllaDB Localhost', 'localhost', '9042', null, null, 'local', 1)
+    (1, 'ScyllaDB Localhost', 'Offline', 'localhost', '9042', null, null, 'local', 1)
 `);
 
 export async function getAllConnections(): Promise<Connection[]> {
-	return databse_
+	return db
 		.prepare(
-			"SELECT id, name, host, port, username, password, dc, nodes FROM connections",
+			"SELECT id, name, status, host, port, username, password, dc, nodes FROM connections",
 		)
 		.all() as Connection[];
 }
 
 export function addConnection(connection: Connection) {
-	const { name, host, port, username, password, dc, nodes } = connection;
+	const { name, host, port, status, username, password, dc, nodes } =
+		connection;
 
-	const stmt = databse_.prepare(`
-    INSERT INTO connections (name, host, port, username, password, dc, nodes)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+	const stmt = db.prepare(`
+    INSERT INTO connections (name, host, port, status, username, password, dc, nodes)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `);
-	stmt.run(name, host, port, username, password, 3, nodes);
+	stmt.run(name, host, port, status, username, password, 3, nodes);
 }
 
 export function updateConnectionById(
 	connectionId: number,
 	updatedConnection: Connection,
 ) {
-	const { name, host, username, password, dc, nodes, port } = updatedConnection;
-	const stmt = databse_.prepare(`
+	const { name, host, username, status, password, dc, nodes, port } =
+		updatedConnection;
+	const stmt = db.prepare(`
     UPDATE connections
-    SET name = ?, host = ?, username = ?, password = ?, dc = ?, nodes = ?, port = ?
+    SET name = ?, host = ?, username = ?, status = ?, password = ?, dc = ?, nodes = ?, port = ?
     WHERE id = ?
   `);
-	stmt.run(name, host, username, password, dc, nodes, port, connectionId);
+	stmt.run(
+		name,
+		host,
+		username,
+		status,
+		password,
+		dc,
+		nodes,
+		port,
+		connectionId,
+	);
 }
 
 export function deleteConnectionById(connectionId: number) {
-	const stmt = databse_.prepare(`
+	const stmt = db.prepare(`
     DELETE FROM connections WHERE id = ?
   `);
 	stmt.run(connectionId);
@@ -65,6 +85,7 @@ export type Connection = {
 	name: string;
 	host: string;
 	port: number;
+	status?: ConnectionStatus;
 	username: string | null;
 	password: string | null;
 	dc?: string;

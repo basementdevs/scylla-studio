@@ -28,6 +28,7 @@ import {
 	updateConnection,
 } from "../actions/connections";
 import NewConnectionModal from "./modal";
+import TableLabel from "./table-item";
 
 export default function ConnectionTableServer() {
 	const [connections, setConnections] = useState<Connection[]>([]);
@@ -63,6 +64,14 @@ export default function ConnectionTableServer() {
 		}
 	};
 
+	const handleRefresh = async (conn: Connection) => {
+		startTransition(async () => {
+			await updateConnection(conn.id!, conn);
+			const updatedConnection = await fetchConnections();
+			setConnections(updatedConnection);
+		});
+	};
+
 	const handleUpdateClick = (conn: Connection) => {
 		setSelectedConnection(conn);
 	};
@@ -76,6 +85,7 @@ export default function ConnectionTableServer() {
 				<Table>
 					<TableHeader>
 						<TableRow>
+							<TableHead>Status</TableHead>
 							<TableHead>Name/Alias</TableHead>
 							<TableHead>Host</TableHead>
 							<TableHead>Port</TableHead>
@@ -89,6 +99,7 @@ export default function ConnectionTableServer() {
 						{connections.map((conn) => (
 							<TableRow key={conn.name}>
 								{[
+									"status",
 									"name",
 									"host",
 									"port",
@@ -100,12 +111,15 @@ export default function ConnectionTableServer() {
 									<ContextMenu key={`${conn.name}-${key}`}>
 										<ContextMenuTrigger asChild>
 											<TableCell>
-												{key === "password" ? "••••••••" : (conn as any)[key]}
+												<TableLabel itemKey={key} conn={conn} />
 											</TableCell>
 										</ContextMenuTrigger>
 										<ContextMenuContent>
 											<ContextMenuItem onSelect={() => handleUpdateClick(conn)}>
 												Update
+											</ContextMenuItem>
+											<ContextMenuItem onSelect={() => handleRefresh(conn)}>
+												Refresh
 											</ContextMenuItem>
 											<ContextMenuItem onSelect={() => handleDelete(conn)}>
 												Delete
