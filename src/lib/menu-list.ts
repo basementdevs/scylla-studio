@@ -2,7 +2,8 @@ import { SelectKeySpace } from "@scylla-studio/components/composed/select-databa
 import { useLayout } from "@scylla-studio/hooks/layout";
 import {
   Cable,
-  CodeSquare, HomeIcon,
+  CodeSquare,
+  HomeIcon,
   LayoutGrid,
   LucideIcon,
   TableProperties,

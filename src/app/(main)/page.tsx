@@ -1,12 +1,29 @@
 "use client";
 
-import {ContentLayout} from "@scylla-studio/components/composed/sidebar/content-layout";
-import {Card, CardContent, CardHeader,} from "@scylla-studio/components/ui/card";
-import {CheckCircle, Circle, GitCommit, Github, Linkedin, MinusCircle, PlusCircle} from "lucide-react";
-import {contributors as packageContributors} from "../../../package.json";
-import {useEffect, useState} from "react";
-import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@scylla-studio/components/ui/tooltip";
-import {Badge} from "@scylla-studio/components/ui/badge";
+import { ContentLayout } from "@scylla-studio/components/composed/sidebar/content-layout";
+import { Badge } from "@scylla-studio/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+} from "@scylla-studio/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@scylla-studio/components/ui/tooltip";
+import {
+  CheckCircle,
+  Circle,
+  GitCommit,
+  Github,
+  Linkedin,
+  MinusCircle,
+  PlusCircle,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { contributors as packageContributors } from "../../../package.json";
 
 type PackageContributor = {
   name: string;
@@ -32,9 +49,9 @@ export default function DashboardPage() {
     <ContentLayout title="Home">
       <Card>
         <CardContent>
-          <DashboardHeader/>
-          <DashboardKeyFeatures/>
-          <DashboardContributors/>
+          <DashboardHeader />
+          <DashboardKeyFeatures />
+          <DashboardContributors />
         </CardContent>
       </Card>
     </ContentLayout>
@@ -44,35 +61,37 @@ export default function DashboardPage() {
 function DashboardHeader() {
   return (
     <div className="flex md:flex-row flex-col space-x-2">
-      <img src="https://github.com/basementdevs/scylla-studio/raw/main/.github/assets/logo.png"
-           alt="ScyllaDB Studio Logo"
-           width="100"/>
+      <img
+        src="https://github.com/basementdevs/scylla-studio/raw/main/.github/assets/logo.png"
+        alt="ScyllaDB Studio Logo"
+        width="100"
+      />
       <div>
         <CardHeader>
           <h1 className="font-bold">ScyllaDB Studio</h1>
           <p>
-            a front-end application designed for the ScyllaDB ecosystem, inspired by tools like Drizzle and Prisma
-            Studio.
-            It provides an intuitive interface for managing your ScyllaDB keyspaces and tables, integrating essential
-            performance metrics, and offering a unified solution to interact with both local and cloud-based ScyllaDB
+            a front-end application designed for the ScyllaDB ecosystem,
+            inspired by tools like Drizzle and Prisma Studio. It provides an
+            intuitive interface for managing your ScyllaDB keyspaces and tables,
+            integrating essential performance metrics, and offering a unified
+            solution to interact with both local and cloud-based ScyllaDB
             clusters.
           </p>
         </CardHeader>
       </div>
     </div>
   );
-
 }
 
 function DashboardKeyFeatures() {
   const features = [
-    {name: "Visualize keyspaces and tables", status: "done"},
-    {name: "Explore your data with a powerful query editor", status: "wip"},
-    {name: "Visualize your data model", status: "wip"},
-    {name: "Support for both local and cloud-based clusters", status: "done"},
-    {name: "Keyspace Autocomplete based on Active Connection", status: "wip"},
-    {name: "Query History", status: "wip"},
-  ]
+    { name: "Visualize keyspaces and tables", status: "done" },
+    { name: "Explore your data with a powerful query editor", status: "wip" },
+    { name: "Visualize your data model", status: "wip" },
+    { name: "Support for both local and cloud-based clusters", status: "done" },
+    { name: "Keyspace Autocomplete based on Active Connection", status: "wip" },
+    { name: "Query History", status: "wip" },
+  ];
 
   return (
     <div className="mt-6">
@@ -81,16 +100,16 @@ function DashboardKeyFeatures() {
         {features.map((feature, index) => (
           <li key={index} className="flex items-center space-x-2">
             {feature.status === "done" ? (
-              <CheckCircle className="h-5 w-5 text-green-500"/>
+              <CheckCircle className="h-5 w-5 text-green-500" />
             ) : (
-              <Circle className="h-5 w-5 text-yellow-500"/>
+              <Circle className="h-5 w-5 text-yellow-500" />
             )}
             <span>{feature.name}</span>
           </li>
         ))}
       </ul>
     </div>
-  )
+  );
 }
 
 const DashboardContributors = () => {
@@ -99,16 +118,25 @@ const DashboardContributors = () => {
   useEffect(() => {
     const fetchContributors = async () => {
       const response = await fetch(
-        "https://api.github.com/repos/basementdevs/scylla-studio/stats/contributors"
+        "https://api.github.com/repos/basementdevs/scylla-studio/stats/contributors",
       );
       const data = await response.json();
 
       // Format the data from GitHub
       const githubContributors: GithubContributor[] = data.map((item: any) => {
         // Sum up all weeks' data to get the all-time stats
-        const totalAdditions = item.weeks.reduce((sum: number, week: any) => sum + week.a, 0);
-        const totalDeletions = item.weeks.reduce((sum: number, week: any) => sum + week.d, 0);
-        const totalCommits = item.weeks.reduce((sum: number, week: any) => sum + week.c, 0);
+        const totalAdditions = item.weeks.reduce(
+          (sum: number, week: any) => sum + week.a,
+          0,
+        );
+        const totalDeletions = item.weeks.reduce(
+          (sum: number, week: any) => sum + week.d,
+          0,
+        );
+        const totalCommits = item.weeks.reduce(
+          (sum: number, week: any) => sum + week.c,
+          0,
+        );
 
         return {
           name: item.author.login,
@@ -116,29 +144,35 @@ const DashboardContributors = () => {
           github: item.author.login,
           additions: totalAdditions,
           deletions: totalDeletions,
-          commits: totalCommits
+          commits: totalCommits,
         };
       });
 
       // Merge GitHub data with packageContributors based on 'github'
-      const mergedContributors = packageContributors.map((packageContributor) => {
-        const githubContributor = githubContributors.find(
-          (contributor) => contributor.github.toLowerCase() === packageContributor.github.toLowerCase()
-        );
+      const mergedContributors = packageContributors.map(
+        (packageContributor) => {
+          const githubContributor = githubContributors.find(
+            (contributor) =>
+              contributor.github.toLowerCase() ===
+              packageContributor.github.toLowerCase(),
+          );
 
-        return {
-          ...packageContributor,
-          ...(githubContributor || {
-            avatarUrl: "", // Default values if contributor is not found in GitHub data
-            additions: 0,
-            deletions: 0,
-            commits: 0
-          })
-        };
-      });
+          return {
+            ...packageContributor,
+            ...(githubContributor || {
+              avatarUrl: "", // Default values if contributor is not found in GitHub data
+              additions: 0,
+              deletions: 0,
+              commits: 0,
+            }),
+          };
+        },
+      );
 
       // Sort by commits in descending order
-      const sortedContributors = mergedContributors.sort((a, b) => b.commits - a.commits);
+      const sortedContributors = mergedContributors.sort(
+        (a, b) => b.commits - a.commits,
+      );
 
       setContributors(sortedContributors);
     };
@@ -165,13 +199,10 @@ const DashboardContributors = () => {
               )}
             </div>
             <CardContent className="">
-
               <div className="flex items-center justify-between">
                 <h3 className="font-medium text-lg">{contributor.name}</h3>
                 {contributor.core && (
-                  <Badge variant={'secondary'}>
-                    Core Member
-                  </Badge>
+                  <Badge variant={"secondary"}>Core Member</Badge>
                 )}
               </div>
 
@@ -180,8 +211,10 @@ const DashboardContributors = () => {
                   <Tooltip>
                     <TooltipTrigger>
                       <div className="flex items-center text-green-600">
-                        <PlusCircle className="w-4 h-4 mr-1"/>
-                        <span className="text-xs font-semibold">{contributor.additions}</span>
+                        <PlusCircle className="w-4 h-4 mr-1" />
+                        <span className="text-xs font-semibold">
+                          {contributor.additions}
+                        </span>
                       </div>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -193,8 +226,10 @@ const DashboardContributors = () => {
                   <Tooltip>
                     <TooltipTrigger>
                       <div className="flex items-center text-red-600">
-                        <MinusCircle className="w-4 h-4 mr-1"/>
-                        <span className="text-xs font-semibold">{contributor.deletions}</span>
+                        <MinusCircle className="w-4 h-4 mr-1" />
+                        <span className="text-xs font-semibold">
+                          {contributor.deletions}
+                        </span>
                       </div>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -206,8 +241,10 @@ const DashboardContributors = () => {
                   <Tooltip>
                     <TooltipTrigger>
                       <div className="flex items-center text-blue-600">
-                        <GitCommit className="w-4 h-4 mr-1"/>
-                        <span className="text-xs font-semibold">{contributor.commits}</span>
+                        <GitCommit className="w-4 h-4 mr-1" />
+                        <span className="text-xs font-semibold">
+                          {contributor.commits}
+                        </span>
                       </div>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -225,16 +262,18 @@ const DashboardContributors = () => {
                     rel="noopener noreferrer"
                     className="flex items-center hover:text-primary"
                   >
-                    <Github className="w-10 h-5 mr-2"/>
+                    <Github className="w-10 h-5 mr-2" />
                   </a>
-                  {contributor.linkedin && (<a
-                    href={`https://linkedin.com/in/${contributor.linkedin}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center hover:text-primary"
-                  >
-                    <Linkedin className="w-4 h-4 mr-2"/>
-                  </a>)}
+                  {contributor.linkedin && (
+                    <a
+                      href={`https://linkedin.com/in/${contributor.linkedin}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center hover:text-primary"
+                    >
+                      <Linkedin className="w-4 h-4 mr-2" />
+                    </a>
+                  )}
                 </div>
               </div>
             </CardContent>

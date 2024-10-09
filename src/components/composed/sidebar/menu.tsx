@@ -20,23 +20,23 @@ interface MenuProperties {
   isOpen: boolean | undefined;
 }
 
+const triggerCtrlK = () => {
+  const isMac = navigator.platform.toUpperCase().includes("MAC");
+  const keyEvent = new KeyboardEvent("keydown", {
+    key: "k",
+    code: "KeyK",
+    keyCode: 75, // keyCode for 'K'
+    ctrlKey: !isMac, // Control key for Windows/Linux
+    metaKey: isMac, // Command key for Mac
+    bubbles: true,
+  });
+
+  document.dispatchEvent(keyEvent);
+};
+
 export function Menu({ isOpen }: MenuProperties) {
   const pathname = usePathname();
   const menuList = useGetMenuList(pathname);
-
-  const triggerCtrlK = () => {
-    const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-    const keyEvent = new KeyboardEvent('keydown', {
-      key: 'k',
-      code: 'KeyK',
-      keyCode: 75, // keyCode for 'K'
-      ctrlKey: !isMac,  // Control key for Windows/Linux
-      metaKey: isMac,   // Command key for Mac
-      bubbles: true,
-    });
-
-    document.dispatchEvent(keyEvent);
-  };
 
   return (
     <ScrollArea className="[&>div>div[style]]:!block">
@@ -125,25 +125,22 @@ export function Menu({ isOpen }: MenuProperties) {
               )}
             </li>
           ))}
-           <li className="w-full grow flex items-end">
-           	<TooltipProvider disableHoverableContent>
-           		<Tooltip delayDuration={100}>
-           			<TooltipTrigger asChild>
+          <li className="w-full grow flex items-end">
+            <TooltipProvider disableHoverableContent>
+              <Tooltip delayDuration={100}>
+                <TooltipTrigger asChild>
                   <Button
-                    onClick={() => {
-                      triggerCtrlK()
-                    }}
+                    onClick={() => triggerCtrlK()}
                     variant="outline"
                     className="w-full justify-center h-100 mt-5"
                   >
                     <p className="text-sm text-muted-foreground">
                       Press{" "}
-                      <kbd
-                        className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                      <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
                         <span className="text-xs">⌘ K</span>
                       </kbd>
                       <br />
-                       to open the Command Pallete
+                      to open the Command Pallete
                     </p>
                   </Button>
                 </TooltipTrigger>
@@ -152,7 +149,7 @@ export function Menu({ isOpen }: MenuProperties) {
                 )}
               </Tooltip>
             </TooltipProvider>
-           </li>
+          </li>
         </ul>
       </nav>
     </ScrollArea>
