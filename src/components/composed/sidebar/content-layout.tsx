@@ -1,6 +1,6 @@
 "use client";
 
-import { CommandMenu } from "@scylla-studio/app/(main)/components/command";
+import { CommandMenu } from "@scylla-studio/components/composed/command";
 import { Navbar } from "@scylla-studio/components/composed/sidebar/navbar";
 import { cn } from "@scylla-studio/lib/utils";
 

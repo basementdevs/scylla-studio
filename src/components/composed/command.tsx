@@ -34,7 +34,7 @@ export function CommandMenu() {
 
   const featureItems = [
     {
-      title: "Dashboard",
+      title: "Home",
       link: "/",
     },
     {

@@ -1,5 +1,4 @@
 import { SheetMenu } from "@scylla-studio/components/composed/sidebar/sheet-menu";
-import { UserNav } from "@scylla-studio/components/composed/sidebar/user-nav";
 import { ThemeToggler } from "@scylla-studio/components/composed/theme-toggler";
 import { cn } from "@scylla-studio/lib/utils";
 
