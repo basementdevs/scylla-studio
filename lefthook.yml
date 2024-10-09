@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=https://json.schemastore.org/lefthook.json
+
+# lefthook.yml
+assert_lefthook_installed: true
+
+pre-commit:
+  parallel: false
+  commands:
+    biome:
+      run: pnpm run check
+    lint:
+      run: pnpm run lint
+      include: "*.js,*.jsx,*.ts,*.tsx" 
+
+pre-push:
+  parallel: false
+  commands:
+    lint:
+      run: pnpm run lint 
