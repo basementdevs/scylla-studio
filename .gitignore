@@ -37,3 +37,5 @@ next-env.d.ts
 
 # SQLite files
 *.db
+
+package-lock.json
