@@ -15,6 +15,7 @@ import {
 } from "@scylla-studio/components/ui/resizable";
 import { Tabs, TabsList, TabsTrigger } from "@scylla-studio/components/ui/tabs";
 import { useCqlFilters } from "@scylla-studio/hooks/use-cql-filters";
+import type { AvailableConnections } from "@scylla-studio/lib/connections";
 import type { TracingResult } from "@scylla-studio/lib/execute-query";
 import { cn } from "@scylla-studio/lib/utils";
 import debounce from "lodash.debounce";
@@ -28,7 +29,6 @@ import { ResultsRender } from "./results-render";
 import QueryDashboard from "./tracing-dashboard-render";
 import { TracingRender } from "./tracing-render";
 import { getFullQueryAtCursor } from "./utils";
-import type { AvailableConnections } from "@scylla-studio/lib/connections";
 
 enum ExecuteType {
 	ALL = 0,
@@ -53,14 +53,13 @@ export function CqlEditor() {
 	const currentConnection = useCqlFilters((state) => state.currentConnection);
 	const fetchSize = useCqlFilters((state) => state.fetchSize);
 	// probably the editor functions uses a memo, so the instance of currentConnection is not updated
-	const currentConnectionRef = useRef<AvailableConnections | null>(null);
-	const fetchSizeRef = useRef<string | undefined | null>(null);
+	const currentConnectionReference = useRef<AvailableConnections | null>(null);
+	const fetchSizeReference = useRef<string | undefined | null>(null);
 
 	const monaco = useMonaco();
-	const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
-	const decorationsRef = useRef<editor.IEditorDecorationsCollection | null>(
-		null,
-	);
+	const editorReference = useRef<editor.IStandaloneCodeEditor | null>(null);
+	const decorationsReference =
+		useRef<editor.IEditorDecorationsCollection | null>(null);
 	const queryExecutor = useAction(executeQueryAction, {
 		onSuccess: ({ data }) => {
 			setQueryResult(data?.result ?? []);
@@ -80,24 +79,24 @@ export function CqlEditor() {
 	});
 
 	useEffect(() => {
-		currentConnectionRef.current = currentConnection ?? null;
+		currentConnectionReference.current = currentConnection ?? null;
 	}, [currentConnection]);
 
 	useEffect(() => {
-		fetchSizeRef.current = fetchSize ?? null;
+		fetchSizeReference.current = fetchSize ?? null;
 	}, [fetchSize]);
 
 	const executeQuery = (query: string) => {
-		if (!currentConnectionRef.current) {
+		if (!currentConnectionReference.current) {
 			toast.error("No connection selected");
 			return;
 		}
 		const limit =
-			fetchSizeRef.current === "unset" || !fetchSizeRef.current
+			fetchSizeReference.current === "unset" || !fetchSizeReference.current
 				? undefined
-				: Number.parseInt(fetchSizeRef.current);
+				: Number.parseInt(fetchSizeReference.current);
 
-		const { username, password, ...rest } = currentConnectionRef.current;
+		const { username, password, ...rest } = currentConnectionReference.current;
 		const connection = {
 			...rest,
 			username: username ?? null,
@@ -118,6 +117,7 @@ export function CqlEditor() {
 	}, []);
 
 	// Debounced save function using lodash
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const debouncedSave = useCallback(
 		debounce(
 			(query: string) => localStorage.setItem("cqlEditorQuery", query),
@@ -126,8 +126,7 @@ export function CqlEditor() {
 		[],
 	);
 
-	const handleCodeChange = (newValue?: string) => {
-		const updatedCode = newValue || "";
+	const handleCodeChange = (updatedCode = "") => {
 		setCode(updatedCode);
 		debouncedSave(updatedCode); // Save to local storage with debounce
 	};
@@ -136,18 +135,18 @@ export function CqlEditor() {
 		editor: editor.IStandaloneCodeEditor,
 		monaco: Monaco,
 	) => {
-		if (!decorationsRef.current)
-			decorationsRef.current = editor.createDecorationsCollection();
+		if (!decorationsReference.current)
+			decorationsReference.current = editor.createDecorationsCollection();
 
 		const currentQuery = getFullQueryAtCursor(editor, monaco);
 
 		if (!currentQuery) {
-			decorationsRef.current.clear();
+			decorationsReference.current.clear();
 			return;
 		}
 
-		decorationsRef.current.clear();
-		decorationsRef.current.set([
+		decorationsReference.current.clear();
+		decorationsReference.current.set([
 			{
 				range: currentQuery.range,
 				options: {
@@ -163,7 +162,7 @@ export function CqlEditor() {
 		editor: editor.IStandaloneCodeEditor,
 		monaco: Monaco,
 	) => {
-		editorRef.current = editor;
+		editorReference.current = editor;
 
 		// Add event listener to highlight the query whenever the cursor position changes
 		editor.onDidChangeCursorPosition(() => {
@@ -189,17 +188,17 @@ export function CqlEditor() {
 	};
 
 	const handleExecute = (executeType: ExecuteType) => {
-		if (!editorRef.current || !monaco) return;
+		if (!editorReference.current || !monaco) return;
 
 		switch (executeType) {
 			case ExecuteType.CURRENT: {
-				const fullQuery = getFullQueryAtCursor(editorRef.current, monaco);
+				const fullQuery = getFullQueryAtCursor(editorReference.current, monaco);
 				if (fullQuery?.query) executeQuery(fullQuery.query);
 				break;
 			}
 			case ExecuteType.ALL: {
 				const statements = code.split(";").filter((stmt) => stmt.trim() !== "");
-				statements.forEach(executeQuery);
+				statements.forEach((stmt) => executeQuery(stmt));
 				break;
 			}
 		}

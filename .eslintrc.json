@@ -1,6 +1,19 @@
 {
-  "extends": [
-    "next/core-web-vitals",
-    "next/typescript"
-  ]
+	"extends": ["next", "next/core-web-vitals", "plugin:unicorn/recommended"],
+	"plugins": ["filenames"],
+	"ignorePatterns": ["next-env.d.ts"],
+	"rules": {
+		"filenames/match-regex": ["error", "^[a-z0-9-]+$", true],
+		"unicorn/filename-case": [
+			"error",
+			{
+				"case": "kebabCase"
+			}
+		],
+		"unicorn/no-null": 0,
+		"unicorn/no-array-for-each": 0,
+		"unicorn/no-nested-ternary": 0,
+		"unicorn/prefer-spread": 0,
+		"unicorn/prevent-abbreviations": 0
+	}
 }
