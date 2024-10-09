@@ -35,6 +35,8 @@ export const ResultsRender = ({
 		// if you change the render size, the current page can't be higher than the total pages
 		if (currentPage > Math.ceil(data.length / renderSize))
 			setCurrentPage(Math.max(Math.ceil(data.length / renderSize), 1));
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [data, renderSize]);
 
 	// Calculate the data to display for the current page
@@ -106,7 +108,7 @@ export const ResultsRender = ({
 							<TableRow key={rowIndex}>
 								{headers.map((header) => (
 									<TableCell key={`${rowIndex}-${header}`}>
-										{row[header] !== undefined ? String(row[header]) : "N/A"}
+										{row[header] === undefined ? "N/A" : String(row[header])}
 									</TableCell>
 								))}
 							</TableRow>

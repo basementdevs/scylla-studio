@@ -8,41 +8,46 @@ import { actionClient } from "@scylla-studio/lib/safe-actions";
 import { z } from "zod";
 
 export const executeQueryAction = actionClient
-  .schema(
-    z.object({
-      query: z.string(),
-      limit: z.number().optional(),
-      connection: z.object({
-        host: z.string().refine((value) => {
-          // Regex for matching localhost:port
-          const localhostRegex = /^localhost$/;
-          // Regex for matching IPv4 addresses
-          const ipv4Regex = /^(25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})\.(25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})\.(25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})\.(25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})$/;
-          // Regex for matching domain-style address (example: node-0.aws-sa-east-1.1695b05c8e05b5237178.clusters.scylla.cloud)
-          const domainRegex = /^[a-zA-Z0-9-]+\.[a-zA-Z0-9.-]+$/;
+	.schema(
+		z.object({
+			query: z.string(),
+			limit: z.number().optional(),
+			connection: z.object({
+				host: z.string().refine((value) => {
+					// Regex for matching localhost:port
+					const localhostRegex = /^localhost$/;
+					// Regex for matching IPv4 addresses
+					const ipv4Regex =
+						/^(25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})\.(25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})\.(25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})\.(25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})$/;
+					// Regex for matching domain-style address (example: node-0.aws-sa-east-1.1695b05c8e05b5237178.clusters.scylla.cloud)
+					const domainRegex = /^[a-zA-Z0-9-]+\.[a-zA-Z0-9.-]+$/;
 
-          return localhostRegex.test(value) || ipv4Regex.test(value) || domainRegex.test(value);
-        }),
-        id: z.number().optional(),
-        name: z.string().optional(),
-        port: z.coerce.number().optional(),
-        username: z.string().nullable(),
-        password: z.string().nullable(),
-        nodes: z.any().optional(),
-        dc: z.any().optional(),
-      }),
-    }),
-  )
-  .action(async ({ parsedInput }) => {
-    const session = await getSession(parsedInput.connection);
-    let query = parsedInput.query;
+					return (
+						localhostRegex.test(value) ||
+						ipv4Regex.test(value) ||
+						domainRegex.test(value)
+					);
+				}),
+				id: z.number().optional(),
+				name: z.string().optional(),
+				port: z.coerce.number().optional(),
+				username: z.string().nullable(),
+				password: z.string().nullable(),
+				nodes: z.any().optional(),
+				dc: z.any().optional(),
+			}),
+		}),
+	)
+	.action(async ({ parsedInput }) => {
+		const session = await getSession(parsedInput.connection);
+		let query = parsedInput.query;
 
-    // remove the semicolon, then add the limit
-    if (parsedInput.limit)
-      query = query.replace(/;$/, ` LIMIT ${parsedInput.limit};`);
+		// remove the semicolon, then add the limit
+		if (parsedInput.limit)
+			query = query.replace(/;$/, ` LIMIT ${parsedInput.limit};`);
 
-    return (await session.executeWithTracing(query)) as QueryResult;
-  });
+		return (await session.executeWithTracing(query)) as QueryResult;
+	});
 
 /**
  * Retrieves or establishes a session for the given connection.
@@ -59,46 +64,50 @@ export const executeQueryAction = actionClient
  * @throws {Error} - Throws an error if the session is not found after validation.
  */
 export const getSession = async (inputConnection: Partial<Connection>) => {
-  const connection = connections.find((c) => c.id === inputConnection.id);
-  let session = connection?.session;
+	const connection = connections.find((c) => c.id === inputConnection.id);
+	let session = connection?.session;
 
-  // prepare the object for upcomming connections
-  let connectionObject = {
-    nodes: [`${inputConnection.host}:${inputConnection.port}`],
-    auth: ((inputConnection.username && inputConnection.password) && {
-      username: inputConnection.username,
-      password: inputConnection.password
-    } as Auth || undefined),
-  } as ClusterConfig;
+	// prepare the object for upcomming connections
+	let connectionObject = {
+		nodes: [`${inputConnection.host}:${inputConnection.port}`],
+		auth:
+			(inputConnection.username &&
+				inputConnection.password &&
+				({
+					username: inputConnection.username,
+					password: inputConnection.password,
+				} as Auth)) ||
+			undefined,
+	} as ClusterConfig;
 
-  // TODO: add support for tls
+	// TODO: add support for tls
 
-  // if a connection was never open and stored, then create a new connection
-  if (!connection) {
-    const cluster = new Cluster(connectionObject);
-    session = await cluster.connect();
-    connections.push({
-      ...(inputConnection as Connection),
-      session,
-    });
-    return session;
-  }
+	// if a connection was never open and stored, then create a new connection
+	if (!connection) {
+		const cluster = new Cluster(connectionObject);
+		session = await cluster.connect();
+		connections.push({
+			...(inputConnection as Connection),
+			session,
+		});
+		return session;
+	}
 
-  // validate if the session still exists on the database
-  const healthCheck = await session?.execute("SELECT * FROM system.local");
-  console.debug("healthCheck", healthCheck);
+	// validate if the session still exists on the database
+	const healthCheck = await session?.execute("SELECT * FROM system.local");
+	console.debug("healthCheck", healthCheck);
 
-  // if the session is not valid, then create a new connection
-  if (!healthCheck) {
-    const cluster = new Cluster(connectionObject);
-    const newSession = await cluster.connect();
-    connection.session = newSession;
+	// if the session is not valid, then create a new connection
+	if (!healthCheck) {
+		const cluster = new Cluster(connectionObject);
+		const newSession = await cluster.connect();
+		connection.session = newSession;
 
-    return newSession;
-  }
+		return newSession;
+	}
 
-  if (!session) throw new Error("Session not found");
+	if (!session) throw new Error("Session not found");
 
-  // the session exists and still valid
-  return session;
+	// the session exists and still valid
+	return session;
 };

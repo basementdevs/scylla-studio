@@ -35,6 +35,7 @@ export const ResultFilters = () => {
 
 	useEffect(() => {
 		fetchConnectionsAction.execute();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const handleChangeConnection = (connectionId: string) => {
@@ -57,7 +58,7 @@ export const ResultFilters = () => {
 				</SelectTrigger>
 				<SelectContent>
 					<SelectGroup>
-						{["unset","25", "50", "100", "500"].map((size) => (
+						{["unset", "25", "50", "100", "500"].map((size) => (
 							<SelectItem key={size} value={size.toString()}>
 								Fetch size: {size}
 							</SelectItem>
