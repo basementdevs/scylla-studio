@@ -22,6 +22,7 @@ import {
   MinusCircle,
   PlusCircle,
 } from "lucide-react";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { contributors as packageContributors } from "../../../package.json";
 
@@ -61,7 +62,7 @@ export default function DashboardPage() {
 function DashboardHeader() {
   return (
     <div className="flex md:flex-row flex-col space-x-2">
-      <img
+      <Image
         src="https://github.com/basementdevs/scylla-studio/raw/main/.github/assets/logo.png"
         alt="ScyllaDB Studio Logo"
         width="100"
@@ -187,7 +188,7 @@ const DashboardContributors = () => {
         {contributors.map((contributor, index) => (
           <Card key={index} className="overflow-hidden">
             <div className="relative">
-              <img
+              <Image
                 src={contributor.avatarUrl}
                 alt={`${contributor.name}'s avatar`}
                 className="w-full h-48 object-cover"
