@@ -8,7 +8,8 @@
 		"start": "next start",
 		"lint": "next lint",
 		"check": "biome check",
-		"check:fix": "biome check --write"
+		"check:fix": "biome check --write",
+		"trigger:ci": "git commit --allow-empty -s -m '[CI]: release docker image'"
 	},
 	"dependencies": {
 		"@hookform/resolvers": "^3.9.0",
