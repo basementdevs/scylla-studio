@@ -1,6 +1,5 @@
 "use client";
 
-import { TracingResult } from "@scylla-studio/actions/execute-query";
 import {
 	Card,
 	CardContent,
@@ -8,6 +7,7 @@ import {
 	CardTitle,
 } from "@scylla-studio/components/ui/card";
 import { ScrollArea } from "@scylla-studio/components/ui/scroll-area";
+import type { TracingResult } from "@scylla-studio/lib/execute-query";
 import { useEffect, useState } from "react";
 import {
 	Bar,
@@ -25,8 +25,10 @@ import {
 
 export default function QueryDashboard({
 	tracingInfo,
-}: { tracingInfo: TracingResult }) {
-	const [data, setData] = useState<TracingResult>(tracingInfo);
+}: {
+	tracingInfo: TracingResult;
+}) {
+	const [data] = useState<TracingResult>(tracingInfo);
 
 	// State variables for various datasets
 	const [shardData, setShardData] = useState<
@@ -55,7 +57,7 @@ export default function QueryDashboard({
 		const activitiesPerSource = new Map<string, number>();
 		let maxSourceElapsed = 0;
 
-		for (const [index, event] of data.events.entries()) {
+		data.events.forEach((event, index) => {
 			// Shard Data
 			if (!shardMap.has(event.thread)) {
 				shardMap.set(event.thread, { events: 0, totalTime: 0 });
@@ -105,42 +107,44 @@ export default function QueryDashboard({
 			if (event.source_elapsed > maxSourceElapsed) {
 				maxSourceElapsed = event.source_elapsed;
 			}
-		}
+		});
 
 		// Prepare Data for Charts
 
 		// Shard Data
-		const shardDataArray = [...shardMap.entries()].map(([name, info]) => ({
-			name,
-			events: info.events,
-			totalTime: info.totalTime,
-		}));
+		const shardDataArray = Array.from(shardMap.entries()).map(
+			([name, info]) => ({
+				name,
+				events: info.events,
+				totalTime: info.totalTime,
+			}),
+		);
 		setShardData(shardDataArray);
 
 		// Activity Duration per Shard Data
 		const activityDurationDataArray: any[] = [];
-		for (const [shard, activities] of activityDurationPerShard.entries()) {
+		activityDurationPerShard.forEach((activities, shard) => {
 			const dataPoint: any = { shard };
 			for (const activity in activities) {
 				dataPoint[activity] = activities[activity];
 			}
 			activityDurationDataArray.push(dataPoint);
-		}
+		});
 		setActivityDurationData(activityDurationDataArray);
 
 		// Extract unique activity keys
 		const activityKeysSet = new Set<string>();
-		for (const dataPoint of activityDurationDataArray) {
-			for (const key of Object.keys(dataPoint)) {
+		activityDurationDataArray.forEach((dataPoint) => {
+			Object.keys(dataPoint).forEach((key) => {
 				if (key !== "shard") {
 					activityKeysSet.add(key);
 				}
-			}
-		}
-		setActivityKeys([...activityKeysSet]);
+			});
+		});
+		setActivityKeys(Array.from(activityKeysSet));
 
 		// Events per Thread Data
-		const eventsPerThreadArray = [...eventsPerThread.entries()].map(
+		const eventsPerThreadArray = Array.from(eventsPerThread.entries()).map(
 			([thread, count]) => ({
 				thread,
 				count,
@@ -149,7 +153,7 @@ export default function QueryDashboard({
 		setEventsPerThreadData(eventsPerThreadArray);
 
 		// Activity Frequency Data
-		const activityFrequencyArray = [...activityFrequency.entries()].map(
+		const activityFrequencyArray = Array.from(activityFrequency.entries()).map(
 			([activity, count]) => ({
 				activity,
 				count,
@@ -161,12 +165,12 @@ export default function QueryDashboard({
 		setEventsOverTimeData(eventsOverTime);
 
 		// Activities per Source IP Data
-		const activitiesPerSourceArray = [...activitiesPerSource.entries()].map(
-			([source, count]) => ({
-				source,
-				count,
-			}),
-		);
+		const activitiesPerSourceArray = Array.from(
+			activitiesPerSource.entries(),
+		).map(([source, count]) => ({
+			source,
+			count,
+		}));
 		setActivitiesPerSourceData(activitiesPerSourceArray);
 
 		// Total Source Elapsed vs Total Duration Data

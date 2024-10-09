@@ -1,8 +1,8 @@
 import Database from "better-sqlite3";
 
-const database = new Database("connections.db");
+const databse_ = new Database("./connections.db");
 
-database.exec(`
+databse_.exec(`
   CREATE TABLE IF NOT EXISTS connections (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT,
@@ -15,15 +15,15 @@ database.exec(`
   )
 `);
 
-database.exec(`
-  INSERT OR IGNORE INTO connections 
+databse_.exec(`
+  INSERT OR IGNORE INTO connections
     (id, name, host, port, username, password, dc, nodes)
-  VALUES 
-    (1, 'ScyllaDB Localhost', 'localhost', '9042', null, null, 'local', 1) 
+  VALUES
+    (1, 'ScyllaDB Localhost', 'localhost', '9042', null, null, 'local', 1)
 `);
 
 export async function getAllConnections(): Promise<Connection[]> {
-	return database
+	return databse_
 		.prepare(
 			"SELECT id, name, host, port, username, password, dc, nodes FROM connections",
 		)
@@ -33,7 +33,7 @@ export async function getAllConnections(): Promise<Connection[]> {
 export function addConnection(connection: Connection) {
 	const { name, host, port, username, password, dc, nodes } = connection;
 
-	const stmt = database.prepare(`
+	const stmt = databse_.prepare(`
     INSERT INTO connections (name, host, port, username, password, dc, nodes)
     VALUES (?, ?, ?, ?, ?, ?, ?)
   `);
@@ -45,7 +45,7 @@ export function updateConnectionById(
 	updatedConnection: Connection,
 ) {
 	const { name, host, username, password, dc, nodes, port } = updatedConnection;
-	const stmt = database.prepare(`
+	const stmt = databse_.prepare(`
     UPDATE connections
     SET name = ?, host = ?, username = ?, password = ?, dc = ?, nodes = ?, port = ?
     WHERE id = ?
@@ -54,7 +54,7 @@ export function updateConnectionById(
 }
 
 export function deleteConnectionById(connectionId: number) {
-	const stmt = database.prepare(`
+	const stmt = databse_.prepare(`
     DELETE FROM connections WHERE id = ?
   `);
 	stmt.run(connectionId);

@@ -1,0 +1,31 @@
+services:
+  scylladb:
+    image: scylladb/scylla
+    container_name: scylladb
+    command: --smp 10
+    ports:
+      - "9042:9042"
+    networks:
+      - scylla-network
+    deploy:
+      resources:
+        limits:
+          cpus: "10"
+    tty: true
+    stdin_open: true
+
+  scylla-studio:
+    image: basementdevs/scylla-studio
+    container_name: scylla-studio
+    volumes:
+      - ./connections.db:/app/connections.db
+    ports:
+      - "3000:3000"
+    networks:
+      - scylla-network
+    depends_on:
+      - scylladb
+
+networks:
+  scylla-network:
+    driver: bridge

@@ -52,6 +52,7 @@
 		"zustand": "5.0.0-rc.2"
 	},
 	"devDependencies": {
+		"@types/better-sqlite3": "^7.6.11",
 		"@biomejs/biome": "1.9.3",
 		"@types/lodash.debounce": "^4.0.9",
 		"@types/node": "^20",
