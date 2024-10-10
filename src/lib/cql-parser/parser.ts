@@ -18,17 +18,17 @@ export interface DescriptionRow {
 export async function parseKeyspaces(
   session: ScyllaSession,
 ): Promise<Record<string, KeyspaceDefinition>> {
-  let parsedKeyspaces = new Map<string, KeyspaceDefinition>();
-  let rows = await session.execute("DESC keyspaces");
+  const parsedKeyspaces = new Map<string, KeyspaceDefinition>();
+  const rows = await session.execute("DESC keyspaces");
 
-  for (let row of rows) {
-    let result: DescriptionRow[] = await session.execute(
+  for (const row of rows) {
+    const result: DescriptionRow[] = await session.execute(
       `DESC ${row.keyspace_name}`,
     );
 
     let parsedKeyspace = {} as KeyspaceDefinition;
 
-    for (let row of result) {
+    for (const row of result) {
       switch (row.type) {
         case "keyspace": {
           parsedKeyspace = parseCreateKeyspace(row);

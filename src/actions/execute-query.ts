@@ -68,7 +68,7 @@ export const getSession = async (inputConnection: Partial<Connection>) => {
   let session = connection?.session;
 
   // prepare the object for upcomming connections
-  let connectionObject = {
+  const connectionObject = {
     nodes: [`${inputConnection.host}:${inputConnection.port}`],
     auth:
       (inputConnection.username &&

@@ -18,7 +18,7 @@ export function CommandMenu() {
   const [open, setOpen] = React.useState(false);
   const { keyspaces } = useLayout();
 
-  let parsedKeyspaces = Object.keys(keyspaces);
+  const parsedKeyspaces = Object.keys(keyspaces);
   const router = useRouter();
 
   React.useEffect(() => {
@@ -74,8 +74,8 @@ export function CommandMenu() {
         </CommandGroup>
         <CommandGroup heading="Tables">
           {parsedKeyspaces.map((keyspace) => {
-            let currentKeyspace = keyspaces[keyspace];
-            let currentTables = Object.keys(currentKeyspace.tables);
+            const currentKeyspace = keyspaces[keyspace];
+            const currentTables = Object.keys(currentKeyspace.tables);
 
             return currentTables.map((table) => (
               <CommandItem

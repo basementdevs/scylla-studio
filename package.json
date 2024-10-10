@@ -9,7 +9,13 @@
     "lint": "next lint",
     "check": "biome check",
     "check:fix": "biome check --write",
-    "trigger:ci": "git commit --allow-empty -s -m '[CI]: release docker image'"
+    "check:ci": "biome ci .",
+    "check:hook": "biome check --no-errors-on-unmatched --files-ignore-unknown=true",
+    "trigger:ci": "git commit --allow-empty -s -m '[CD]: release docker image'"
+  },
+  "engines": {
+    "node": ">=22",
+    "pnpm": "9.11.0"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -63,7 +69,7 @@
     "eslint-config-next": "14.2.9",
     "eslint-plugin-filenames": "^1.3.2",
     "eslint-plugin-unicorn": "^56.0.0",
-    "lefthook": "^1.7.18",
+    "lefthook": "1.7.18",
     "monaco-editor": "^0.52.0",
     "postcss": "^8",
     "tailwindcss": "^3.4.13",

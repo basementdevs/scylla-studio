@@ -6,14 +6,24 @@ assert_lefthook_installed: true
 pre-commit:
   parallel: false
   commands:
-    biome:
-      run: pnpm run check
+    format:
+      tags: formatting
+      run: pnpm run check:hook -- {staged_files}
     lint:
-      run: pnpm run lint
-      include: "*.js,*.jsx,*.ts,*.tsx" 
+      tags: linting
+      glob: "*.{js,jsx,ts,tsx}"
+      run: pnpm exec next lint --file {staged_files}
 
 pre-push:
   parallel: false
   commands:
+    format:
+      tags: formatting
+      run: pnpm run check:hook -- {push_files}
     lint:
-      run: pnpm run lint 
+      tags: linting
+      glob: "*.{js,jsx,ts,tsx}"
+      run: pnpm exec next lint --file {push_files}
+    audit:
+      tags: security
+      run: pnpm audit --prod
