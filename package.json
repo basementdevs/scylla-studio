@@ -11,7 +11,7 @@
     "check:fix": "biome check --write",
     "check:ci": "biome ci .",
     "check:hook": "biome check --no-errors-on-unmatched --files-ignore-unknown=true",
-    "trigger:ci": "git commit --allow-empty -s -m '[CI]: release docker image'"
+    "trigger:ci": "git commit --allow-empty -s -m '[CD]: release docker image'"
   },
   "engines": {
     "node": ">=22",
