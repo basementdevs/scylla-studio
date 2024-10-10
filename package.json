@@ -11,6 +11,10 @@
     "check:fix": "biome check --write",
     "trigger:ci": "git commit --allow-empty -s -m '[CI]: release docker image'"
   },
+  "engines": {
+    "node": ">=22",
+    "pnpm": "9.11.0"
+  },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
     "@lambda-group/scylladb": "^0.6.1",
