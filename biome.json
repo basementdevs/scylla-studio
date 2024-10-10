@@ -18,7 +18,8 @@
     "indentStyle": "space",
     "indentWidth": 2,
     "lineWidth": 80,
-    "lineEnding": "lf"
+    "lineEnding": "lf",
+    "useEditorconfig": true
   },
   "javascript": {
     "formatter": {

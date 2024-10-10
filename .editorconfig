@@ -1,0 +1,20 @@
+root = true
+
+[*]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[{Makefile,**.mk}]
+indent_style = tab
+indent_size = 4
+
+[*.{diff,md}]
+trim_trailing_whitespace = false
+
+[docker-compose{,.*}.{yaml,yml}]
+indent_style = space
+indent_size = 2
