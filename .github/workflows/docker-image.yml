@@ -4,10 +4,11 @@ on:
   push:
     branches:
       - main
+      - develop
   workflow_dispatch:
     inputs:
       reason:
-        description: 'Write why you are requesting a manual release'
+        description: "Write why you are requesting a manual release"
         type: string
         required: true
 
