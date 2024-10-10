@@ -14,7 +14,7 @@ export async function fetchConnections(): Promise<Connection[]> {
 }
 
 async function validateConnectionStatus(newConnection: Connection) {
-  let connectionObject = {
+  const connectionObject = {
     nodes: [`${newConnection.host}:${newConnection.port}`],
     auth:
       (newConnection.username &&
@@ -31,7 +31,7 @@ async function validateConnectionStatus(newConnection: Connection) {
     await cluster.connect();
     newConnection.status = "Connected";
   } catch (error: any) {
-    let message = error.message as string;
+    const message = error.message as string;
     console.log(message);
     newConnection.status =
       message.includes("Connection reset by peer") ||

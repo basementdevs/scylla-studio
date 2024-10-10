@@ -167,7 +167,7 @@ function parseTableKeys(create_table_cql: string) {
   const clusteringKeys: string[] = [];
 
   if (!keysPart?.includes(",")) {
-    let partitionKeys = keysPart?.split(")") || [];
+    const partitionKeys = keysPart?.split(")") || [];
     return { partitionKeys, clusteringKeys };
   }
 

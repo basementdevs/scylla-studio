@@ -10,7 +10,7 @@ export const getFullQueryAtCursor = (
   monaco: Monaco,
 ) => {
   const model = editor.getModel();
-  let position = editor.getPosition();
+  const position = editor.getPosition();
 
   if (!model || !position) return null;
 

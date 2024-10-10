@@ -34,7 +34,7 @@ export const queryKeyspaceAction = actionClient
     const session = await connection.connect();
     const clusterData = await session.getClusterData();
     const keyspaces = clusterData.getKeyspaceInfo();
-    let betterKeyspaces = await parseKeyspaces(session);
+    const betterKeyspaces = await parseKeyspaces(session);
 
     return { keyspaces, betterKeyspaces };
   });
