@@ -9,6 +9,7 @@
     "lint": "next lint",
     "check": "biome check",
     "check:fix": "biome check --write",
+    "check:ci": "biome ci .",
     "trigger:ci": "git commit --allow-empty -s -m '[CI]: release docker image'"
   },
   "engines": {
