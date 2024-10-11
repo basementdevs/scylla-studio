@@ -1,6 +1,6 @@
 "use client";
 
-import { type DialogProps } from "@radix-ui/react-dialog";
+import type { DialogProps } from "@radix-ui/react-dialog";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { Command as CommandPrimitive } from "cmdk";
 import * as React from "react";
@@ -23,12 +23,7 @@ const Command = React.forwardRef<
 ));
 Command.displayName = CommandPrimitive.displayName;
 
-interface CommandDialogProperties extends DialogProps {}
-
-const CommandDialog = ({
-  children,
-  ...properties
-}: CommandDialogProperties) => {
+const CommandDialog = ({ children, ...properties }: DialogProps) => {
   return (
     <Dialog {...properties}>
       <DialogContent className="overflow-hidden p-0">
