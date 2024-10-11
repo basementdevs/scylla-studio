@@ -66,6 +66,7 @@ function DashboardHeader() {
         src="https://github.com/basementdevs/scylla-studio/raw/main/.github/assets/logo.png"
         alt="ScyllaDB Studio Logo"
         width="100"
+        height="100"
       />
       <div>
         <CardHeader>
@@ -192,6 +193,8 @@ const DashboardContributors = () => {
                 src={contributor.avatarUrl}
                 alt={`${contributor.name}'s avatar`}
                 className="w-full h-48 object-cover"
+                width="100"
+                height="100"
               />
               {contributor.openToWork && (
                 <div className="absolute top-2 left-2 bg-green-500 text-white text-xs py-1 px-2 rounded-md">
