@@ -122,7 +122,7 @@ function KeyspaceCQLTooltip({
 }: { keyspaceInfo: KeyspaceDefinition }) {
   const cql = `CREATE KEYSPACE ${keyspaceInfo.name}
 WITH replication = {
-    'class': '${keyspaceInfo?.replication}',
+    'class': '${keyspaceInfo?.replication?.class}',
     'replication_factor': 0
 } AND tablets = {
     'enabled': ${keyspaceInfo.tablets}

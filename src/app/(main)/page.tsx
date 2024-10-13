@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { contributors as packageContributors } from "../../../package.json";
+import packageJson from "../../../package.json";
 
 type PackageContributor = {
   name: string;
@@ -122,10 +122,19 @@ const DashboardContributors = () => {
       const response = await fetch(
         "https://api.github.com/repos/basementdevs/scylla-studio/stats/contributors",
       );
+
+      /**
+       * In 202 case, has nothing on reponse body.
+       * In 403 case, we can't access the data or reach the rate limit.
+       */
+      if (response.status === 202 || response.status === 403) {
+        return;
+      }
+
       const data = await response.json();
 
       // Format the data from GitHub
-      const githubContributors: GithubContributor[] = data.map((item: any) => {
+      const githubContributors: GithubContributor[] = data?.map((item: any) => {
         // Sum up all weeks' data to get the all-time stats
         const totalAdditions = item.weeks.reduce(
           (sum: number, week: any) => sum + week.a,
@@ -149,6 +158,9 @@ const DashboardContributors = () => {
           commits: totalCommits,
         };
       });
+
+      const packageContributors: PackageContributor[] =
+        packageJson.contributors;
 
       // Merge GitHub data with packageContributors based on 'github'
       const mergedContributors = packageContributors.map(
@@ -193,8 +205,9 @@ const DashboardContributors = () => {
                 src={contributor.avatarUrl}
                 alt={`${contributor.name}'s avatar`}
                 className="w-full h-48 object-cover"
-                width="100"
-                height="100"
+                loading="lazy"
+                width="460"
+                height="460"
               />
               {contributor.openToWork && (
                 <div className="absolute top-2 left-2 bg-green-500 text-white text-xs py-1 px-2 rounded-md">
