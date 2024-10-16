@@ -5,7 +5,5 @@ export default async function MainLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-      <SidebarLayout>{children}</SidebarLayout>
-  );
+  return <SidebarLayout>{children}</SidebarLayout>;
 }
