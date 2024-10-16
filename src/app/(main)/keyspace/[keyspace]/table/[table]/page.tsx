@@ -2,7 +2,7 @@
 
 import { ContentLayout } from "@scylla-studio/components/composed/sidebar/content-layout";
 import { Card } from "@scylla-studio/components/ui/card";
-import { useLayout } from "@scylla-studio/hooks/layout";
+import { useLayout } from "@scylla-studio/contexts/layout";
 import TableGeneralInfo from "./_components/table-general-info";
 import TableStructure from "./_components/table-structure";
 

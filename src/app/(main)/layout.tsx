@@ -1,5 +1,4 @@
 import SidebarLayout from "@scylla-studio/components/composed/sidebar/admin-panel-layout";
-import { LayoutProvider } from "@scylla-studio/contexts/layout";
 
 export default async function MainLayout({
   children,
@@ -7,8 +6,6 @@ export default async function MainLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <LayoutProvider>
       <SidebarLayout>{children}</SidebarLayout>
-    </LayoutProvider>
   );
 }
