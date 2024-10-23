@@ -1,3 +1,10 @@
+<div align="center">
+
+[![Docker Image](https://github.com/basementdevs/scylla-studio/actions/workflows/docker-image.yml/badge.svg)](https://github.com/basementdevs/scylla-studio/actions/workflows/docker-image.yml)
+[![ScyllaDB Unnoficial Discord Server](https://img.shields.io/badge/ScyllaDB_Developers-Discord_Server-4C388C)](https://discord.gg/8Preg7PfTY)
+
+</div>
+
 <h1 align="center"> Scylla Studio </h1>
 
 <img src="./.github/assets/logo.png" width=90 align="left" />
