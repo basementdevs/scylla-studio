@@ -11,7 +11,7 @@ import {
 import { Input } from "@scylla-studio/components/ui/input";
 import { Modal } from "@scylla-studio/components/ui/modal";
 import { Plus } from "lucide-react";
-import { ReactNode, useEffect, useState, useTransition } from "react";
+import { type ReactNode, useEffect, useState, useTransition } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 

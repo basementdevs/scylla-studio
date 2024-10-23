@@ -19,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@scylla-studio/components/ui/table";
+import { useLayout } from "@scylla-studio/contexts/layout";
 import type { Connection } from "@scylla-studio/lib/internal-db/connections";
 import { useEffect, useState, useTransition } from "react";
 import {
@@ -31,9 +32,13 @@ import NewConnectionModal from "./modal";
 import TableLabel from "./table-item";
 
 export default function ConnectionTableServer() {
-  const [connections, setConnections] = useState<Connection[]>([]);
-  const [selectedConnection, setSelectedConnection] =
-    useState<Connection | null>(null);
+  const connections = useLayout((state) => state.connections);
+  const setConnections = useLayout((state) => state.setConnections);
+  const selectedConnection = useLayout((state) => state.selectedConnection);
+  const setSelectedConnection = useLayout(
+    (state) => state.setSelectedConnection,
+  );
+
   const [_, startTransition] = useTransition();
 
   useEffect(() => {

@@ -9,7 +9,7 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from "@scylla-studio/components/ui/command";
-import { useLayout } from "@scylla-studio/hooks/layout";
+import { useLayout } from "@scylla-studio/contexts/layout";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";

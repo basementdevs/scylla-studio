@@ -1,5 +1,5 @@
 import { SelectKeySpace } from "@scylla-studio/components/composed/select-database";
-import { useLayout } from "@scylla-studio/hooks/layout";
+import { useLayout } from "@scylla-studio/contexts/layout";
 import {
   Cable,
   CodeSquare,
@@ -31,8 +31,12 @@ type Group = {
 };
 
 export function useGetMenuList(pathname: string): Group[] {
-  const { keyspaces, connections, setSelectedConnection, selectedConnection } =
-    useLayout();
+  const keyspaces = useLayout((state) => state.keyspaces);
+  const connections = useLayout((state) => state.connections);
+  const setSelectedConnection = useLayout(
+    (state) => state.setSelectedConnection,
+  );
+  const selectedConnection = useLayout((state) => state.selectedConnection);
 
   const keyspaceList = Object.entries(keyspaces).map(([keyspaceName]) => {
     const keyspacePath = `/keyspace/${keyspaceName}`;
