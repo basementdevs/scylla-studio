@@ -5,10 +5,10 @@ import {
   CodeSquare,
   HomeIcon,
   LayoutGrid,
-  LucideIcon,
+  type LucideIcon,
   TableProperties,
 } from "lucide-react";
-import { ReactNode } from "react";
+import { type ReactNode, useEffect } from "react";
 
 type Submenu = {
   href: string;
@@ -32,11 +32,25 @@ type Group = {
 
 export function useGetMenuList(pathname: string): Group[] {
   const keyspaces = useLayout((state) => state.keyspaces);
-  const connections = useLayout((state) => state.connections);
   const setSelectedConnection = useLayout(
     (state) => state.setSelectedConnection,
   );
+  const connections = useLayout((state) => state.connections);
+  const fetchInitialConnections = useLayout(
+    (state) => state.fetchInitialConnections,
+  );
   const selectedConnection = useLayout((state) => state.selectedConnection);
+  const queryKeyspace = useLayout((state) => state.queryKeyspace);
+
+  useEffect(() => {
+    fetchInitialConnections();
+    const fetchKeyspace = async () => {
+      if (selectedConnection) {
+        await queryKeyspace(selectedConnection!);
+      }
+    };
+    fetchKeyspace();
+  }, [selectedConnection, fetchInitialConnections, queryKeyspace]);
 
   const keyspaceList = Object.entries(keyspaces).map(([keyspaceName]) => {
     const keyspacePath = `/keyspace/${keyspaceName}`;

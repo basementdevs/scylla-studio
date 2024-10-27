@@ -60,12 +60,24 @@ export const useLayout = create<LayoutState>((set, get) => ({
 
   queryKeyspace: async (selectedConnection) => {
     try {
+      if (selectedConnection?.status === "Offline") {
+        set({ keyspaces: {} });
+        toast.error("Failed to query keyspaces.");
+        return;
+      }
+
       const queryKeyspace = await queryKeyspaceAction({
         host: selectedConnection.host,
         port: selectedConnection.port,
         password: selectedConnection.password,
         username: selectedConnection.username,
       });
+
+      set({
+        keyspaces: queryKeyspace?.data?.keyspaces || {},
+        betterKeyspaces: queryKeyspace?.data?.betterKeyspaces || {},
+      });
+
       return queryKeyspace;
     } catch (error) {
       console.error(error);
