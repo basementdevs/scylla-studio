@@ -20,6 +20,7 @@ env:
   PROVIDER: ghcr.io
   REPO_NAME: ${{ github.repository }}
   IMAGE_NAME: ghcr.io/${{ github.repository }}
+  PLATFORMS: linux/amd64,linux/arm64
 
 jobs:
   build-and-push:
@@ -35,8 +36,14 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@49b3bc8e6bdd4a60e6116a5414239cba5943d3cf # v3.2.0
+        with:
+          platforms: ${{ env.PLATFORMS }}
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@c47758b77c9736f4b2ef4073d4d51994fabfe349 # v3.7.1
+        with:
+          platforms: ${{ env.PLATFORMS }}
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # 3.3.0
         with:
@@ -46,7 +53,7 @@ jobs:
       - name: Build Docker image
         run: |
           docker buildx build \
-            --platform "linux/amd64" \
+            --platform "${{ env.PLATFORMS }}" \
             --label "org.opencontainers.image.source=https://github.com/${{ env.REPO_NAME }}" \
             --label "org.opencontainers.image.created=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
             --tag "${{ env.IMAGE_NAME }}:latest" \
@@ -54,5 +61,5 @@ jobs:
             --tag "${{ env.IMAGE_NAME }}:${{ github.ref_name }}" \
             --push \
             --progress=plain \
-            --file Dockerfile \
+            --file .docker/Dockerfile \
             .
