@@ -1,7 +1,7 @@
 "use client";
 
 import { ContentLayout } from "@scylla-studio/components/composed/sidebar/content-layout";
-import { useLayout } from "@scylla-studio/hooks/layout";
+import { useLayout } from "@scylla-studio/contexts/layout";
 import KeyspaceInfo from "./_components/keyspace-info";
 import KeyspaceTables from "./_components/keyspace-tables";
 

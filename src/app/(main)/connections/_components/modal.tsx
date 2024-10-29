@@ -10,8 +10,9 @@ import {
 } from "@scylla-studio/components/ui/form";
 import { Input } from "@scylla-studio/components/ui/input";
 import { Modal } from "@scylla-studio/components/ui/modal";
+import { useLayout } from "@scylla-studio/contexts/layout";
 import { Plus } from "lucide-react";
-import { ReactNode, useEffect, useState, useTransition } from "react";
+import { type ReactNode, useEffect, useState, useTransition } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -74,6 +75,9 @@ export default function NewConnectionModal({
   connectionToEdit,
 }: NewConnectionModalProperties) {
   const [open, setOpen] = useState(false);
+  const fetchInitialConnections = useLayout(
+    (state) => state.fetchInitialConnections,
+  );
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
@@ -85,6 +89,7 @@ export default function NewConnectionModal({
   const handleSave = (data: z.infer<typeof formSchema>) => {
     startTransition(async () => {
       await onSave(data);
+      fetchInitialConnections();
       setOpen(false);
     });
   };

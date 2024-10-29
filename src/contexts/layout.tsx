@@ -1,94 +1,89 @@
-"use client";
-
 import type { ScyllaKeyspace } from "@lambda-group/scylladb";
 import { queryKeyspaceAction } from "@scylla-studio/actions/query-keyspaces";
 import { fetchConnections } from "@scylla-studio/app/(main)/connections/actions/connections";
-import { KeyspaceDefinition } from "@scylla-studio/lib/cql-parser/keyspace-parser";
+import type { KeyspaceDefinition } from "@scylla-studio/lib/cql-parser/keyspace-parser";
 import type { Connection } from "@scylla-studio/lib/internal-db/connections";
-import { useAction } from "next-safe-action/hooks";
-import {
-  type Dispatch,
-  type SetStateAction,
-  createContext,
-  startTransition,
-  useEffect,
-  useState,
-} from "react";
+import { startTransition } from "react";
 import { toast } from "sonner";
+import { create } from "zustand";
 
-export interface ILayoutContext {
+interface LayoutState {
   keyspaces: Record<string, ScyllaKeyspace>;
-  setKeyspaces: Dispatch<SetStateAction<Record<string, ScyllaKeyspace>>>;
   betterKeyspaces: Record<string, KeyspaceDefinition>;
-  setBetterKeyspaces: Dispatch<
-    SetStateAction<Record<string, KeyspaceDefinition>>
-  >;
   connections: Connection[];
-  setSelectedConnection: Dispatch<SetStateAction<Connection | undefined>>;
   selectedConnection: Connection | undefined;
+  setKeyspaces: (keyspaces: Record<string, ScyllaKeyspace>) => void;
+  setBetterKeyspaces: (
+    betterKeyspaces: Record<string, KeyspaceDefinition>,
+  ) => void;
+  setConnections: (connections: Connection[]) => void;
+  setSelectedConnection: (connection: Connection | undefined) => void;
+  queryKeyspace: (selectedConnection: Connection) => void;
+  fetchInitialConnections: () => void;
 }
 
-export const LayoutContext = createContext<ILayoutContext>(
-  {} as ILayoutContext,
-);
+export const useLayout = create<LayoutState>((set, get) => ({
+  keyspaces: {},
+  betterKeyspaces: {},
+  connections: [],
+  selectedConnection: undefined,
 
-export function LayoutProvider({ children }: { children: React.ReactNode }) {
-  const [keyspaces, setKeyspaces] = useState({});
-  const [betterKeyspaces, setBetterKeyspaces] = useState({});
-  const [connections, setConnections] = useState<Connection[]>([]);
-  const [selectedConnection, setSelectedConnection] = useState<Connection>();
+  setKeyspaces: (keyspaces) => set({ keyspaces }),
 
-  useEffect(() => {
-    const fetchInitialConnections = async () => {
+  setBetterKeyspaces: (betterKeyspaces) => set({ betterKeyspaces }),
+
+  setConnections: (connections) => {
+    if (JSON.stringify(get().connections) !== JSON.stringify(connections)) {
+      set({ connections });
+    }
+  },
+
+  setSelectedConnection: (connection) => {
+    set({ selectedConnection: connection });
+  },
+
+  fetchInitialConnections: async () => {
+    try {
       const initialConnections = await fetchConnections();
-      startTransition(() => {
-        setConnections(initialConnections);
-      });
-    };
+      if (
+        JSON.stringify(get().connections) !== JSON.stringify(initialConnections)
+      ) {
+        startTransition(() => {
+          set({ connections: initialConnections });
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching connections:", error);
+      toast.error("Failed to fetch connections.");
+    }
+  },
 
-    fetchInitialConnections();
-  }, []);
+  queryKeyspace: async (selectedConnection) => {
+    try {
+      if (selectedConnection?.status === "Offline") {
+        set({ keyspaces: {} });
+        toast.error("Failed to query keyspaces.");
+        return;
+      }
 
-  const queryKeyspace = useAction(queryKeyspaceAction, {
-    onExecute: () => {},
-    onSuccess: ({ data }) => {
-      console.log(data);
-      if (data?.keyspaces) setKeyspaces(data.keyspaces);
-      if (data?.betterKeyspaces) setBetterKeyspaces(data.betterKeyspaces);
-    },
-    onError: (error) => {
-      console.log(error);
-      toast.error("Failed to query keyspaces.");
-      setSelectedConnection(undefined);
-      setKeyspaces({});
-    },
-  });
-
-  useEffect(() => {
-    if (selectedConnection) {
-      queryKeyspace.execute({
+      const queryKeyspace = await queryKeyspaceAction({
         host: selectedConnection.host,
         port: selectedConnection.port,
         password: selectedConnection.password,
         username: selectedConnection.username,
       });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queryKeyspace.execute, selectedConnection]);
 
-  return (
-    <LayoutContext.Provider
-      value={{
-        keyspaces,
-        setKeyspaces,
-        betterKeyspaces,
-        setBetterKeyspaces,
-        connections,
-        selectedConnection,
-        setSelectedConnection,
-      }}
-    >
-      {children}
-    </LayoutContext.Provider>
-  );
-}
+      set({
+        keyspaces: queryKeyspace?.data?.keyspaces || {},
+        betterKeyspaces: queryKeyspace?.data?.betterKeyspaces || {},
+      });
+
+      return queryKeyspace;
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to query keyspaces.");
+      get().setSelectedConnection(undefined);
+      throw error;
+    }
+  },
+}));

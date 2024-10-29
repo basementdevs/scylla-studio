@@ -6,11 +6,10 @@ import {
   SelectValue,
 } from "@scylla-studio/components/ui/select";
 import type { Connection } from "@scylla-studio/lib/internal-db/connections";
-import type { Dispatch, SetStateAction } from "react";
 
 type SelectKeySpaceProperties = {
   connections: Connection[];
-  setSelectedConnection: Dispatch<SetStateAction<Connection | undefined>>;
+  setSelectedConnection: (connection: Connection | undefined) => void;
   selectedConnection: Connection | undefined;
 };
 
