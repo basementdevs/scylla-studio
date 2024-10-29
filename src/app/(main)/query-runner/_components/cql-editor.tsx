@@ -49,6 +49,7 @@ export function CqlEditor() {
   const [queryTracing, setQueryTracing] = useState<TracingResult>(
     {} as TracingResult,
   );
+  const [updateKey, setUpdateKey] = useState(0); // Used to force re-render when query is executed
   const [activeTab, setActiveTab] = useState<string>(DisplayTabs.RESULT);
   const currentConnection = useCqlFilters((state) => state.currentConnection);
   const fetchSize = useCqlFilters((state) => state.fetchSize);
@@ -64,6 +65,7 @@ export function CqlEditor() {
     onSuccess: ({ data }) => {
       setQueryResult(data?.result ?? []);
       setQueryTracing(data?.tracing ?? ({} as TracingResult));
+      setUpdateKey((prev) => prev + 1); // Increment key to force re-render
     },
     onError: ({ error }) => {
       console.error("Failed to execute query", error);
@@ -204,12 +206,34 @@ export function CqlEditor() {
     }
   };
 
-  const renderTabs = {
-    [DisplayTabs.RESULT]: (
-      <ResultsRender data={queryResult} tracingData={queryTracing} />
+  const renderResult = useCallback(
+    () => (
+      <ResultsRender
+        key={`result-${updateKey}`}
+        data={queryResult}
+        tracingData={queryTracing}
+      />
     ),
-    [DisplayTabs.TRACING]: <TracingRender data={queryTracing} />,
-    [DisplayTabs.DASHBOARD]: <QueryDashboard tracingInfo={queryTracing} />,
+    [queryTracing, updateKey],
+  );
+
+  const renderTracing = useCallback(
+    () => <TracingRender key={`tracing-${updateKey}`} data={queryTracing} />,
+    [queryTracing, updateKey],
+  );
+  const renderDashboard = useCallback(
+    () => (
+      <QueryDashboard
+        key={`dashboard-${updateKey}`}
+        tracingInfo={queryTracing}
+      />
+    ),
+    [queryTracing, updateKey],
+  );
+  const renderTabs = {
+    [DisplayTabs.RESULT]: renderResult(),
+    [DisplayTabs.TRACING]: renderTracing(),
+    [DisplayTabs.DASHBOARD]: renderDashboard(),
   };
 
   return (
