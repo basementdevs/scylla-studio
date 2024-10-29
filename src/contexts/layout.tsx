@@ -12,14 +12,15 @@ interface LayoutState {
   betterKeyspaces: Record<string, KeyspaceDefinition>;
   connections: Connection[];
   selectedConnection: Connection | undefined;
+  loadingKeyspaces: boolean;
   setKeyspaces: (keyspaces: Record<string, ScyllaKeyspace>) => void;
   setBetterKeyspaces: (
     betterKeyspaces: Record<string, KeyspaceDefinition>,
   ) => void;
   setConnections: (connections: Connection[]) => void;
   setSelectedConnection: (connection: Connection | undefined) => void;
-  queryKeyspace: (selectedConnection: Connection) => void;
-  fetchInitialConnections: () => void;
+  queryKeyspace: (selectedConnection: Connection) => Promise<void>;
+  fetchInitialConnections: () => Promise<void>;
 }
 
 export const useLayout = create<LayoutState>((set, get) => ({
@@ -27,6 +28,7 @@ export const useLayout = create<LayoutState>((set, get) => ({
   betterKeyspaces: {},
   connections: [],
   selectedConnection: undefined,
+  loadingKeyspaces: false,
 
   setKeyspaces: (keyspaces) => set({ keyspaces }),
 
@@ -65,6 +67,7 @@ export const useLayout = create<LayoutState>((set, get) => ({
         toast.error("Failed to query keyspaces.");
         return;
       }
+      set({ loadingKeyspaces: true });
 
       const queryKeyspace = await queryKeyspaceAction({
         host: selectedConnection.host,
@@ -76,13 +79,12 @@ export const useLayout = create<LayoutState>((set, get) => ({
       set({
         keyspaces: queryKeyspace?.data?.keyspaces || {},
         betterKeyspaces: queryKeyspace?.data?.betterKeyspaces || {},
+        loadingKeyspaces: false,
       });
-
-      return queryKeyspace;
     } catch (error) {
       console.error(error);
       toast.error("Failed to query keyspaces.");
-      get().setSelectedConnection(undefined);
+      set({ selectedConnection: undefined, loadingKeyspaces: false });
       throw error;
     }
   },

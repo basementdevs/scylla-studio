@@ -1,14 +1,15 @@
+"use client";
+
 import { SelectKeySpace } from "@scylla-studio/components/composed/select-database";
 import { useLayout } from "@scylla-studio/contexts/layout";
 import {
   Cable,
   CodeSquare,
   HomeIcon,
-  LayoutGrid,
   type LucideIcon,
   TableProperties,
 } from "lucide-react";
-import { type ReactNode, useEffect } from "react";
+import { type ReactNode, startTransition, useEffect } from "react";
 
 type Submenu = {
   href: string;
@@ -43,13 +44,10 @@ export function useGetMenuList(pathname: string): Group[] {
   const queryKeyspace = useLayout((state) => state.queryKeyspace);
 
   useEffect(() => {
-    fetchInitialConnections();
-    const fetchKeyspace = async () => {
-      if (selectedConnection) {
-        await queryKeyspace(selectedConnection!);
-      }
-    };
-    fetchKeyspace();
+    startTransition(async () => {
+      await fetchInitialConnections();
+      if (selectedConnection) await queryKeyspace(selectedConnection!);
+    });
   }, [selectedConnection, fetchInitialConnections, queryKeyspace]);
 
   const keyspaceList = Object.entries(keyspaces).map(([keyspaceName]) => {

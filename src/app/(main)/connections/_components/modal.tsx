@@ -11,7 +11,7 @@ import {
 import { Input } from "@scylla-studio/components/ui/input";
 import { Modal } from "@scylla-studio/components/ui/modal";
 import { useLayout } from "@scylla-studio/contexts/layout";
-import { Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { type ReactNode, useEffect, useState, useTransition } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -81,15 +81,13 @@ export default function NewConnectionModal({
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    if (connectionToEdit) {
-      setOpen(true);
-    }
+    if (connectionToEdit) setOpen(true);
   }, [connectionToEdit]);
 
   const handleSave = (data: z.infer<typeof formSchema>) => {
     startTransition(async () => {
       await onSave(data);
-      fetchInitialConnections();
+      await fetchInitialConnections();
       setOpen(false);
     });
   };
@@ -178,7 +176,13 @@ export default function NewConnectionModal({
             />
 
             <Button type="submit" disabled={isPending}>
-              {connectionToEdit ? "Update Connection" : "Save Connection"}
+              {isPending ? (
+                <Loader2 className="animate-spin" />
+              ) : connectionToEdit ? (
+                "Update Connection"
+              ) : (
+                "Save Connection"
+              )}
             </Button>
           </div>
         </FormWrapper>

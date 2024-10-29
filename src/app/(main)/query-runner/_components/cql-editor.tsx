@@ -13,6 +13,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@scylla-studio/components/ui/resizable";
+import { Skeleton } from "@scylla-studio/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@scylla-studio/components/ui/tabs";
 import { useCqlFilters } from "@scylla-studio/hooks/use-cql-filters";
 import type { AvailableConnections } from "@scylla-studio/lib/connections";
@@ -43,6 +44,7 @@ enum DisplayTabs {
 
 export function CqlEditor() {
   const [code, setCode] = useState("");
+  const [loadingResults, setLoadingResults] = useState(false);
   const [queryResult, setQueryResult] = useState<
     Array<Record<string, unknown>>
   >([]);
@@ -88,7 +90,7 @@ export function CqlEditor() {
     fetchSizeReference.current = fetchSize ?? null;
   }, [fetchSize]);
 
-  const executeQuery = (query: string) => {
+  const executeQuery = async (query: string) => {
     if (!currentConnectionReference.current) {
       toast.error("No connection selected");
       return;
@@ -105,11 +107,13 @@ export function CqlEditor() {
       password: password ?? null,
     };
 
-    queryExecutor.execute({
+    setLoadingResults(true);
+    await queryExecutor.executeAsync({
       query,
       connection,
       limit,
     });
+    setLoadingResults(false);
   };
 
   // Load saved query from localStorage when the component mounts
@@ -329,7 +333,14 @@ export function CqlEditor() {
               </TabsList>
             </Tabs>
           )}
-          {renderTabs[activeTab as DisplayTabs]}
+          {loadingResults ? (
+            <div className="flex flex-col w-full h-full gap-1 p-1">
+              <Skeleton className="h-11 w-full" />
+              <Skeleton className="h-full w-full" />
+            </div>
+          ) : (
+            renderTabs[activeTab as DisplayTabs]
+          )}
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>

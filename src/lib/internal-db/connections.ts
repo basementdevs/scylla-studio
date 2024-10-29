@@ -23,12 +23,12 @@ db.exec(`
   )
 `);
 
-db.exec(`
-  INSERT OR IGNORE INTO connections
-    (id, name, status, host, port, username, password, dc, nodes)
-  VALUES
-    (1, 'ScyllaDB Localhost', 'Offline', 'localhost', '9042', null, null, 'local', 1)
-`);
+// db.exec(`
+//   INSERT OR IGNORE INTO connections
+//     (id, name, status, host, port, username, password, dc, nodes)
+//   VALUES
+//     (1, 'ScyllaDB Localhost', 'Offline', 'localhost', '9042', null, null, 'local', 1)
+// `);
 
 export async function getAllConnections(): Promise<Connection[]> {
   return db
@@ -73,7 +73,7 @@ export function updateConnectionById(
   );
 }
 
-export function deleteConnectionById(connectionId: number) {
+export async function deleteConnectionById(connectionId: number) {
   const stmt = db.prepare(`
     DELETE FROM connections WHERE id = ?
   `);
