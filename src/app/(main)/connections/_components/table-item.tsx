@@ -1,7 +1,6 @@
 import { Badge } from "@scylla-studio/components/ui/badge";
 import { Label } from "@scylla-studio/components/ui/label";
-import { Connection } from "@scylla-studio/lib/internal-db/connections";
-import React from "react";
+import type { Connection } from "@scylla-studio/lib/internal-db/connections";
 
 export default function TableLabel({
   itemKey,

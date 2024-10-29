@@ -3,7 +3,7 @@
 import { actionClient } from "@scylla-studio/lib/safe-actions";
 import { z } from "zod";
 
-import { Auth, Cluster, ClusterConfig } from "@lambda-group/scylladb";
+import { type Auth, Cluster } from "@lambda-group/scylladb";
 import { parseKeyspaces } from "@scylla-studio/lib/cql-parser/parser";
 
 export const queryKeyspaceAction = actionClient
