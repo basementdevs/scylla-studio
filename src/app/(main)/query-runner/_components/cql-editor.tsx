@@ -23,13 +23,7 @@ import type { TracingResult } from "@scylla-studio/lib/execute-query";
 import { cn } from "@scylla-studio/lib/utils";
 import debounce from "lodash.debounce";
 import { Braces, ChartArea, Play, SearchCode } from "lucide-react";
-import {
-  CancellationToken,
-  CompletionItem,
-  Position,
-  editor,
-  languages,
-} from "monaco-editor";
+import { CancellationToken, Position, editor, languages } from "monaco-editor";
 import { useAction } from "next-safe-action/hooks";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -185,41 +179,33 @@ export function CqlEditor() {
     });
 
     monaco.languages.setMonarchTokensProvider("cql", cql_language);
-    // monaco.languages.registerCompletionItemProvider("cql", {
-    //   triggerCharacters: [' ', '.', '(', ')'],
-    //   provideCompletionItems(model: editor.ITextModel, position: Position, context: languages.CompletionContext, token: CancellationToken): languages.ProviderResult<languages.CompletionList> {
-    //
-    //     const completionItems: CompletionItem[] = [
-    //       {
-    //         label: 'SELECT',
-    //         kind: languages.CompletionItemKind.Keyword,
-    //         documentation: 'Select data from a table',
-    //         range: {
-    //           startLineNumber: 0,
-    //           startColumn: 0,
-    //           endLineNumber: 0,
-    //           endColumn: 0
-    //         },
-    //         insertText: 'SELECT',
-    //         insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
-    //       }
-    //
-    //     ];
-    //     return {suggestions: completionItems};
-    //
-    //     const word = model.getWordUntilPosition(position);
-    //     const range = {
-    //       startLineNumber: position.lineNumber,
-    //       endLineNumber: position.lineNumber,
-    //       startColumn: word.startColumn,
-    //       endColumn: word.endColumn
-    //     };
-    //     const suggestions = completionItems
-    //       .filter((item) => item.label.toLowerCase().startsWith(word.word.toLowerCase()))
-    //       .map((item) => ({ ...item, range }));
-    //     return { suggestions };
-    //   }
-    // });
+
+    monaco.languages.registerCompletionItemProvider("cql", {
+      triggerCharacters: [" ", ".", "(", ")"],
+      provideCompletionItems(
+        model: editor.ITextModel,
+        position: Position,
+        _context: languages.CompletionContext,
+        _token: CancellationToken,
+      ): languages.ProviderResult<languages.CompletionList> {
+        const word = model.getWordUntilPosition(position);
+
+        const range = {
+          startLineNumber: position.lineNumber,
+          endLineNumber: position.lineNumber,
+          startColumn: word.startColumn,
+          endColumn: word.endColumn,
+        };
+
+        const suggestions = cqlCompletionItemProvider(monaco)
+          .filter((item) =>
+            item.label.toLowerCase().startsWith(word.word.toLowerCase()),
+          )
+          .map((item) => ({ ...item, range }));
+
+        return { suggestions };
+      },
+    });
 
     editorReference.current = editor;
 

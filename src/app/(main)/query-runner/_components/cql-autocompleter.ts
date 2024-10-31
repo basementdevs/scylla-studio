@@ -1,4 +1,6 @@
-import * as monaco from "monaco-editor";
+import { useMonaco } from "@monaco-editor/react";
+
+export type MonacoInstance = NonNullable<ReturnType<typeof useMonaco>>;
 
 // Define CQL keywords, functions, data types, and operators
 const keywords = [
@@ -183,101 +185,43 @@ const operators = [
 ];
 
 // Helper function to create completion items
-function createCompletionItem(
-  label: string,
-  kind: monaco.languages.CompletionItemKind,
-  documentation?: string,
-  insertText?: string,
-): monaco.languages.CompletionItem {
-  return {
-    label,
-    kind,
-    documentation,
-    range: {
-      startLineNumber: 0,
-      startColumn: 0,
-      endLineNumber: 0,
-      endColumn: 0,
-    },
-    insertText: insertText || label,
-    insertTextRules:
-      monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+export const cqlCompletionItemProvider = (monacoInstance: MonacoInstance) => {
+  const defaultRange = {
+    startLineNumber: 0,
+    startColumn: 0,
+    endLineNumber: 0,
+    endColumn: 0,
   };
-}
-
-// Build completion items
-const completionItems: monaco.languages.CompletionItem[] = [];
-
-// Add keywords to completion items
-keywords.forEach((keyword) => {
-  completionItems.push(
-    createCompletionItem(
-      keyword,
-      monaco.languages.CompletionItemKind.Keyword,
-      "Keyword",
-    ),
-  );
-});
-
-// Add functions to completion items
-functions.forEach((func) => {
-  completionItems.push(
-    createCompletionItem(
-      func,
-      monaco.languages.CompletionItemKind.Function,
-      "Function",
-      func + "($0)",
-    ),
-  );
-});
-
-// Add data types to completion items
-dataTypes.forEach((type) => {
-  completionItems.push(
-    createCompletionItem(
-      type,
-      monaco.languages.CompletionItemKind.TypeParameter,
-      "Data Type",
-    ),
-  );
-});
-
-// Add operators to completion items
-operators.forEach((operator) => {
-  completionItems.push(
-    createCompletionItem(
-      operator,
-      monaco.languages.CompletionItemKind.Operator,
-      "Operator",
-    ),
-  );
-});
-
-// Implement the CompletionItemProvider
-export const cqlCompletionItemProvider: monaco.languages.CompletionItemProvider =
-  {
-    triggerCharacters: [" ", ".", "(", ")"],
-    provideCompletionItems: (
-      model: monaco.editor.ITextModel,
-      position: monaco.Position,
-      context: monaco.languages.CompletionContext,
-      token: monaco.CancellationToken,
-    ) => {
-      const word = model.getWordUntilPosition(position);
-      const range = {
-        startLineNumber: position.lineNumber,
-        endLineNumber: position.lineNumber,
-        startColumn: word.startColumn,
-        endColumn: word.endColumn,
-      };
-
-      // Filter suggestions based on the current word
-      const suggestions = completionItems
-        .filter((item) =>
-          item.label.toLowerCase().startsWith(word.word.toLowerCase()),
-        )
-        .map((item) => ({ ...item, range }));
-
-      return { suggestions };
+  const cqlSyntax = {
+    [monacoInstance.languages.CompletionItemKind.Keyword]: {
+      data: keywords,
+      description: "Keyword",
+    },
+    [monacoInstance.languages.CompletionItemKind.Function]: {
+      data: functions,
+      description: 'func + "($0)"',
+    },
+    [monacoInstance.languages.CompletionItemKind.TypeParameter]: {
+      data: dataTypes,
+      description: "Data Type",
+    },
+    [monacoInstance.languages.CompletionItemKind.Operator]: {
+      data: operators,
+      description: "Operator",
     },
   };
+
+  return Object.entries(cqlSyntax).flatMap(([syntaxType, item]) =>
+    item.data.map((value) => ({
+      label: value,
+      kind: monacoInstance.languages.CompletionItemKind[
+        syntaxType as keyof typeof monacoInstance.languages.CompletionItemKind
+      ],
+      documentation: item.description,
+      range: defaultRange,
+      insertText: value,
+      insertTextRules:
+        monacoInstance.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+    })),
+  );
+};
