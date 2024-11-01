@@ -17,6 +17,7 @@ import {
 } from "@scylla-studio/components/ui/resizable";
 import { Skeleton } from "@scylla-studio/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@scylla-studio/components/ui/tabs";
+import { useLayout } from "@scylla-studio/contexts/layout";
 import { useCqlFilters } from "@scylla-studio/hooks/use-cql-filters";
 import type { AvailableConnections } from "@scylla-studio/lib/connections";
 import type { TracingResult } from "@scylla-studio/lib/execute-query";
@@ -197,9 +198,9 @@ export function CqlEditor() {
           endColumn: word.endColumn,
         };
 
-        const suggestions = cqlCompletionItemProvider(monaco)
+        const suggestions = cqlCompletionItemProvider(monaco, editor)
           .filter((item) =>
-            item.label.toLowerCase().startsWith(word.word.toLowerCase()),
+            item.label.label.toLowerCase().startsWith(word.word.toLowerCase()),
           )
           .map((item) => ({ ...item, range }));
 
