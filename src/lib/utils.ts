@@ -18,7 +18,7 @@ export const sleep = async (seconds: number): Promise<void> => {
 /**
  * This is a hack to determine if the app is running in Docker Compose.
  * And allow to use services names as hostnames.
- * This env is setted on enrironment directive in docker-compose.yml
+ * This env is setted on environment directive in docker-compose.yml
  */
 export function isRunningInDockerCompose() {
   return process.env?.NEXT_PUBLIC_DOCKER_COMPOSE === "1";
