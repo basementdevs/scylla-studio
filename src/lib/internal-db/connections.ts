@@ -1,5 +1,7 @@
 import Database from "better-sqlite3";
 
+import { isRunningInDockerCompose } from "../utils";
+
 const db = new Database("./connections.db");
 
 // Available Status: Connected, Refused, Offline
@@ -23,12 +25,14 @@ db.exec(`
   )
 `);
 
-// db.exec(`
-//   INSERT OR IGNORE INTO connections
-//     (id, name, status, host, port, username, password, dc, nodes)
-//   VALUES
-//     (1, 'ScyllaDB Localhost', 'Offline', 'localhost', '9042', null, null, 'local', 1)
-// `);
+if (isRunningInDockerCompose()) {
+  db.exec(`
+    INSERT OR IGNORE INTO connections
+      (id, name, status, host, port, username, password, dc, nodes)
+    VALUES
+      (1, 'ScyllaDB Localhost', 'Connected', 'scylla-node', '9042', null, null, 'local', 1)
+  `);
+}
 
 export async function getAllConnections(): Promise<Connection[]> {
   return db

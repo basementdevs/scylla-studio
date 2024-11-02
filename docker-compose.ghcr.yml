@@ -1,0 +1,49 @@
+services:
+  scylla-node:
+    container_name: scylla-node
+    image: scylladb/scylla:6.2
+    command:
+      - --smp=1
+      - --memory=2GB
+      - --overprovisioned=1
+      - --developer-mode=1
+      - --seeds=scylla-node
+    ports:
+      - "9042:9042"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - cqlsh -e "SHOW VERSION" || exit 1
+      interval: 15s
+      timeout: 30s
+      retries: 15
+      start_period: 30s
+    networks:
+      scylla-network:
+        ipv4_address: 172.20.20.2
+
+  scylla-studio:
+    container_name: scylla-studio
+    image: ghcr.io/basementdevs/scylla-studio:main
+    tty: true
+    environment:
+      - NEXT_PUBLIC_DOCKER_COMPOSE=1
+    ports:
+      - "3000:3000"
+    depends_on:
+      scylla-node:
+        condition: service_healthy
+    networks:
+      scylla-network:
+        ipv4_address: 172.20.20.3
+
+networks:
+  scylla-network:
+    name: scylla-network
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: scylla-network
+    ipam:
+      config:
+        - gateway: 172.20.20.1
+          subnet: 172.20.20.0/28
