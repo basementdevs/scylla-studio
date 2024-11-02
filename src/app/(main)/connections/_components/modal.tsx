@@ -11,6 +11,7 @@ import {
 import { Input } from "@scylla-studio/components/ui/input";
 import { Modal } from "@scylla-studio/components/ui/modal";
 import { useLayout } from "@scylla-studio/contexts/layout";
+import { isRunningInDockerCompose } from "@scylla-studio/lib/utils";
 import { Loader2, Plus } from "lucide-react";
 import { type ReactNode, useEffect, useState, useTransition } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -27,11 +28,14 @@ const formSchema = z
         /^(25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})\.(25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})\.(25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})\.(25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})$/;
       // Regex for matching domain-style address (example: node-0.aws-sa-east-1.1695b05c8e05b5237178.clusters.scylla.cloud)
       const domainRegex = /^[a-zA-Z0-9-]+\.[a-zA-Z0-9.-]+$/;
+      // Regex for matching Docker service names
+      const dockerServiceRegex = /^[a-zA-Z0-9-]+$/;
 
       return (
         localhostRegex.test(value) ||
         ipv4Regex.test(value) ||
-        domainRegex.test(value)
+        domainRegex.test(value) ||
+        (isRunningInDockerCompose() && dockerServiceRegex.test(value))
       );
     }),
     port: z.coerce.number().min(1).max(65_545),

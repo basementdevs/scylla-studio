@@ -5,6 +5,7 @@ import { connections } from "@scylla-studio/lib/connections";
 import type { QueryResult } from "@scylla-studio/lib/execute-query";
 import type { Connection } from "@scylla-studio/lib/internal-db/connections";
 import { actionClient } from "@scylla-studio/lib/safe-actions";
+import { isRunningInDockerCompose } from "@scylla-studio/lib/utils";
 import { z } from "zod";
 
 export const executeQueryAction = actionClient
@@ -21,11 +22,14 @@ export const executeQueryAction = actionClient
             /^(25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})\.(25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})\.(25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})\.(25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})$/;
           // Regex for matching domain-style address (example: node-0.aws-sa-east-1.1695b05c8e05b5237178.clusters.scylla.cloud)
           const domainRegex = /^[a-zA-Z0-9-]+\.[a-zA-Z0-9.-]+$/;
+          // Regex for matching Docker service names
+          const dockerServiceRegex = /^[a-zA-Z0-9-]+$/;
 
           return (
             localhostRegex.test(value) ||
             ipv4Regex.test(value) ||
-            domainRegex.test(value)
+            domainRegex.test(value) ||
+            (isRunningInDockerCompose() && dockerServiceRegex.test(value))
           );
         }),
         id: z.number().optional(),
