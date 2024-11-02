@@ -1,7 +1,15 @@
 import { useMonaco } from "@monaco-editor/react";
+import KeyspaceDefinitions from "@scylla-studio/app/(main)/keyspace/[keyspace]/_components/keyspace-tables";
 import { getFullQueryAtCursor } from "@scylla-studio/app/(main)/query-runner/_components/utils";
 import { useCqlFilters } from "@scylla-studio/hooks/use-cql-filters";
-import { editor } from "monaco-editor";
+import { KeyspaceDefinition } from "@scylla-studio/lib/cql-parser/keyspace-parser";
+import { TableDefinition } from "@scylla-studio/lib/cql-parser/table-parser";
+import {
+  CompletionItem,
+  CompletionItemLabel,
+  editor,
+  languages,
+} from "monaco-editor";
 
 export type MonacoInstance = NonNullable<ReturnType<typeof useMonaco>>;
 
@@ -194,7 +202,9 @@ const defaultRange = {
   endColumn: 0,
 };
 
-function getDefaultSuggestions(monacoInstance: MonacoInstance) {
+function getDefaultSuggestions(
+  monacoInstance: MonacoInstance,
+): languages.CompletionItem[] {
   const cqlSyntax = {
     [monacoInstance.languages.CompletionItemKind.Keyword]: {
       data: keywords,
@@ -215,24 +225,77 @@ function getDefaultSuggestions(monacoInstance: MonacoInstance) {
   };
 
   return Object.entries(cqlSyntax).flatMap(([syntaxType, item]) =>
-    item.data.map((value) => ({
-      label: {
-        label: value,
-        detail: null,
-        description:
-          monacoInstance.languages.CompletionItemKind[
+    item.data.map(
+      (value) =>
+        ({
+          label: {
+            label: value,
+            detail:
+              monacoInstance.languages.CompletionItemKind[
+                syntaxType as keyof typeof monacoInstance.languages.CompletionItemKind
+              ].toString(),
+            description: item.description,
+          } as languages.CompletionItemLabel,
+          kind: monacoInstance.languages.CompletionItemKind[
             syntaxType as keyof typeof monacoInstance.languages.CompletionItemKind
           ],
-      },
-      kind: monacoInstance.languages.CompletionItemKind[
-        syntaxType as keyof typeof monacoInstance.languages.CompletionItemKind
-      ],
-      documentation: item.description,
-      range: defaultRange,
-      insertText: value,
-      insertTextRules:
-        monacoInstance.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-    })),
+          documentation: item.description,
+          range: defaultRange,
+          insertText: value,
+          insertTextRules:
+            monacoInstance.languages.CompletionItemInsertTextRule
+              .InsertAsSnippet,
+        }) as languages.CompletionItem,
+    ),
+  );
+}
+
+function prepareUseSuggestions(
+  monacoInstance: MonacoInstance,
+  keyspaces: KeyspaceDefinition[],
+): languages.CompletionItem[] {
+  return keyspaces.map(
+    (keyspace) =>
+      ({
+        label: {
+          label: keyspace.name,
+          detail: "",
+          description: "Keyspace",
+        } as languages.CompletionItemLabel,
+        kind: monacoInstance.languages.CompletionItemKind.Class,
+        documentation: "TODO: build documentation with the Keyspace Object",
+        range: defaultRange,
+        insertText: keyspace.name,
+        insertTextRules:
+          monacoInstance.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+      }) as languages.CompletionItem,
+  );
+}
+
+type TableCompletion = {
+  keyspace: string;
+  table: string;
+};
+
+function prepareTablesSuggestions(
+  monacoInstance: MonacoInstance,
+  tables: TableCompletion[],
+): languages.CompletionItem[] {
+  return tables.map(
+    (table) =>
+      ({
+        label: {
+          label: `${table.keyspace}.${table.table}`,
+          detail: "",
+          description: "Table",
+        } as languages.CompletionItemLabel,
+        kind: monacoInstance.languages.CompletionItemKind.Class,
+        documentation: "TODO: build documentation with the Keyspace Object",
+        range: defaultRange,
+        insertText: `${table.keyspace}.${table.table}`,
+        insertTextRules:
+          monacoInstance.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+      }) as languages.CompletionItem,
   );
 }
 
@@ -240,77 +303,60 @@ function getDefaultSuggestions(monacoInstance: MonacoInstance) {
 export const cqlCompletionItemProvider = (
   monacoInstance: MonacoInstance,
   editor: editor.IStandaloneCodeEditor,
-) => {
+): languages.CompletionItem[] => {
   const cursor = getFullQueryAtCursor(editor, monacoInstance);
 
   if (!cursor) return getDefaultSuggestions(monacoInstance);
 
   const textUntilPosition = cursor.query.split("\n\n").shift() || "";
 
-  console.log(textUntilPosition);
-
   const useKeyspaceRegex = /USE\s+(\w*)$/i;
   const fromTableRegex = /FROM\s+(\w*)$/i;
   const selectColumnRegex = /SELECT\s+([\w,\s]*)$/i;
   const whereColumnRegex = /WHERE\s+(\w*)$/i;
 
+  // Check if you're typing a keyspace
   if (useKeyspaceRegex.test(textUntilPosition)) {
-    return [
+    const keyspaces = [
       {
-        label: {
-          label: "my_keyspace",
-          detail: "lalalala",
-          description: "Keyspace",
+        // TODO: this should be a real keyspace
+        name: "my_keyspace",
+        entitiesCount: 1337, // Ignore this until I figure out what it is
+        replication: {
+          class: "NetworkTopologyStrategy",
+          datacenters: new Map<string, number>(),
         },
-        kind: monacoInstance.languages.CompletionItemKind.Keyword,
-        documentation: "Keyspace belongs to the current cluster {cluster_name}",
-        range: defaultRange,
-        insertText: "my_keyspace",
-        insertTextRules:
-          monacoInstance.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+        durableWrites: true,
+        tablets: true,
+        tables: new Map<string, TableDefinition>(),
       },
-    ];
+    ] as KeyspaceDefinition[];
+
+    return prepareUseSuggestions(monacoInstance, keyspaces);
   } else if (fromTableRegex.test(textUntilPosition)) {
-    return [
+    const tables = [
       {
-        label: {
-          label: "my_keyspace.messages",
-          detail: "lalalala",
-          description: "Table", // materialized views?
-        },
-        kind: monacoInstance.languages.CompletionItemKind.Class,
-        documentation: "Table with stuff trust me",
-        range: defaultRange,
-        insertText: "monstrously_long_keyspace_name.messages",
-        insertTextRules:
-          monacoInstance.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+        keyspace: "my_keyspace",
+        table: "my_table",
       },
-    ];
+      {
+        keyspace: "my_keyspace",
+        table: "my_table2",
+      },
+    ] as TableCompletion[];
+
+    return prepareTablesSuggestions(monacoInstance, tables);
   } else if (selectColumnRegex.test(textUntilPosition)) {
     // TODO: or we display everything related to all tables or we display nothing
     return getDefaultSuggestions(monacoInstance);
-
-    // return [
-    //   {
-    //     label: {
-    //       label: "monstrously_long_keyspace_name.messages",
-    //       detail: "lalalala",
-    //       description: "that's definitely something"
-    //     },
-    //     kind: monacoInstance.languages.CompletionItemKind.Keyword,
-    //     documentation: "Keyword",
-    //     range: defaultRange,
-    //     insertText: "monstrously_long_keyspace_name.messages",
-    //     insertTextRules: monacoInstance.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-    //   },
-    // ];
   } else if (whereColumnRegex.test(textUntilPosition)) {
+    // TODO: here we would need to fetch all related columns from the specific table mentioned previously
     return [
       {
         label: {
           label: "field1",
-          detail: "(from table x)",
-          description: "Column",
+          detail: "Column",
+          description: " - table x ",
         },
         kind: monacoInstance.languages.CompletionItemKind.Keyword,
         documentation: "Column from table x",
