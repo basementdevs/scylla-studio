@@ -21,6 +21,7 @@ export const getFullQueryAtCursor = (
   let endLineIndex = position.lineNumber;
   while (model.getLineCount() >= endLineIndex) {
     const currentLine = model.getLineContent(endLineIndex);
+
     if (currentLine.includes(";")) {
       found = true;
       break;

@@ -2,6 +2,8 @@
 
 import Editor, { type Monaco, useMonaco } from "@monaco-editor/react";
 import { executeQueryAction } from "@scylla-studio/actions/execute-query";
+import { cqlCompletionItemProvider } from "@scylla-studio/app/(main)/query-runner/_components/cql-autocompleter";
+import { cql_language } from "@scylla-studio/app/(main)/query-runner/_components/cql-language";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,13 +17,14 @@ import {
 } from "@scylla-studio/components/ui/resizable";
 import { Skeleton } from "@scylla-studio/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@scylla-studio/components/ui/tabs";
+import { useLayout } from "@scylla-studio/contexts/layout";
 import { useCqlFilters } from "@scylla-studio/hooks/use-cql-filters";
 import type { AvailableConnections } from "@scylla-studio/lib/connections";
 import type { TracingResult } from "@scylla-studio/lib/execute-query";
 import { cn } from "@scylla-studio/lib/utils";
 import debounce from "lodash.debounce";
 import { Braces, ChartArea, Play, SearchCode } from "lucide-react";
-import type { editor } from "monaco-editor";
+import { CancellationToken, Position, editor, languages } from "monaco-editor";
 import { useAction } from "next-safe-action/hooks";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -60,6 +63,7 @@ export function CqlEditor() {
   const fetchSizeReference = useRef<string | undefined | null>(null);
 
   const monaco = useMonaco();
+
   const editorReference = useRef<editor.IStandaloneCodeEditor | null>(null);
   const decorationsReference =
     useRef<editor.IEditorDecorationsCollection | null>(null);
@@ -168,6 +172,42 @@ export function CqlEditor() {
     editor: editor.IStandaloneCodeEditor,
     monaco: Monaco,
   ) => {
+    monaco.languages.register({
+      id: "cql",
+      extensions: [".cql"],
+      aliases: ["CQL", "cql"],
+      mimetypes: ["text/cql"],
+    });
+
+    monaco.languages.setMonarchTokensProvider("cql", cql_language);
+
+    monaco.languages.registerCompletionItemProvider("cql", {
+      triggerCharacters: [" ", ".", "(", ")"],
+      provideCompletionItems(
+        model: editor.ITextModel,
+        position: Position,
+        _context: languages.CompletionContext,
+        _token: CancellationToken,
+      ): languages.ProviderResult<languages.CompletionList> {
+        const word = model.getWordUntilPosition(position);
+
+        const range = {
+          startLineNumber: position.lineNumber,
+          endLineNumber: position.lineNumber,
+          startColumn: word.startColumn,
+          endColumn: word.endColumn,
+        };
+
+        const suggestions = cqlCompletionItemProvider(monaco, editor)
+          .filter((item) =>
+            item.label.label.toLowerCase().startsWith(word.word.toLowerCase()),
+          )
+          .map((item) => ({ ...item, range }));
+
+        return { suggestions };
+      },
+    });
+
     editorReference.current = editor;
 
     // Add event listener to highlight the query whenever the cursor position changes
@@ -278,7 +318,7 @@ export function CqlEditor() {
           <Editor
             height="100%"
             theme="vs-dark"
-            language="sql"
+            language="cql"
             value={code}
             onMount={handleEditorDidMount}
             onChange={handleCodeChange}
