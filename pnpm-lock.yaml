@@ -12,8 +12,8 @@ importers:
         specifier: 3.9.1
         version: 3.9.1(react-hook-form@7.53.1(react@18.3.1))
       '@lambda-group/scylladb':
-        specifier: ~0.6.1
-        version: 0.6.1
+        specifier: ~0.7.0
+        version: 0.7.0
       '@monaco-editor/react':
         specifier: 4.6.0
         version: 4.6.0(monaco-editor@0.52.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -424,14 +424,20 @@ packages:
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
 
-  '@lambda-group/scylladb-linux-x64-gnu@0.6.1':
-    resolution: {integrity: sha512-ppKDH3qW3qb44dvFBUymbXrEWxTYNolULo1n70sR4TtMwTT7LFO2YftGuv6Dp8+9G/8n1tYTw6ZeI2XcoJh/oA==}
+  '@lambda-group/scylladb-linux-x64-gnu@0.7.0':
+    resolution: {integrity: sha512-3K8WaRFKat0xNcaM7bUPZ049e1ZOnwH7NPzOLb+ZoaAL9ZU9Rx7FVg9IHLcj772W+gaBo/s8zq/w7zbsU/gq4g==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
 
-  '@lambda-group/scylladb@0.6.1':
-    resolution: {integrity: sha512-HNgV2ot9PPYT1ULuIxPmqO42OC84Xza+Gbh7cSwQBHzNt+RRE68bDSy45Gb2Kd3UcBbM9Yzd615tI/l1mhGdrA==}
+  '@lambda-group/scylladb-linux-x64-musl@0.7.0':
+    resolution: {integrity: sha512-sM+CXXeYEyWQBV3MFqgl00Uhk3PGiwSNGMXoojDaKev5AvD94+GKNXK3hGRYByZZk0V9osVrj923my/tRY2tpQ==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@lambda-group/scylladb@0.7.0':
+    resolution: {integrity: sha512-xDyraTNgpkveBWjwAB8K/vsRZ/WNneukD/Gh5rwG3nJlt9Ty+0sc9bLV+dAQ7/s8+IgEJrdd49dB3HPIWz7QjQ==}
     engines: {node: '>= 10'}
 
   '@monaco-editor/loader@1.4.0':
@@ -3198,12 +3204,16 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
-  '@lambda-group/scylladb-linux-x64-gnu@0.6.1':
+  '@lambda-group/scylladb-linux-x64-gnu@0.7.0':
     optional: true
 
-  '@lambda-group/scylladb@0.6.1':
+  '@lambda-group/scylladb-linux-x64-musl@0.7.0':
+    optional: true
+
+  '@lambda-group/scylladb@0.7.0':
     optionalDependencies:
-      '@lambda-group/scylladb-linux-x64-gnu': 0.6.1
+      '@lambda-group/scylladb-linux-x64-gnu': 0.7.0
+      '@lambda-group/scylladb-linux-x64-musl': 0.7.0
 
   '@monaco-editor/loader@1.4.0(monaco-editor@0.52.0)':
     dependencies:
