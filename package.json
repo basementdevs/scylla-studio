@@ -18,7 +18,7 @@
     "pnpm": "9.11.0"
   },
   "dependencies": {
-    "@hookform/resolvers": "3.9.0",
+    "@hookform/resolvers": "3.9.1",
     "@lambda-group/scylladb": "~0.6.1",
     "@monaco-editor/react": "4.6.0",
     "@radix-ui/react-accordion": "1.2.1",
