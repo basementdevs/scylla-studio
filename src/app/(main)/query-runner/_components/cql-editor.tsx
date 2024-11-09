@@ -1,6 +1,6 @@
 "use client";
 
-import { ScyllaKeyspace } from "@lambda-group/scylladb";
+import type { ScyllaKeyspace } from "@lambda-group/scylladb";
 import Editor, { type Monaco, useMonaco } from "@monaco-editor/react";
 import { executeQueryAction } from "@scylla-studio/actions/execute-query";
 import { queryKeyspaceAction } from "@scylla-studio/actions/query-keyspaces";
@@ -18,28 +18,22 @@ import {
   ResizablePanelGroup,
 } from "@scylla-studio/components/ui/resizable";
 import { Skeleton } from "@scylla-studio/components/ui/skeleton";
-import { Tabs, TabsList, TabsTrigger } from "@scylla-studio/components/ui/tabs";
-import { useLayout } from "@scylla-studio/contexts/layout";
 import { useCqlFilters } from "@scylla-studio/hooks/use-cql-filters";
 import type { AvailableConnections } from "@scylla-studio/lib/connections";
 import type { TracingResult } from "@scylla-studio/lib/execute-query";
-import { cn } from "@scylla-studio/lib/utils";
 import debounce from "lodash.debounce";
-import { Braces, ChartArea, Play, SearchCode } from "lucide-react";
-import { CancellationToken, Position, editor, languages } from "monaco-editor";
+import { Braces, Play } from "lucide-react";
+import type {
+  CancellationToken,
+  Position,
+  editor,
+  languages,
+} from "monaco-editor";
 import { useAction } from "next-safe-action/hooks";
-import {
-  startTransition,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { CqlResultPanel } from "./cql-resultpanel";
 import { ResultFilters } from "./result-filters";
-import { ResultsRender } from "./results-render";
-import QueryDashboard from "./tracing-dashboard-render";
-import { TracingRender } from "./tracing-render";
 import {
   formatKeyspaces,
   formatKeyspacesTables,
@@ -49,12 +43,6 @@ import {
 enum ExecuteType {
   ALL = 0,
   CURRENT = 1,
-}
-
-enum DisplayTabs {
-  RESULT = "result",
-  TRACING = "tracing",
-  DASHBOARD = "dashboard",
 }
 
 export function CqlEditor() {
@@ -71,7 +59,6 @@ export function CqlEditor() {
     {} as TracingResult,
   );
   const [updateKey, setUpdateKey] = useState(0); // Used to force re-render when query is executed
-  const [activeTab, setActiveTab] = useState<string>(DisplayTabs.RESULT);
   const currentConnection = useCqlFilters((state) => state.currentConnection);
   const fetchSize = useCqlFilters((state) => state.fetchSize);
   // probably the editor functions uses a memo, so the instance of currentConnection is not updated
@@ -83,6 +70,7 @@ export function CqlEditor() {
   const editorReference = useRef<editor.IStandaloneCodeEditor | null>(null);
   const decorationsReference =
     useRef<editor.IEditorDecorationsCollection | null>(null);
+
   const queryExecutor = useAction(executeQueryAction, {
     onSuccess: ({ data }) => {
       setQueryResult(data?.result ?? []);
@@ -101,14 +89,6 @@ export function CqlEditor() {
       });
     },
   });
-
-  useEffect(() => {
-    currentConnectionReference.current = currentConnection ?? null;
-  }, [currentConnection]);
-
-  useEffect(() => {
-    fetchSizeReference.current = fetchSize ?? null;
-  }, [fetchSize]);
 
   const executeQuery = async (query: string) => {
     if (!currentConnectionReference.current) {
@@ -136,12 +116,6 @@ export function CqlEditor() {
     setLoadingResults(false);
   };
 
-  // Load saved query from localStorage when the component mounts
-  useEffect(() => {
-    const savedCode = localStorage.getItem("cqlEditorQuery");
-    if (savedCode) setCode(savedCode);
-  }, []);
-
   // Debounced save function using lodash
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSave = useCallback(
@@ -157,6 +131,7 @@ export function CqlEditor() {
     debouncedSave(updatedCode); // Save to local storage with debounce
   };
 
+  // Highlights line when put ";"
   const highlightQueryAtCursor = (
     editor: editor.IStandaloneCodeEditor,
     monaco: Monaco,
@@ -209,6 +184,12 @@ export function CqlEditor() {
         _token: CancellationToken,
       ): languages.ProviderResult<languages.CompletionList> {
         const word = model.getWordUntilPosition(position);
+        const prevChar = model.getValueInRange({
+          startLineNumber: position.lineNumber,
+          startColumn: position.column - 1,
+          endLineNumber: position.lineNumber,
+          endColumn: position.column,
+        });
 
         const range = {
           startLineNumber: position.lineNumber,
@@ -216,6 +197,18 @@ export function CqlEditor() {
           startColumn: word.startColumn,
           endColumn: word.endColumn,
         };
+        if (prevChar === ".") {
+          // If prevChar is "." we need to get the word before it.
+          const wordBeforePosition = model.getWordAtPosition({
+            lineNumber: position.lineNumber,
+            column: position.column - 1,
+          });
+
+          range.startColumn = wordBeforePosition
+            ? wordBeforePosition.startColumn
+            : position.column - 1;
+          range.endColumn = position.column;
+        }
 
         const suggestions = cqlCompletionItemProvider(
           monaco,
@@ -297,36 +290,21 @@ export function CqlEditor() {
     }
   };
 
-  const renderResult = useCallback(
-    () => (
-      <ResultsRender
-        key={`result-${updateKey}`}
-        data={queryResult}
-        tracingData={queryTracing}
-      />
-    ),
-    [queryTracing, updateKey],
-  );
+  useEffect(() => {
+    currentConnectionReference.current = currentConnection ?? null;
+  }, [currentConnection]);
 
-  const renderTracing = useCallback(
-    () => <TracingRender key={`tracing-${updateKey}`} data={queryTracing} />,
-    [queryTracing, updateKey],
-  );
-  const renderDashboard = useCallback(
-    () => (
-      <QueryDashboard
-        key={`dashboard-${updateKey}`}
-        tracingInfo={queryTracing}
-      />
-    ),
-    [queryTracing, updateKey],
-  );
-  const renderTabs = {
-    [DisplayTabs.RESULT]: renderResult(),
-    [DisplayTabs.TRACING]: renderTracing(),
-    [DisplayTabs.DASHBOARD]: renderDashboard(),
-  };
+  useEffect(() => {
+    fetchSizeReference.current = fetchSize ?? null;
+  }, [fetchSize]);
 
+  // Load saved query from localStorage when the component mounts
+  useEffect(() => {
+    const savedCode = localStorage.getItem("cqlEditorQuery");
+    if (savedCode) setCode(savedCode);
+  }, []);
+
+  // Load all keyspaces from the current connection
   useEffect(() => {
     if (currentConnection) queryKeySpaces(currentConnection);
   }, [currentConnection]);
@@ -385,56 +363,12 @@ export function CqlEditor() {
           )}
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel className="flex flex-row">
-          {!queryResult || queryResult.length === 0 ? null : (
-            <Tabs
-              orientation="vertical"
-              value={activeTab}
-              onValueChange={setActiveTab}
-              className="flex"
-            >
-              <TabsList className="flex h-full flex-col justify-start p-0 rounded-none">
-                <TabsTrigger
-                  value={DisplayTabs.RESULT}
-                  className={cn(
-                    "w-full justify-center rounded-none px-4 py-2 text-left hover:bg-white/10",
-                    activeTab === DisplayTabs.RESULT && "bg-white",
-                  )}
-                >
-                  <Braces size={16} />
-                </TabsTrigger>
-
-                <TabsTrigger
-                  value={DisplayTabs.TRACING}
-                  className={cn(
-                    "w-full justify-center rounded-none px-4 py-2 text-left hover:bg-white/10",
-                    activeTab === DisplayTabs.TRACING && "bg-white",
-                  )}
-                >
-                  <SearchCode size={18} />
-                </TabsTrigger>
-
-                <TabsTrigger
-                  value={DisplayTabs.DASHBOARD}
-                  className={cn(
-                    "w-full justify-center rounded-none px-4 py-2 text-left hover:bg-white/10",
-                    activeTab === DisplayTabs.DASHBOARD && "bg-white",
-                  )}
-                >
-                  <ChartArea size={18} />
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          )}
-          {loadingResults ? (
-            <div className="flex flex-col w-full h-full gap-1 p-1">
-              <Skeleton className="h-11 w-full" />
-              <Skeleton className="h-full w-full" />
-            </div>
-          ) : (
-            renderTabs[activeTab as DisplayTabs]
-          )}
-        </ResizablePanel>
+        <CqlResultPanel
+          updateKey={updateKey}
+          queryResult={queryResult}
+          queryTracing={queryTracing}
+          loadingResults={loadingResults}
+        />
       </ResizablePanelGroup>
     </div>
   );
