@@ -1,12 +1,12 @@
+import { ScyllaKeyspace } from "@lambda-group/scylladb";
 import { useMonaco } from "@monaco-editor/react";
 import KeyspaceDefinitions from "@scylla-studio/app/(main)/keyspace/[keyspace]/_components/keyspace-tables";
-import { getFullQueryAtCursor } from "@scylla-studio/app/(main)/query-runner/_components/utils";
+import { getFullQueryAtCursor, getSingleLineQueryAtCursor } from "@scylla-studio/app/(main)/query-runner/_components/utils";
 import { useCqlFilters } from "@scylla-studio/hooks/use-cql-filters";
 import { KeyspaceDefinition } from "@scylla-studio/lib/cql-parser/keyspace-parser";
 import { TableDefinition } from "@scylla-studio/lib/cql-parser/table-parser";
 import {
-  CompletionItem,
-  CompletionItemLabel,
+
   editor,
   languages,
 } from "monaco-editor";
@@ -303,49 +303,26 @@ function prepareTablesSuggestions(
 export const cqlCompletionItemProvider = (
   monacoInstance: MonacoInstance,
   editor: editor.IStandaloneCodeEditor,
+  keyspaces?: KeyspaceDefinition[],
+  keyspacesTables?: TableCompletion[]
 ): languages.CompletionItem[] => {
-  const cursor = getFullQueryAtCursor(editor, monacoInstance);
 
+
+  const cursor = getSingleLineQueryAtCursor(editor, monacoInstance);
   if (!cursor) return getDefaultSuggestions(monacoInstance);
+  const textUntilPosition = cursor.query.split("\n\n").shift()?.replaceAll(";", "") || "";
 
-  const textUntilPosition = cursor.query.split("\n\n").shift() || "";
 
   const useKeyspaceRegex = /USE\s+(\w*)$/i;
   const fromTableRegex = /FROM\s+(\w*)$/i;
   const selectColumnRegex = /SELECT\s+([\w,\s]*)$/i;
   const whereColumnRegex = /WHERE\s+(\w*)$/i;
-
   // Check if you're typing a keyspace
   if (useKeyspaceRegex.test(textUntilPosition)) {
-    const keyspaces = [
-      {
-        // TODO: this should be a real keyspace
-        name: "my_keyspace",
-        entitiesCount: 1337, // Ignore this until I figure out what it is
-        replication: {
-          class: "NetworkTopologyStrategy",
-          datacenters: new Map<string, number>(),
-        },
-        durableWrites: true,
-        tablets: true,
-        tables: new Map<string, TableDefinition>(),
-      },
-    ] as KeyspaceDefinition[];
 
-    return prepareUseSuggestions(monacoInstance, keyspaces);
+    return prepareUseSuggestions(monacoInstance, (keyspaces as any) as KeyspaceDefinition[] || []);
   } else if (fromTableRegex.test(textUntilPosition)) {
-    const tables = [
-      {
-        keyspace: "my_keyspace",
-        table: "my_table",
-      },
-      {
-        keyspace: "my_keyspace",
-        table: "my_table2",
-      },
-    ] as TableCompletion[];
-
-    return prepareTablesSuggestions(monacoInstance, tables);
+    return prepareTablesSuggestions(monacoInstance, keyspacesTables  || []);
   } else if (selectColumnRegex.test(textUntilPosition)) {
     // TODO: or we display everything related to all tables or we display nothing
     return getDefaultSuggestions(monacoInstance);

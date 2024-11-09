@@ -1,7 +1,9 @@
 "use client";
 
+import { ScyllaKeyspace } from "@lambda-group/scylladb";
 import Editor, { type Monaco, useMonaco } from "@monaco-editor/react";
 import { executeQueryAction } from "@scylla-studio/actions/execute-query";
+import { queryKeyspaceAction } from "@scylla-studio/actions/query-keyspaces";
 import { cqlCompletionItemProvider } from "@scylla-studio/app/(main)/query-runner/_components/cql-autocompleter";
 import { cql_language } from "@scylla-studio/app/(main)/query-runner/_components/cql-language";
 import {
@@ -26,13 +28,23 @@ import debounce from "lodash.debounce";
 import { Braces, ChartArea, Play, SearchCode } from "lucide-react";
 import { CancellationToken, Position, editor, languages } from "monaco-editor";
 import { useAction } from "next-safe-action/hooks";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  startTransition,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { toast } from "sonner";
 import { ResultFilters } from "./result-filters";
 import { ResultsRender } from "./results-render";
 import QueryDashboard from "./tracing-dashboard-render";
 import { TracingRender } from "./tracing-render";
-import { getFullQueryAtCursor } from "./utils";
+import {
+  formatKeyspaces,
+  formatKeyspacesTables,
+  getFullQueryAtCursor,
+} from "./utils";
 
 enum ExecuteType {
   ALL = 0,
@@ -48,6 +60,10 @@ enum DisplayTabs {
 export function CqlEditor() {
   const [code, setCode] = useState("");
   const [loadingResults, setLoadingResults] = useState(false);
+  const [keyspaces, setKeyspaces] = useState<Record<string, ScyllaKeyspace>>(
+    {},
+  );
+  const [isFecthedKeys, setIsFecthecKeys] = useState(false);
   const [queryResult, setQueryResult] = useState<
     Array<Record<string, unknown>>
   >([]);
@@ -181,6 +197,9 @@ export function CqlEditor() {
 
     monaco.languages.setMonarchTokensProvider("cql", cql_language);
 
+    const keyspaceData = formatKeyspaces(keyspaces);
+    const keyspacesTables = formatKeyspacesTables(keyspaces);
+
     monaco.languages.registerCompletionItemProvider("cql", {
       triggerCharacters: [" ", ".", "(", ")"],
       provideCompletionItems(
@@ -198,7 +217,12 @@ export function CqlEditor() {
           endColumn: word.endColumn,
         };
 
-        const suggestions = cqlCompletionItemProvider(monaco, editor)
+        const suggestions = cqlCompletionItemProvider(
+          monaco,
+          editor,
+          keyspaceData,
+          keyspacesTables,
+        )
           .filter((item) =>
             item.label.label.toLowerCase().startsWith(word.word.toLowerCase()),
           )
@@ -250,6 +274,29 @@ export function CqlEditor() {
     }
   };
 
+  const queryKeySpaces = async (selectedConnection: AvailableConnections) => {
+    try {
+      if (selectedConnection?.status === "Offline") {
+        toast.error("Failed to query keyspaces.");
+        setKeyspaces({});
+        return;
+      }
+      const queriedKeyspaces = await queryKeyspaceAction({
+        host: selectedConnection.host,
+        port: selectedConnection.port,
+        password: selectedConnection.password,
+        username: selectedConnection.username,
+      });
+
+      setKeyspaces(queriedKeyspaces?.data?.keyspaces || {});
+    } catch (error) {
+      toast.error("Failed to query keyspaces.");
+      console.error(error);
+    } finally {
+      setIsFecthecKeys(true);
+    }
+  };
+
   const renderResult = useCallback(
     () => (
       <ResultsRender
@@ -279,6 +326,10 @@ export function CqlEditor() {
     [DisplayTabs.TRACING]: renderTracing(),
     [DisplayTabs.DASHBOARD]: renderDashboard(),
   };
+
+  useEffect(() => {
+    if (currentConnection) queryKeySpaces(currentConnection);
+  }, [currentConnection]);
 
   return (
     <div className="h-[calc(100vh-112px)] w-full flex flex-col">
@@ -315,21 +366,23 @@ export function CqlEditor() {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <Editor
-            height="100%"
-            theme="vs-dark"
-            language="cql"
-            value={code}
-            onMount={handleEditorDidMount}
-            onChange={handleCodeChange}
-            options={{
-              fontSize: 16,
-              selectOnLineNumbers: true,
-              minimap: { enabled: false },
-              automaticLayout: true,
-              scrollBeyondLastLine: false,
-            }}
-          />
+          {currentConnection && isFecthedKeys && (
+            <Editor
+              height="100%"
+              theme="vs-dark"
+              language="cql"
+              value={code}
+              onMount={handleEditorDidMount}
+              onChange={handleCodeChange}
+              options={{
+                fontSize: 16,
+                selectOnLineNumbers: true,
+                minimap: { enabled: false },
+                automaticLayout: true,
+                scrollBeyondLastLine: false,
+              }}
+            />
+          )}
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel className="flex flex-row">
