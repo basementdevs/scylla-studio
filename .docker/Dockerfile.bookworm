@@ -21,7 +21,7 @@ SHELL [ "/bin/bash", "-c" ]
 # Install necessary dependencies
 RUN set -euxo pipefail;\
   apt-get update;\
-  apt-get install -y --no-install-recommends tzdata nano ca-certificates git curl;\
+  apt-get install -y --no-install-recommends nano ca-certificates curl;\
   curl --fail --silent --show-error --location ${INIT_URL} --output ${INIT_PATH};\
   chmod +x ${INIT_PATH};\
   rm -rf /var/lib/apt/lists/*
@@ -47,7 +47,6 @@ COPY --chown=${USER}:${USER}\
 
 # Install dependencies with pnpm
 RUN set -euxo pipefail;\
-  corepack enable;\
   corepack prepare pnpm --activate;\
   pnpm install
 
