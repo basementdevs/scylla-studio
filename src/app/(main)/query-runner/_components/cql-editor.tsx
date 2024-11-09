@@ -49,14 +49,14 @@ export function CqlEditor() {
   const [code, setCode] = useState("");
   const [loadingResults, setLoadingResults] = useState(false);
   const [keyspaces, setKeyspaces] = useState<Record<string, ScyllaKeyspace>>(
-    {},
+    {}
   );
   const [isFetchedKeys, setIsFetchedKeys] = useState(false);
   const [queryResult, setQueryResult] = useState<
     Array<Record<string, unknown>>
   >([]);
   const [queryTracing, setQueryTracing] = useState<TracingResult>(
-    {} as TracingResult,
+    {} as TracingResult
   );
   const [updateKey, setUpdateKey] = useState(0); // Used to force re-render when query is executed
   const currentConnection = useCqlFilters((state) => state.currentConnection);
@@ -121,9 +121,9 @@ export function CqlEditor() {
   const debouncedSave = useCallback(
     debounce(
       (query: string) => localStorage.setItem("cqlEditorQuery", query),
-      500,
+      500
     ),
-    [],
+    []
   );
 
   const handleCodeChange = (updatedCode = "") => {
@@ -134,7 +134,7 @@ export function CqlEditor() {
   // Highlights line when put ";"
   const highlightQueryAtCursor = (
     editor: editor.IStandaloneCodeEditor,
-    monaco: Monaco,
+    monaco: Monaco
   ) => {
     if (!decorationsReference.current)
       decorationsReference.current = editor.createDecorationsCollection();
@@ -161,7 +161,7 @@ export function CqlEditor() {
   // Use the onMount lifecycle to get access to the editor and monaco instance
   const handleEditorDidMount = (
     editor: editor.IStandaloneCodeEditor,
-    monaco: Monaco,
+    monaco: Monaco
   ) => {
     monaco.languages.register({
       id: "cql",
@@ -181,10 +181,9 @@ export function CqlEditor() {
         model: editor.ITextModel,
         position: Position,
         _context: languages.CompletionContext,
-        _token: CancellationToken,
+        _token: CancellationToken
       ): languages.ProviderResult<languages.CompletionList> {
         const word = model.getWordUntilPosition(position);
-        console.log(word);
         const prevChar = model.getValueInRange({
           startLineNumber: position.lineNumber,
           startColumn: position.column - 1,
@@ -215,10 +214,10 @@ export function CqlEditor() {
           monaco,
           editor,
           keyspaceData,
-          keyspacesTables,
+          keyspacesTables
         )
           .filter((item) =>
-            item.label.label.toLowerCase().startsWith(word.word.toLowerCase()),
+            item.label.label.toLowerCase().startsWith(word.word.toLowerCase())
           )
           .map((item) => ({ ...item, range }));
 
