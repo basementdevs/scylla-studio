@@ -1,14 +1,14 @@
 import { ScyllaKeyspace } from "@lambda-group/scylladb";
-import { useMonaco } from "@monaco-editor/react";
+import type { useMonaco } from "@monaco-editor/react";
 import KeyspaceDefinitions from "@scylla-studio/app/(main)/keyspace/[keyspace]/_components/keyspace-tables";
 import {
   getFullQueryAtCursor,
   getSingleLineQueryAtCursor,
 } from "@scylla-studio/app/(main)/query-runner/_components/utils";
 import { useCqlFilters } from "@scylla-studio/hooks/use-cql-filters";
-import { KeyspaceDefinition } from "@scylla-studio/lib/cql-parser/keyspace-parser";
+import type { KeyspaceDefinition } from "@scylla-studio/lib/cql-parser/keyspace-parser";
 import { TableDefinition } from "@scylla-studio/lib/cql-parser/table-parser";
-import { editor, languages } from "monaco-editor";
+import { editor, type languages } from "monaco-editor";
 
 export type MonacoInstance = NonNullable<ReturnType<typeof useMonaco>>;
 
@@ -311,9 +311,11 @@ export const cqlCompletionItemProvider = (
     cursor.query.split("\n\n").shift()?.replaceAll(";", "") || "";
 
   const useKeyspaceRegex = /USE\s+(\w*)$/i;
-  const fromTableRegex = /FROM\s+(\w*)$/i;
+  const fromTableRegex = /FROM\s+(\w*)(\.\w*)?/i;
+
   const selectColumnRegex = /SELECT\s+([\w,\s]*)$/i;
   const whereColumnRegex = /WHERE\s+(\w*)$/i;
+
   // Check if you're typing a keyspace
   if (useKeyspaceRegex.test(textUntilPosition)) {
     return prepareUseSuggestions(

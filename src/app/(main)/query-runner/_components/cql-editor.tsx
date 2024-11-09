@@ -1,6 +1,6 @@
 "use client";
 
-import { ScyllaKeyspace } from "@lambda-group/scylladb";
+import type { ScyllaKeyspace } from "@lambda-group/scylladb";
 import Editor, { type Monaco, useMonaco } from "@monaco-editor/react";
 import { executeQueryAction } from "@scylla-studio/actions/execute-query";
 import { queryKeyspaceAction } from "@scylla-studio/actions/query-keyspaces";
@@ -26,7 +26,12 @@ import type { TracingResult } from "@scylla-studio/lib/execute-query";
 import { cn } from "@scylla-studio/lib/utils";
 import debounce from "lodash.debounce";
 import { Braces, ChartArea, Play, SearchCode } from "lucide-react";
-import { CancellationToken, Position, editor, languages } from "monaco-editor";
+import type {
+  CancellationToken,
+  Position,
+  editor,
+  languages,
+} from "monaco-editor";
 import { useAction } from "next-safe-action/hooks";
 import {
   startTransition,
@@ -209,6 +214,13 @@ export function CqlEditor() {
         _token: CancellationToken,
       ): languages.ProviderResult<languages.CompletionList> {
         const word = model.getWordUntilPosition(position);
+        console.log(word);
+        const prevChar = model.getValueInRange({
+          startLineNumber: position.lineNumber,
+          startColumn: position.column - 1,
+          endLineNumber: position.lineNumber,
+          endColumn: position.column,
+        });
 
         const range = {
           startLineNumber: position.lineNumber,
@@ -216,6 +228,18 @@ export function CqlEditor() {
           startColumn: word.startColumn,
           endColumn: word.endColumn,
         };
+        if (prevChar === ".") {
+          // If prevChar is "." we need to get the word before it.
+          const wordBeforePosition = model.getWordAtPosition({
+            lineNumber: position.lineNumber,
+            column: position.column - 1,
+          });
+
+          range.startColumn = wordBeforePosition
+            ? wordBeforePosition.startColumn
+            : position.column - 1;
+          range.endColumn = position.column;
+        }
 
         const suggestions = cqlCompletionItemProvider(
           monaco,
