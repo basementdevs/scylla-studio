@@ -63,7 +63,7 @@ export function CqlEditor() {
   const [keyspaces, setKeyspaces] = useState<Record<string, ScyllaKeyspace>>(
     {},
   );
-  const [isFecthedKeys, setIsFecthecKeys] = useState(false);
+  const [isFetchedKeys, setIsFetchedKeys] = useState(false);
   const [queryResult, setQueryResult] = useState<
     Array<Record<string, unknown>>
   >([]);
