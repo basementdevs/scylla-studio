@@ -1,6 +1,13 @@
 "use client";
-import { Monaco } from "@monaco-editor/react";
+import type { ScyllaKeyspace } from "@lambda-group/scylladb";
+import type { Monaco } from "@monaco-editor/react";
+import type { KeyspaceDefinition } from "@scylla-studio/lib/cql-parser/keyspace-parser";
 import { editor } from "monaco-editor";
+
+type TableCompletion = {
+  keyspace: string;
+  table: string;
+};
 
 /**
  * Get the full query at the cursor position in the editor
@@ -62,4 +69,50 @@ export const getFullQueryAtCursor = (
     range,
     query,
   };
+};
+
+// Get the query of the line that has been edited
+export const getSingleLineQueryAtCursor = (
+  editor: editor.IStandaloneCodeEditor,
+  monaco: Monaco,
+) => {
+  const model = editor.getModel();
+  const position = editor.getPosition();
+
+  if (!model || !position) return null;
+
+  const lineText = model.getLineContent(position.lineNumber);
+
+  return {
+    range: position,
+    query: lineText,
+  };
+};
+
+// Format keyspaces to suggestions model
+export const formatKeyspaces = (
+  data: Record<string, ScyllaKeyspace>,
+): KeyspaceDefinition[] => {
+  const keyspaces = Object.entries(data).map((keyspace) => ({
+    name: keyspace[0],
+    ...keyspace[1],
+  }));
+
+  return keyspaces as any as KeyspaceDefinition[];
+};
+
+// Format Keyspaces tables to suggestions format
+export const formatKeyspacesTables = (data: Record<string, ScyllaKeyspace>) => {
+  const tables = Object.entries(data).reduce((acc, value) => {
+    const data = Object.keys(value[1].tables).map((table) => ({
+      keyspace: value[0],
+      table: table,
+    }));
+
+    acc.push(...data);
+
+    return acc;
+  }, [] as TableCompletion[]);
+
+  return tables;
 };
