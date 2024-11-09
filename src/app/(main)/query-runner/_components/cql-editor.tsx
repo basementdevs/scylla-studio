@@ -366,7 +366,7 @@ export function CqlEditor() {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          {currentConnection && isFecthedKeys && (
+          {currentConnection && isFetchedKeys && (
             <Editor
               height="100%"
               theme="vs-dark"
