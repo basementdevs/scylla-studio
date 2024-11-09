@@ -293,7 +293,7 @@ export function CqlEditor() {
       toast.error("Failed to query keyspaces.");
       console.error(error);
     } finally {
-      setIsFecthecKeys(true);
+      setIsFetchedKeys(true);
     }
   };
 
