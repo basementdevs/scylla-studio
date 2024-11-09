@@ -1,3 +1,5 @@
+import { memo, useEffect, useState } from "react";
+
 import { Badge } from "@scylla-studio/components/ui/badge";
 import { Button } from "@scylla-studio/components/ui/button";
 import {
@@ -15,9 +17,8 @@ import {
 import { useCqlFilters } from "@scylla-studio/hooks/use-cql-filters";
 import type { TracingResult } from "@scylla-studio/lib/execute-query";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { useEffect, useState } from "react";
 
-export const ResultsRender = ({
+const ResultsRenderComponent = ({
   data,
   tracingData,
 }: {
@@ -119,3 +120,5 @@ export const ResultsRender = ({
     </div>
   );
 };
+
+export const ResultsRender = memo(ResultsRenderComponent);
