@@ -29,8 +29,7 @@ COPY --chown=${USER}:${USER} \
 COPY --chown=${USER}:${USER} src ${WORKDIR}/src
 
 RUN set -euxo pipefail; \
-  wget -qO- https://get.pnpm.io/install.sh | PNPM_VERSION=9.11.0 ENV="$HOME/.shrc" SHELL="$(which sh)" sh -; \
-  source "$HOME/.shrc"; \
+  corepack prepare pnpm --activate;\
   pnpm install --frozen-lockfile; \
   pnpm dlx cross-env NODE_ENV=production pnpm run build;
 

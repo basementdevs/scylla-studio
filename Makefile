@@ -16,6 +16,10 @@ docker-up: ## Starts a cluster with ScyllaDB and NextJS
 docker-down: ## Stops the cluster and removes the volumes and images
 	@$(DOCKER_COMMAND) compose --file docker-compose.yml down --volumes --rmi local
 
+.PHONY: docker-logs
+docker-logs: ## Shows the logs of the cluster
+	@$(DOCKER_COMMAND) compose --file docker-compose.yml logs --follow
+
 .PHONY: node-nt-status
 node-nt-status: ## Shows ScyllaDB nodetool status
 	@$(DOCKER_COMMAND) compose --file docker-compose.yml exec scylla-node nodetool status
