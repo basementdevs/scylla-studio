@@ -12,8 +12,8 @@ importers:
         specifier: 3.9.1
         version: 3.9.1(react-hook-form@7.53.2(react@18.3.1))
       '@lambda-group/scylladb':
-        specifier: ~0.7.0
-        version: 0.7.0
+        specifier: ~0.7.1
+        version: 0.7.1
       '@monaco-editor/react':
         specifier: 4.6.0
         version: 4.6.0(monaco-editor@0.52.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -424,21 +424,63 @@ packages:
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
 
-  '@lambda-group/scylladb-linux-x64-gnu@0.7.0':
-    resolution: {integrity: sha512-3K8WaRFKat0xNcaM7bUPZ049e1ZOnwH7NPzOLb+ZoaAL9ZU9Rx7FVg9IHLcj772W+gaBo/s8zq/w7zbsU/gq4g==}
-    engines: {node: '>= 10'}
+  '@lambda-group/scylladb-android-arm-eabi@0.7.1':
+    resolution: {integrity: sha512-ovT1O6u9iTdrscplDwEiOgpbcFAbNREWrVUZL8GjPgHlRmgh3nMsYRp2RqKQ0cTolKvjNy96dYj27XcBuHGDDg==}
+    engines: {node: '>= 20'}
+    cpu: [arm]
+    os: [android]
+
+  '@lambda-group/scylladb-android-arm64@0.7.1':
+    resolution: {integrity: sha512-uxsjQCOjSIe/mSsfM2e7DpBeQNIMGxyANoT51VtjR16vYxqR46SfKUANanEL7PJYPF1VU5Rl1F06dDjEizEzPw==}
+    engines: {node: '>= 20'}
+    cpu: [arm64]
+    os: [android]
+
+  '@lambda-group/scylladb-darwin-arm64@0.7.1':
+    resolution: {integrity: sha512-y/ivy7o9LhRtvrzNCa2PHitKeAMMg+b1ZU+w/zBU0cHy174altj/gYOLL+/aex5Yrvw+lG+xf3RFbVqhaMj0ag==}
+    engines: {node: '>= 20'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@lambda-group/scylladb-darwin-x64@0.7.1':
+    resolution: {integrity: sha512-EmQL6NwEvjkIzE7G0TYl9V0/NAtZTao+6SdBAFa+ghUCSVUmujbCks218Hb7lYrqmlGLEa4l9TAhWATufNh0UA==}
+    engines: {node: '>= 20'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@lambda-group/scylladb-linux-arm-gnueabihf@0.7.1':
+    resolution: {integrity: sha512-MnbUGUq7PkZ4OxQk75Fw7xpyOb5wXslAY41Sy+gFhlhu6kFFUhjkD9phcwWQQApOHvI9xCYASi93tRzvIVltmw==}
+    engines: {node: '>= 20'}
+    cpu: [arm]
+    os: [linux]
+
+  '@lambda-group/scylladb-linux-arm64-gnu@0.7.1':
+    resolution: {integrity: sha512-H2N2dOQTHfPdQTwCPY21/ojLQVaKoMXuppQ1e9LL0tCCWqh8/B4m7c9Uegn2944iAegrd3VCZmQFpjDt/wSX2g==}
+    engines: {node: '>= 20'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@lambda-group/scylladb-linux-arm64-musl@0.7.1':
+    resolution: {integrity: sha512-Qs+WDE9G2ByTm2zg8JJMZ6ObKZToswMzTIjPzXudyNXtlYoBWUHQW498I/tJ4yE13jtx2YmB2dGGHN5tzxwpWQ==}
+    engines: {node: '>= 20'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@lambda-group/scylladb-linux-x64-gnu@0.7.1':
+    resolution: {integrity: sha512-3lwQyxLdvtQWOuvc+VpGTevJg0M7Z9T36f+noa5yQfpXz4cfsyTC8l4dE5dA6y3KT26iauqMS9i98ftTh2MADA==}
+    engines: {node: '>= 20'}
     cpu: [x64]
     os: [linux]
 
-  '@lambda-group/scylladb-linux-x64-musl@0.7.0':
-    resolution: {integrity: sha512-sM+CXXeYEyWQBV3MFqgl00Uhk3PGiwSNGMXoojDaKev5AvD94+GKNXK3hGRYByZZk0V9osVrj923my/tRY2tpQ==}
-    engines: {node: '>= 10'}
+  '@lambda-group/scylladb-linux-x64-musl@0.7.1':
+    resolution: {integrity: sha512-YTPKrIPrVVvak/Ea7gy07B2+kskDSNajQmy338Z2Bq4wkjS5cKBke0O0WDMj2bwciwXuSeXZrB5mzwNdBfZAwg==}
+    engines: {node: '>= 20'}
     cpu: [x64]
     os: [linux]
 
-  '@lambda-group/scylladb@0.7.0':
-    resolution: {integrity: sha512-xDyraTNgpkveBWjwAB8K/vsRZ/WNneukD/Gh5rwG3nJlt9Ty+0sc9bLV+dAQ7/s8+IgEJrdd49dB3HPIWz7QjQ==}
-    engines: {node: '>= 10'}
+  '@lambda-group/scylladb@0.7.1':
+    resolution: {integrity: sha512-hFKriiXvmbWW3fsntNXGp4XJEP2zQzsyx509qkpWZHnTFFfD8xlJ+mkeR9iZx3MaD2f3Rid3bW3TNNo3QL5yjg==}
+    engines: {node: '>= 20'}
 
   '@monaco-editor/loader@1.4.0':
     resolution: {integrity: sha512-00ioBig0x642hytVspPl7DbQyaSWRaolYie/UFNjoTdvoKPzo6xrXLhTk9ixgIKcLH5b5vDOjVNiGyY+uDCUlg==}
@@ -3204,16 +3246,44 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
-  '@lambda-group/scylladb-linux-x64-gnu@0.7.0':
+  '@lambda-group/scylladb-android-arm-eabi@0.7.1':
     optional: true
 
-  '@lambda-group/scylladb-linux-x64-musl@0.7.0':
+  '@lambda-group/scylladb-android-arm64@0.7.1':
     optional: true
 
-  '@lambda-group/scylladb@0.7.0':
+  '@lambda-group/scylladb-darwin-arm64@0.7.1':
+    optional: true
+
+  '@lambda-group/scylladb-darwin-x64@0.7.1':
+    optional: true
+
+  '@lambda-group/scylladb-linux-arm-gnueabihf@0.7.1':
+    optional: true
+
+  '@lambda-group/scylladb-linux-arm64-gnu@0.7.1':
+    optional: true
+
+  '@lambda-group/scylladb-linux-arm64-musl@0.7.1':
+    optional: true
+
+  '@lambda-group/scylladb-linux-x64-gnu@0.7.1':
+    optional: true
+
+  '@lambda-group/scylladb-linux-x64-musl@0.7.1':
+    optional: true
+
+  '@lambda-group/scylladb@0.7.1':
     optionalDependencies:
-      '@lambda-group/scylladb-linux-x64-gnu': 0.7.0
-      '@lambda-group/scylladb-linux-x64-musl': 0.7.0
+      '@lambda-group/scylladb-android-arm-eabi': 0.7.1
+      '@lambda-group/scylladb-android-arm64': 0.7.1
+      '@lambda-group/scylladb-darwin-arm64': 0.7.1
+      '@lambda-group/scylladb-darwin-x64': 0.7.1
+      '@lambda-group/scylladb-linux-arm-gnueabihf': 0.7.1
+      '@lambda-group/scylladb-linux-arm64-gnu': 0.7.1
+      '@lambda-group/scylladb-linux-arm64-musl': 0.7.1
+      '@lambda-group/scylladb-linux-x64-gnu': 0.7.1
+      '@lambda-group/scylladb-linux-x64-musl': 0.7.1
 
   '@monaco-editor/loader@1.4.0(monaco-editor@0.52.0)':
     dependencies:
