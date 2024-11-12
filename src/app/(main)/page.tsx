@@ -89,7 +89,7 @@ function DashboardKeyFeatures() {
   const features = [
     { name: "Visualize keyspaces and tables", status: "done" },
     { name: "Explore your data with a powerful query editor", status: "wip" },
-    { name: "Visualize your data model", status: "wip" },
+    { name: "Visualize your data model", status: "done" },
     { name: "Support for both local and cloud-based clusters", status: "done" },
     { name: "Keyspace Autocomplete based on Active Connection", status: "wip" },
     { name: "Query History", status: "wip" },
@@ -120,8 +120,10 @@ const DashboardContributors = () => {
   useEffect(() => {
     const fetchContributors = async () => {
       const response = await fetch(
-        "https://api.github.com/repos/basementdevs/scylla-studio/stats/contributors",
+        "https://api.github.com/repos/basementdevs/scylla-studio/stats/contributors"
       );
+
+      console.log("response", response);
 
       /**
        * In 202 case, has nothing on reponse body.
@@ -138,15 +140,15 @@ const DashboardContributors = () => {
         // Sum up all weeks' data to get the all-time stats
         const totalAdditions = item.weeks.reduce(
           (sum: number, week: any) => sum + week.a,
-          0,
+          0
         );
         const totalDeletions = item.weeks.reduce(
           (sum: number, week: any) => sum + week.d,
-          0,
+          0
         );
         const totalCommits = item.weeks.reduce(
           (sum: number, week: any) => sum + week.c,
-          0,
+          0
         );
 
         return {
@@ -168,7 +170,7 @@ const DashboardContributors = () => {
           const githubContributor = githubContributors.find(
             (contributor) =>
               contributor.github.toLowerCase() ===
-              packageContributor.github.toLowerCase(),
+              packageContributor.github.toLowerCase()
           );
 
           return {
@@ -180,12 +182,12 @@ const DashboardContributors = () => {
               commits: 0,
             }),
           };
-        },
+        }
       );
 
       // Sort by commits in descending order
       const sortedContributors = mergedContributors.sort(
-        (a, b) => b.commits - a.commits,
+        (a, b) => b.commits - a.commits
       );
 
       setContributors(sortedContributors);
@@ -193,6 +195,8 @@ const DashboardContributors = () => {
 
     fetchContributors();
   }, []);
+
+  console.log("contributors", contributors);
 
   return (
     <div>
