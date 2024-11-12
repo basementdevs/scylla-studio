@@ -129,6 +129,13 @@
       "github": "lucasqueiroz",
       "openToWork": false,
       "core": false
+    },
+    {
+      "name": "Lucas Rosa",
+      "github": "rosajsx",
+      "linkedin": "lucrosa",
+      "openToWork": false,
+      "core": true
     }
   ]
 }

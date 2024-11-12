@@ -134,6 +134,24 @@ export function Menu({ isOpen }: MenuProperties) {
                     variant="outline"
                     className="w-full justify-center h-100 mt-5"
                   >
+                    {isOpen ? (
+                      <p className="text-sm text-muted-foreground">
+                        Press{" "}
+                        <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                          <span className="text-xs">⌘ K</span>
+                        </kbd>
+                        <br />
+                        to open the Command Pallete
+                      </p>
+                    ) : (
+                      <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                        <span className="text-xs">⌘ K</span>
+                      </kbd>
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                {!isOpen && (
+                  <TooltipContent side="right">
                     <p className="text-sm text-muted-foreground">
                       Press{" "}
                       <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
@@ -142,10 +160,7 @@ export function Menu({ isOpen }: MenuProperties) {
                       <br />
                       to open the Command Pallete
                     </p>
-                  </Button>
-                </TooltipTrigger>
-                {isOpen === false && (
-                  <TooltipContent side="right">Sign out</TooltipContent>
+                  </TooltipContent>
                 )}
               </Tooltip>
             </TooltipProvider>

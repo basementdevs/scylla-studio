@@ -89,7 +89,7 @@ function DashboardKeyFeatures() {
   const features = [
     { name: "Visualize keyspaces and tables", status: "done" },
     { name: "Explore your data with a powerful query editor", status: "wip" },
-    { name: "Visualize your data model", status: "wip" },
+    { name: "Visualize your data model", status: "done" },
     { name: "Support for both local and cloud-based clusters", status: "done" },
     { name: "Keyspace Autocomplete based on Active Connection", status: "wip" },
     { name: "Query History", status: "wip" },
