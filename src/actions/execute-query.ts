@@ -50,7 +50,7 @@ export const executeQueryAction = actionClient
     if (parsedInput.limit)
       query = query.replace(/;$/, ` LIMIT ${parsedInput.limit};`);
 
-    return (await session.executeWithTracing(query)) as QueryResult;
+    return (await session.executeWithTracing(query)) as unknown as QueryResult;
   });
 
 /**

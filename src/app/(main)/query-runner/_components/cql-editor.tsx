@@ -22,13 +22,8 @@ import { useCqlFilters } from "@scylla-studio/hooks/use-cql-filters";
 import type { AvailableConnections } from "@scylla-studio/lib/connections";
 import type { TracingResult } from "@scylla-studio/lib/execute-query";
 import debounce from "lodash.debounce";
-import { Braces, Play } from "lucide-react";
-import type {
-  CancellationToken,
-  Position,
-  editor,
-  languages,
-} from "monaco-editor";
+import { Play } from "lucide-react";
+import { CancellationToken, Position, editor, languages } from "monaco-editor";
 import { useAction } from "next-safe-action/hooks";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -217,7 +212,9 @@ export function CqlEditor() {
           keyspacesTables,
         )
           .filter((item) =>
-            item.label.label.toLowerCase().startsWith(word.word.toLowerCase()),
+            (typeof item.label === "string" ? item.label : item.label.label)
+              .toLowerCase()
+              .startsWith(word.word.toLowerCase()),
           )
           .map((item) => ({ ...item, range }));
 
