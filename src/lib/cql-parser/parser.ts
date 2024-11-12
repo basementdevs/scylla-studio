@@ -22,9 +22,9 @@ export async function parseKeyspaces(
   const rows = await session.execute("DESC keyspaces");
 
   for (const row of rows) {
-    const result: DescriptionRow[] = await session.execute(
+    const result = (await session.execute(
       `DESC ${row.keyspace_name}`,
-    );
+    )) as unknown as DescriptionRow[];
 
     let parsedKeyspace = {} as KeyspaceDefinition;
 
@@ -51,7 +51,7 @@ export async function parseKeyspaces(
       }
     }
 
-    parsedKeyspaces.set(row.keyspace_name, parsedKeyspace);
+    parsedKeyspaces.set(row.keyspace_name as string, parsedKeyspace);
   }
 
   return Object.fromEntries(parsedKeyspaces);
