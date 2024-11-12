@@ -21,7 +21,7 @@ export default function KeyspacePage({
   const { betterKeyspaces, selectedConnection, loadingKeyspaces } = useLayout();
 
   const selectedKeyspace = Object.values(betterKeyspaces).find(
-    (value) => value.name === keyspace
+    (value) => value.name === keyspace,
   );
 
   return (

@@ -65,7 +65,7 @@ export function Menu({ isOpen }: MenuProperties) {
               {menus.map(
                 (
                   { href, label, icon: Icon, active, submenus, element },
-                  index
+                  index,
                 ) =>
                   submenus.length === 0 ? (
                     <div className="w-full" key={index}>
@@ -80,7 +80,7 @@ export function Menu({ isOpen }: MenuProperties) {
                               >
                                 <Link
                                   className={cn(
-                                    !isOpen && "flex justify-center"
+                                    !isOpen && "flex justify-center",
                                   )}
                                   href={href}
                                 >
@@ -90,7 +90,7 @@ export function Menu({ isOpen }: MenuProperties) {
                                   {isOpen && (
                                     <p
                                       className={cn(
-                                        "max-w-[200px] truncate"
+                                        "max-w-[200px] truncate",
                                         // isOpen === false
                                         //   ? "-translate-x-96 opacity-0"
                                         //   : "translate-x-0 opacity-100"
@@ -121,7 +121,7 @@ export function Menu({ isOpen }: MenuProperties) {
                         isOpen={isOpen}
                       />
                     </div>
-                  )
+                  ),
               )}
             </li>
           ))}

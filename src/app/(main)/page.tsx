@@ -120,7 +120,7 @@ const DashboardContributors = () => {
   useEffect(() => {
     const fetchContributors = async () => {
       const response = await fetch(
-        "https://api.github.com/repos/basementdevs/scylla-studio/stats/contributors"
+        "https://api.github.com/repos/basementdevs/scylla-studio/stats/contributors",
       );
 
       console.log("response", response);
@@ -140,15 +140,15 @@ const DashboardContributors = () => {
         // Sum up all weeks' data to get the all-time stats
         const totalAdditions = item.weeks.reduce(
           (sum: number, week: any) => sum + week.a,
-          0
+          0,
         );
         const totalDeletions = item.weeks.reduce(
           (sum: number, week: any) => sum + week.d,
-          0
+          0,
         );
         const totalCommits = item.weeks.reduce(
           (sum: number, week: any) => sum + week.c,
-          0
+          0,
         );
 
         return {
@@ -170,7 +170,7 @@ const DashboardContributors = () => {
           const githubContributor = githubContributors.find(
             (contributor) =>
               contributor.github.toLowerCase() ===
-              packageContributor.github.toLowerCase()
+              packageContributor.github.toLowerCase(),
           );
 
           return {
@@ -182,12 +182,12 @@ const DashboardContributors = () => {
               commits: 0,
             }),
           };
-        }
+        },
       );
 
       // Sort by commits in descending order
       const sortedContributors = mergedContributors.sort(
-        (a, b) => b.commits - a.commits
+        (a, b) => b.commits - a.commits,
       );
 
       setContributors(sortedContributors);
