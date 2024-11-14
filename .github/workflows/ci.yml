@@ -15,6 +15,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+env:
+  NEXT_TELEMETRY_DISABLED: 1
+  COREPACK_ENABLE_DOWNLOAD_PROMPT: 0
+
 jobs:
   setup:
     name: Setup NodeJs, PNPM and Cache
