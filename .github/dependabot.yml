@@ -9,8 +9,15 @@ updates:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major"
-    allow:
-      - dependency-type: "production"
+    groups:
+      prod-dependencies:
+        dependency-type: production
+        patterns:
+          - "*"
+      dev-dependencies:
+        dependency-type: development
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/"
