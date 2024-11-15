@@ -16,8 +16,13 @@
 - **Visual Management of Keyspaces and Tables:**
   Create, edit, and visualize keyspaces and tables directly from the interface.
 
+  <img src="./.github/assets/keyspace-details.gif" alt="keyspace showcase" width="100%"/>
+  <img src="./.github/assets/table-details.gif" alt="keyspace tableshowcase" width="100%"/>
+  <p>
 - **Integrated Metrics Monitoring:**
   Leverages ScyllaDB's Prometheus and Grafana integrations to display important metrics within the app.
+  
+  <img src="./.github/assets/query-ruuner-dashboard.gif" alt="query runner dashboard" width="100%"/>
 
 - **Cluster Connectivity:**
   Easily connect to your local cluster using `https://local.scylladb.studio` or manage cloud-based clusters.
