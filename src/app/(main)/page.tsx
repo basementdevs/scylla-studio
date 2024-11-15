@@ -91,7 +91,10 @@ function DashboardKeyFeatures() {
     { name: "Explore your data with a powerful query editor", status: "wip" },
     { name: "Visualize your data model", status: "done" },
     { name: "Support for both local and cloud-based clusters", status: "done" },
-    { name: "Keyspace Autocomplete based on Active Connection", status: "wip" },
+    {
+      name: "Keyspace Autocomplete based on Active Connection",
+      status: "done",
+    },
     { name: "Query History", status: "wip" },
   ];
 
