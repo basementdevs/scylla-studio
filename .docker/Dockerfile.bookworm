@@ -47,6 +47,7 @@ COPY --chown=${USER}:${USER}\
 
 # Install dependencies with pnpm
 RUN set -euxo pipefail;\
+  corepack enable;\
   corepack prepare pnpm --activate;\
   pnpm install
 
