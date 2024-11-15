@@ -15,12 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@scylla-studio/components/ui/table";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@scylla-studio/components/ui/tooltip";
+
 import { KeyspaceDefinition } from "@scylla-studio/lib/cql-parser/keyspace-parser";
 import {
   ArrowDownIcon,
@@ -109,44 +104,40 @@ export default function KeyspaceDefinitions({
                   </TableCell>
                   <TableCell className="px-4 py-3">
                     <div className="flex gap-2">
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="outline" size="sm" disabled>
-                              <EyeIcon className="w-4 h-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>View Data</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="outline" size="sm" disabled>
-                              <LayersIcon className="w-4 h-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Generate MV</p>
-                            (Work In Progress)
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="outline" size="sm" disabled>
-                              <TrashIcon className="w-4 h-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Drop Table</p>
-                            (Work In Progress)
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                      <CustomTooltip
+                        triggerAsChild
+                        Trigger={
+                          <Button variant="outline" size="sm" disabled>
+                            <EyeIcon className="w-4 h-4" />
+                          </Button>
+                        }
+                      >
+                        <p>View Data</p>
+                      </CustomTooltip>
+
+                      <CustomTooltip
+                        triggerAsChild
+                        Trigger={
+                          <Button variant="outline" size="sm" disabled>
+                            <LayersIcon className="w-4 h-4" />
+                          </Button>
+                        }
+                      >
+                        <p>Generate MV</p>
+                        (Work In Progress)
+                      </CustomTooltip>
+
+                      <CustomTooltip
+                        triggerAsChild
+                        Trigger={
+                          <Button variant="outline" size="sm" disabled>
+                            <TrashIcon className="w-4 h-4" />
+                          </Button>
+                        }
+                      >
+                        <p>Drop Table</p>
+                        (Work In Progress)
+                      </CustomTooltip>
                     </div>
                   </TableCell>
                 </TableRow>
