@@ -1,3 +1,4 @@
+import { CustomTooltip } from "@scylla-studio/components/composed/custom-tooltip";
 import { Badge } from "@scylla-studio/components/ui/badge";
 import { Button } from "@scylla-studio/components/ui/button";
 import {
@@ -54,42 +55,41 @@ export default function KeyspaceDefinitions({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+        <div className=" rounded-lg shadow-lg overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow className="bg-purple-100 dark:bg-purple-900">
-                <TableHead className="font-bold text-purple-700 dark:text-purple-300">
+                <TableHead className="font-bold   px-4 py-3">
                   Table Name
                 </TableHead>
-                <TableHead className="font-bold text-purple-700 dark:text-purple-300">
-                  Keys
-                </TableHead>
-                <TableHead className="font-bold text-purple-700 dark:text-purple-300">
-                  Actions
-                </TableHead>
+                <TableHead className="font-bold  px-4 py-3">Keys</TableHead>
+                <TableHead className="font-bold  px-4 py-3">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {tables.map(({ name, table }) => (
-                <TableRow
-                  key={table.tableName}
-                  className="hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors"
-                >
-                  <TableCell className="font-medium">
-                    <Link
-                      href={`/keyspace/${keyspace.name}/table/${table.tableName}`}
+                <TableRow key={table.tableName} className="">
+                  <TableCell className="font-medium px-4 py-3">
+                    <CustomTooltip
+                      Trigger={
+                        <Link
+                          href={`/keyspace/${keyspace.name}/table/${table.tableName}`}
+                        >
+                          <Badge
+                            variant="secondary"
+                            className="gap-2 bg-cyan-700 text-white dark:bg-cyan-900 "
+                          >
+                            <TableIcon className="w-5 h-5" />
+                            {table.tableName}
+                          </Badge>
+                        </Link>
+                      }
                     >
-                      <Badge
-                        variant="secondary"
-                        className="gap-2 bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200"
-                      >
-                        <TableIcon className="w-5 h-5" />
-                        {table.tableName}
-                      </Badge>
-                    </Link>
+                      View details
+                    </CustomTooltip>
                   </TableCell>
 
-                  <TableCell>
+                  <TableCell className="px-4 py-3">
                     <div className="flex gap-2">
                       <Badge
                         variant="secondary"
@@ -107,12 +107,12 @@ export default function KeyspaceDefinitions({
                       </Badge>
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="px-4 py-3">
                     <div className="flex gap-2">
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button variant="outline" size="sm">
+                            <Button variant="outline" size="sm" disabled>
                               <EyeIcon className="w-4 h-4" />
                             </Button>
                           </TooltipTrigger>
@@ -124,24 +124,26 @@ export default function KeyspaceDefinitions({
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button variant="outline" size="sm">
+                            <Button variant="outline" size="sm" disabled>
                               <LayersIcon className="w-4 h-4" />
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Generate MV</p>
+                            (Work In Progress)
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button variant="outline" size="sm">
+                            <Button variant="outline" size="sm" disabled>
                               <TrashIcon className="w-4 h-4" />
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Drop Table</p>
+                            (Work In Progress)
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
