@@ -9,17 +9,19 @@ import {
 interface CustomTooltipProps {
   Trigger: ReactNode;
   side?: "right" | "top" | "bottom" | "left";
+  triggerAsChild?: boolean;
 }
 
 export function CustomTooltip({
   Trigger,
   children,
   side,
+  triggerAsChild,
 }: PropsWithChildren<CustomTooltipProps>) {
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger>{Trigger}</TooltipTrigger>
+        <TooltipTrigger asChild={triggerAsChild}>{Trigger}</TooltipTrigger>
         <TooltipContent side={side}>{children}</TooltipContent>
       </Tooltip>
     </TooltipProvider>
