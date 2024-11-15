@@ -200,30 +200,31 @@ const DashboardContributors = () => {
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4 mt-5">Contributors:</h2>
-      <div className="grid lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-5 grid-cols-1  md:grid-cols-2  gap-4">
+      <div className="flex flex-wrap  gap-4">
         {contributors.map((contributor, index) => (
-          <Card key={index} className="overflow-hidden">
-            <div className="relative">
-              <Image
-                src={contributor.avatarUrl}
-                alt={`${contributor.name}'s avatar`}
-                className="w-full h-48 object-cover"
-                loading="lazy"
-                width="460"
-                height="460"
-              />
-              {contributor.openToWork && (
-                <div className="absolute top-2 left-2 bg-green-500 text-white text-xs py-1 px-2 rounded-md">
-                  Open to Work
-                </div>
-              )}
-            </div>
-            <CardContent className="">
-              <div className="flex items-center justify-between">
-                <h3 className="font-medium text-lg">{contributor.name}</h3>
+          <Card key={index} className="overflow-hidden relative w-72">
+            <Image
+              src={contributor.avatarUrl}
+              alt={`${contributor.name}'s avatar`}
+              className="w-full h-96 object-cover"
+              loading="lazy"
+              width="460"
+              height="460"
+            />
+
+            <CardContent className="p-0 absolute bottom-0 left-0 right-0 bg-black bg-opacity-55 px-2 py-2">
+              <div className="flex pt-2 pb-3   gap-2">
+                {contributor.openToWork && (
+                  <Badge className="bg-green-500 text-white ">
+                    Open to Work
+                  </Badge>
+                )}
                 {contributor.core && (
                   <Badge variant={"secondary"}>Core Member</Badge>
                 )}
+              </div>
+              <div className="flex items-center justify-between">
+                <h3 className="font-medium text-lg">{contributor.name}</h3>
               </div>
 
               <div className="flex items-center space-x-3">
@@ -275,14 +276,14 @@ const DashboardContributors = () => {
               </div>
 
               <div className="mt-2">
-                <div className="flex flex-row space-x-3 text-sm text-muted-foreground mb-4">
+                <div className="flex flex-row space-x-3 text-sm text-muted-foreground ">
                   <a
                     href={`https://github.com/${contributor.github}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center hover:text-primary"
                   >
-                    <Github className="w-10 h-5 mr-2" />
+                    <Github className="w-5 h-5" />
                   </a>
                   {contributor.linkedin && (
                     <a
