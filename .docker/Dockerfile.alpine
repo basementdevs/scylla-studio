@@ -1,40 +1,29 @@
-# Set up ARG variables
 ARG USER=node
 ARG WORK_DIR=/home/node/app
 ARG INIT_PATH=/usr/local/bin/dumb-init
 ARG INIT_URL=https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_x86_64
 
-# Use Debian-based Node.js image
-FROM node:22-bookworm AS develop
+FROM node:22-alpine AS develop
 
-# Declare build arguments
 ARG USER
 ARG WORK_DIR
 ARG INIT_PATH
 ARG INIT_URL
 
-# Set environment variables
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0 LANG=C.UTF-8 NEXT_TELEMETRY_DISABLED=1 NODE_ENV=development PORT=3000 HOSTNAME=0.0.0.0
 
-SHELL [ "/bin/bash", "-c" ]
-
-# Install necessary dependencies
 RUN set -euxo pipefail;\
-  apt-get update;\
-  apt-get install -y --no-install-recommends nano ca-certificates curl;\
+  apk update;\
+  apk add --no-cache git nano ca-certificates curl libc6-compat;\
   curl --fail --silent --show-error --location ${INIT_URL} --output ${INIT_PATH};\
-  chmod +x ${INIT_PATH};\
-  rm -rf /var/lib/apt/lists/*
+  chmod +x ${INIT_PATH};
 
-# Set up work directory and permissions
 RUN set -euxo pipefail;\
   mkdir -p ${WORK_DIR};\
-  chown -R ${USER}:${USER} ${WORK_DIR}
+  chown -R ${USER}:${USER} ${WORK_DIR};
 
-# Set working directory
 WORKDIR ${WORK_DIR}
 
-# Copy application files with ownership
 COPY --chown=${USER}:${USER}\
   components.json\
   next.config.mjs\
@@ -45,19 +34,15 @@ COPY --chown=${USER}:${USER}\
   tsconfig.json\
   ${WORK_DIR}/
 
-# Install dependencies with pnpm
 RUN set -euxo pipefail;\
   corepack enable;\
   corepack prepare pnpm --activate;\
-  pnpm install
+  pnpm install;
 
-# Copy source files
 COPY --chown=${USER}:${USER} src ${WORK_DIR}/src
 
-# Set the user for running the application
 USER ${USER}
 
-# Define entrypoint and command
 ENTRYPOINT [ "/usr/local/bin/dumb-init", "--" ]
 
 CMD [ "pnpm", "run", "dev" ]
