@@ -19,8 +19,7 @@ services:
       retries: 15
       start_period: 30s
     networks:
-      scylla-network:
-        ipv4_address: 172.20.20.2
+      - scylla-network
 
   scylla-studio:
     container_name: scylla-studio
@@ -28,14 +27,15 @@ services:
     tty: true
     environment:
       - NEXT_PUBLIC_DOCKER_COMPOSE=1
+      - NEXT_TELEMETRY_DISABLED=1
+      - COREPACK_ENABLE_DOWNLOAD_PROMPT=0
     ports:
       - "3000:3000"
     depends_on:
       scylla-node:
         condition: service_healthy
     networks:
-      scylla-network:
-        ipv4_address: 172.20.20.3
+      - scylla-network
 
 networks:
   scylla-network:
@@ -43,7 +43,3 @@ networks:
     driver: bridge
     driver_opts:
       com.docker.network.bridge.name: scylla-network
-    ipam:
-      config:
-        - gateway: 172.20.20.1
-          subnet: 172.20.20.0/28
