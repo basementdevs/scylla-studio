@@ -6,6 +6,7 @@ import {
   Card,
   CardContent,
   CardHeader,
+  CardTitle,
 } from "@scylla-studio/components/ui/card";
 import {
   Tooltip,
@@ -99,18 +100,31 @@ function DashboardKeyFeatures() {
   ];
 
   return (
-    <div className="mt-6">
+    <div className="mt-6 mx-8">
       <h2 className="text-xl font-semibold mb-4">Key Features:</h2>
-      <ul className="space-y-2">
+      <ul className="flex flex-wrap gap-3">
         {features.map((feature, index) => (
-          <li key={index} className="flex items-center space-x-2">
-            {feature.status === "done" ? (
-              <CheckCircle className="h-5 w-5 text-green-500" />
-            ) : (
-              <Circle className="h-5 w-5 text-yellow-500" />
-            )}
-            <span>{feature.name}</span>
-          </li>
+          <Card
+            key={index}
+            className="p-6 flex w-96 justify-between items-center"
+          >
+            <CardTitle>{feature.name}</CardTitle>
+            <CardContent className="p-0">
+              {feature.status === "done" ? (
+                <CheckCircle className="h-5 w-5 text-green-500 " />
+              ) : (
+                <Circle className="h-5 w-5 text-yellow-500 " />
+              )}
+            </CardContent>
+          </Card>
+          // <li key={index} className="flex items-center space-x-2">
+          //   {feature.status === "done" ? (
+          //     <CheckCircle className="h-5 w-5 text-green-500" />
+          //   ) : (
+          //     <Circle className="h-5 w-5 text-yellow-500" />
+          //   )}
+          //   <span>{feature.name}</span>
+          // </li>
         ))}
       </ul>
     </div>
@@ -198,7 +212,7 @@ const DashboardContributors = () => {
   }, []);
 
   return (
-    <div>
+    <div className="mx-8">
       <h2 className="text-xl font-semibold mb-4 mt-5">Contributors:</h2>
       <div className="flex flex-wrap  gap-4">
         {contributors.map((contributor, index) => (
