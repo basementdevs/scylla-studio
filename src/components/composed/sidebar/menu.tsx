@@ -15,6 +15,7 @@ import {
 } from "@scylla-studio/components/ui/tooltip";
 import { useGetMenuList } from "@scylla-studio/lib/menu-list";
 import { cn } from "@scylla-studio/lib/utils";
+import { getIsMacEnviroment } from "@scylla-studio/utils";
 
 interface MenuProperties {
   isOpen: boolean | undefined;
@@ -33,6 +34,8 @@ const triggerCtrlK = () => {
 
   document.dispatchEvent(keyEvent);
 };
+
+const isMacEnvironment = getIsMacEnviroment(window.navigator.userAgent);
 
 export function Menu({ isOpen }: MenuProperties) {
   const pathname = usePathname();
@@ -138,7 +141,9 @@ export function Menu({ isOpen }: MenuProperties) {
                       <p className="text-sm text-muted-foreground">
                         Press{" "}
                         <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
-                          <span className="text-xs">⌘ K</span>
+                          <span className="text-xs">
+                            {isMacEnvironment ? "⌘" : "Ctrl"} + K
+                          </span>
                         </kbd>
                         <br />
                         to open the Command Pallete
