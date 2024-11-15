@@ -1,5 +1,6 @@
 "use client";
 
+import { CustomTooltip } from "@scylla-studio/components/composed/custom-tooltip";
 import { ContentLayout } from "@scylla-studio/components/composed/sidebar/content-layout";
 import { Badge } from "@scylla-studio/components/ui/badge";
 import {
@@ -49,9 +50,9 @@ type MergedContributor = PackageContributor & GithubContributor;
 export default function DashboardPage() {
   return (
     <ContentLayout title="Home">
-      <Card>
+      <Card className="py-4">
+        <DashboardHeader />
         <CardContent>
-          <DashboardHeader />
           <DashboardKeyFeatures />
           <DashboardContributors />
         </CardContent>
@@ -62,26 +63,25 @@ export default function DashboardPage() {
 
 function DashboardHeader() {
   return (
-    <div className="flex md:flex-row flex-col space-x-2">
+    <div className="flex mx-8 py-3 flex-wrap gap-8">
+      <CardHeader className="flex flex-col gap-2">
+        <h1 className="font-bold text-3xl text-[3rem]">
+          ScyllaDB <b className="text-[#57d0e5]">Studio</b>
+        </h1>
+        <p className="max-w-[35rem]">
+          A front-end application designed for the ScyllaDB ecosystem, inspired
+          by tools like Drizzle and Prisma Studio. It provides an intuitive
+          interface for managing your ScyllaDB keyspaces and tables, integrating
+          essential performance metrics, and offering a unified solution to
+          interact with both local and cloud-based ScyllaDB clusters.
+        </p>
+      </CardHeader>
       <Image
         src="https://github.com/basementdevs/scylla-studio/raw/main/.github/assets/logo.png"
         alt="ScyllaDB Studio Logo"
-        width="100"
-        height="100"
+        width="300"
+        height="300"
       />
-      <div>
-        <CardHeader>
-          <h1 className="font-bold">ScyllaDB Studio</h1>
-          <p>
-            a front-end application designed for the ScyllaDB ecosystem,
-            inspired by tools like Drizzle and Prisma Studio. It provides an
-            intuitive interface for managing your ScyllaDB keyspaces and tables,
-            integrating essential performance metrics, and offering a unified
-            solution to interact with both local and cloud-based ScyllaDB
-            clusters.
-          </p>
-        </CardHeader>
-      </div>
     </div>
   );
 }
@@ -110,11 +110,19 @@ function DashboardKeyFeatures() {
           >
             <CardTitle>{feature.name}</CardTitle>
             <CardContent className="p-0">
-              {feature.status === "done" ? (
-                <CheckCircle className="h-5 w-5 text-green-500 " />
-              ) : (
-                <Circle className="h-5 w-5 text-yellow-500 " />
-              )}
+              <CustomTooltip
+                Trigger={
+                  <>
+                    {feature.status === "done" ? (
+                      <CheckCircle className="h-5 w-5 text-green-500 " />
+                    ) : (
+                      <Circle className="h-5 w-5 text-yellow-500 " />
+                    )}
+                  </>
+                }
+              >
+                {feature.status}
+              </CustomTooltip>
             </CardContent>
           </Card>
           // <li key={index} className="flex items-center space-x-2">
