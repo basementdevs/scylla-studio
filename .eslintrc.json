@@ -17,6 +17,7 @@
     "unicorn/no-array-reduce": 0,
     "unicorn/prevent-abbreviations": 0,
     "unicorn/prefer-global-this": 0,
+    "unicorn/prefer-logical-operator-over-ternary": 0,
     // TODO: Check these rules later
     "@typescript-eslint/no-explicit-any": 0,
     "@typescript-eslint/no-unused-vars": [
