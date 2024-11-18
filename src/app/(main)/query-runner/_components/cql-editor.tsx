@@ -21,9 +21,15 @@ import { Skeleton } from "@scylla-studio/components/ui/skeleton";
 import { useCqlFilters } from "@scylla-studio/hooks/use-cql-filters";
 import type { AvailableConnections } from "@scylla-studio/lib/connections";
 import type { TracingResult } from "@scylla-studio/lib/execute-query";
+import { getIsMacEnviroment } from "@scylla-studio/utils";
 import debounce from "lodash.debounce";
 import { Play } from "lucide-react";
-import { CancellationToken, Position, editor, languages } from "monaco-editor";
+import type {
+  CancellationToken,
+  Position,
+  editor,
+  languages,
+} from "monaco-editor";
 import { useAction } from "next-safe-action/hooks";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -39,6 +45,8 @@ enum ExecuteType {
   ALL = 0,
   CURRENT = 1,
 }
+
+const isMacEnviroment = getIsMacEnviroment(navigator.platform.toUpperCase());
 
 export function CqlEditor() {
   const [code, setCode] = useState("");
@@ -326,7 +334,9 @@ export function CqlEditor() {
                 >
                   <span>Run current query</span>
                   <kbd className="ml-2 pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
-                    <span className="text-xs">Ctrl + Enter</span>
+                    <span className="text-xs">
+                      {isMacEnviroment ? "⌘" : "Ctrl"} + Enter
+                    </span>
                   </kbd>
                 </DropdownMenuItem>
                 <DropdownMenuItem

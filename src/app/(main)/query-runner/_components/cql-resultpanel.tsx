@@ -12,6 +12,14 @@ import { ResultsRender } from "./results-render";
 import QueryDashboard from "./tracing-dashboard-render";
 import { TracingRender } from "./tracing-render";
 
+import { CustomTooltip } from "@scylla-studio/components/composed/custom-tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@scylla-studio/components/ui/tooltip";
+
 interface CqlResultPanelProps {
   updateKey: number;
   queryTracing: TracingResult;
@@ -58,6 +66,7 @@ export function CqlResultPanel({
     ),
     [queryTracing, updateKey],
   );
+
   const renderTabs = {
     [DisplayTabs.RESULT]: renderResult(),
     [DisplayTabs.TRACING]: renderTracing(),
@@ -74,35 +83,56 @@ export function CqlResultPanel({
           className="flex"
         >
           <TabsList className="flex h-full flex-col justify-start p-0 rounded-none">
-            <TabsTrigger
-              value={DisplayTabs.RESULT}
-              className={cn(
-                "w-full justify-center rounded-none px-4 py-2 text-left hover:bg-white/10",
-                activeTab === DisplayTabs.RESULT && "bg-white",
-              )}
+            <CustomTooltip
+              side="right"
+              Trigger={
+                <TabsTrigger
+                  value={DisplayTabs.RESULT}
+                  className={cn(
+                    "w-full justify-center rounded-none px-4 py-2 text-left hover:bg-white/10",
+                    activeTab === DisplayTabs.RESULT && "bg-white",
+                  )}
+                >
+                  <Braces size={16} />
+                </TabsTrigger>
+              }
             >
-              <Braces size={16} />
-            </TabsTrigger>
+              Results
+            </CustomTooltip>
 
-            <TabsTrigger
-              value={DisplayTabs.TRACING}
-              className={cn(
-                "w-full justify-center rounded-none px-4 py-2 text-left hover:bg-white/10",
-                activeTab === DisplayTabs.TRACING && "bg-white",
-              )}
+            <CustomTooltip
+              side="right"
+              Trigger={
+                <TabsTrigger
+                  value={DisplayTabs.TRACING}
+                  className={cn(
+                    "w-full justify-center rounded-none px-4 py-2 text-left hover:bg-white/10",
+                    activeTab === DisplayTabs.TRACING && "bg-white",
+                  )}
+                >
+                  <SearchCode size={18} />
+                </TabsTrigger>
+              }
             >
-              <SearchCode size={18} />
-            </TabsTrigger>
+              Tracing
+            </CustomTooltip>
 
-            <TabsTrigger
-              value={DisplayTabs.DASHBOARD}
-              className={cn(
-                "w-full justify-center rounded-none px-4 py-2 text-left hover:bg-white/10",
-                activeTab === DisplayTabs.DASHBOARD && "bg-white",
-              )}
+            <CustomTooltip
+              side="right"
+              Trigger={
+                <TabsTrigger
+                  value={DisplayTabs.DASHBOARD}
+                  className={cn(
+                    "w-full justify-center rounded-none px-4 py-2 text-left hover:bg-white/10",
+                    activeTab === DisplayTabs.DASHBOARD && "bg-white",
+                  )}
+                >
+                  <ChartArea size={18} />
+                </TabsTrigger>
+              }
             >
-              <ChartArea size={18} />
-            </TabsTrigger>
+              Dashboard
+            </CustomTooltip>
           </TabsList>
         </Tabs>
       )}

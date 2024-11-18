@@ -94,7 +94,7 @@ export default function TableStructure({ table }: TableStructureProperties) {
             </TableBody>
           </Table>
         </div>
-        <Card className=" col-span-1 bg-gradient-to-br from-green-50 to-blue-50 dark:from-gray-800 dark:to-gray-900">
+        <Card className=" col-span-1 bg-gradient-to-br from-white to-green-50 dark:from-gray-600 dark:to-gray-900">
           <CardHeader>
             <CardTitle className="text-3xl font-bold flex items-center gap-2 text-green-700 dark:text-green-300">
               <SettingsIcon className="w-8 h-8" />
@@ -118,7 +118,9 @@ export default function TableStructure({ table }: TableStructureProperties) {
               <SettingItem
                 icon={<ClockIcon className="w-4 h-4" />}
                 label="Default TTL"
-                value={`${table.options.defaultTimeToLive} seconds ${table.options.defaultTimeToLive === 0 ? "(disabled)" : ""}`}
+                value={`${table.options.defaultTimeToLive} seconds ${
+                  table.options.defaultTimeToLive === 0 ? "(disabled)" : ""
+                }`}
               />
               <SettingItem
                 icon={<ClockIcon className="w-4 h-4" />}
@@ -148,7 +150,7 @@ function SettingItem({ icon, label, value }: any) {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger className="w-full">
-          <div className="flex items-center space-x-2 p-3 bg-white dark:bg-gray-800 rounded-md shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex items-center space-x-2 p-3 bg-transparent rounded-md ">
             <div className="bg-green-100 dark:bg-green-900 p-2 rounded-full">
               {icon}
             </div>

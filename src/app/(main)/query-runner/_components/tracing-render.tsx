@@ -23,7 +23,9 @@ export const TracingRender = ({ data }: { data: TracingResult }) => {
       <TableHeader className="sticky top-0 dark:bg-background">
         <TableRow>
           {headers.map((header) => (
-            <TableHead key={header}>{header}</TableHead>
+            <TableHead key={header} className="pl-4">
+              {header}
+            </TableHead>
           ))}
         </TableRow>
       </TableHeader>
@@ -33,7 +35,7 @@ export const TracingRender = ({ data }: { data: TracingResult }) => {
             {headers.map((header) => (
               <Popover key={`${rowIndex}-${header}`}>
                 <PopoverTrigger asChild>
-                  <TableCell className="max-w-12 truncate hover:cursor-pointer">
+                  <TableCell className="max-w-12 truncate hover:cursor-pointer pl-4">
                     {row[header as keyof typeof row] === undefined
                       ? "N/A"
                       : String(row[header as keyof typeof row])}

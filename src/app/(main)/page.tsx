@@ -1,11 +1,13 @@
 "use client";
 
+import { CustomTooltip } from "@scylla-studio/components/composed/custom-tooltip";
 import { ContentLayout } from "@scylla-studio/components/composed/sidebar/content-layout";
 import { Badge } from "@scylla-studio/components/ui/badge";
 import {
   Card,
   CardContent,
   CardHeader,
+  CardTitle,
 } from "@scylla-studio/components/ui/card";
 import {
   Tooltip,
@@ -48,9 +50,9 @@ type MergedContributor = PackageContributor & GithubContributor;
 export default function DashboardPage() {
   return (
     <ContentLayout title="Home">
-      <Card>
+      <Card className="py-4">
+        <DashboardHeader />
         <CardContent>
-          <DashboardHeader />
           <DashboardKeyFeatures />
           <DashboardContributors />
         </CardContent>
@@ -61,26 +63,25 @@ export default function DashboardPage() {
 
 function DashboardHeader() {
   return (
-    <div className="flex md:flex-row flex-col space-x-2">
+    <div className="flex mx-8 py-3 flex-wrap gap-8">
+      <CardHeader className="flex flex-col gap-2">
+        <h1 className="font-bold text-3xl text-[3rem]">
+          ScyllaDB <b className="text-[#57d0e5]">Studio</b>
+        </h1>
+        <p className="max-w-[35rem]">
+          A front-end application designed for the ScyllaDB ecosystem, inspired
+          by tools like Drizzle and Prisma Studio. It provides an intuitive
+          interface for managing your ScyllaDB keyspaces and tables, integrating
+          essential performance metrics, and offering a unified solution to
+          interact with both local and cloud-based ScyllaDB clusters.
+        </p>
+      </CardHeader>
       <Image
         src="https://github.com/basementdevs/scylla-studio/raw/main/.github/assets/logo.png"
         alt="ScyllaDB Studio Logo"
-        width="100"
-        height="100"
+        width="300"
+        height="300"
       />
-      <div>
-        <CardHeader>
-          <h1 className="font-bold">ScyllaDB Studio</h1>
-          <p>
-            a front-end application designed for the ScyllaDB ecosystem,
-            inspired by tools like Drizzle and Prisma Studio. It provides an
-            intuitive interface for managing your ScyllaDB keyspaces and tables,
-            integrating essential performance metrics, and offering a unified
-            solution to interact with both local and cloud-based ScyllaDB
-            clusters.
-          </p>
-        </CardHeader>
-      </div>
     </div>
   );
 }
@@ -91,23 +92,39 @@ function DashboardKeyFeatures() {
     { name: "Explore your data with a powerful query editor", status: "wip" },
     { name: "Visualize your data model", status: "done" },
     { name: "Support for both local and cloud-based clusters", status: "done" },
-    { name: "Keyspace Autocomplete based on Active Connection", status: "wip" },
+    {
+      name: "Keyspace Autocomplete based on Active Connection",
+      status: "done",
+    },
     { name: "Query History", status: "wip" },
   ];
 
   return (
-    <div className="mt-6">
+    <div className="mt-6 mx-8">
       <h2 className="text-xl font-semibold mb-4">Key Features:</h2>
-      <ul className="space-y-2">
+      <ul className="flex flex-wrap gap-3">
         {features.map((feature, index) => (
-          <li key={index} className="flex items-center space-x-2">
-            {feature.status === "done" ? (
-              <CheckCircle className="h-5 w-5 text-green-500" />
-            ) : (
-              <Circle className="h-5 w-5 text-yellow-500" />
-            )}
-            <span>{feature.name}</span>
-          </li>
+          <Card
+            key={index}
+            className="p-6 flex w-96 justify-between items-center"
+          >
+            <CardTitle>{feature.name}</CardTitle>
+            <CardContent className="p-0">
+              <CustomTooltip
+                Trigger={
+                  <>
+                    {feature.status === "done" ? (
+                      <CheckCircle className="h-5 w-5 text-green-500 " />
+                    ) : (
+                      <Circle className="h-5 w-5 text-yellow-500 " />
+                    )}
+                  </>
+                }
+              >
+                {feature.status}
+              </CustomTooltip>
+            </CardContent>
+          </Card>
         ))}
       </ul>
     </div>
@@ -195,32 +212,33 @@ const DashboardContributors = () => {
   }, []);
 
   return (
-    <div>
+    <div className="mx-8">
       <h2 className="text-xl font-semibold mb-4 mt-5">Contributors:</h2>
-      <div className="grid lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-5 grid-cols-1  md:grid-cols-2  gap-4">
+      <div className="flex flex-wrap  gap-4">
         {contributors.map((contributor, index) => (
-          <Card key={index} className="overflow-hidden">
-            <div className="relative">
-              <Image
-                src={contributor.avatarUrl}
-                alt={`${contributor.name}'s avatar`}
-                className="w-full h-48 object-cover"
-                loading="lazy"
-                width="460"
-                height="460"
-              />
-              {contributor.openToWork && (
-                <div className="absolute top-2 left-2 bg-green-500 text-white text-xs py-1 px-2 rounded-md">
-                  Open to Work
-                </div>
-              )}
-            </div>
-            <CardContent className="">
-              <div className="flex items-center justify-between">
-                <h3 className="font-medium text-lg">{contributor.name}</h3>
+          <Card key={index} className="overflow-hidden relative w-72">
+            <Image
+              src={contributor.avatarUrl}
+              alt={`${contributor.name}'s avatar`}
+              className="w-full h-96 object-cover"
+              loading="lazy"
+              width="460"
+              height="460"
+            />
+
+            <CardContent className="p-0 absolute bottom-0 left-0 right-0 bg-black bg-opacity-55 px-2 py-2">
+              <div className="flex pt-2 pb-3   gap-2">
+                {contributor.openToWork && (
+                  <Badge className="bg-green-500 text-white ">
+                    Open to Work
+                  </Badge>
+                )}
                 {contributor.core && (
                   <Badge variant={"secondary"}>Core Member</Badge>
                 )}
+              </div>
+              <div className="flex items-center justify-between">
+                <h3 className="font-medium text-lg">{contributor.name}</h3>
               </div>
 
               <div className="flex items-center space-x-3">
@@ -272,14 +290,14 @@ const DashboardContributors = () => {
               </div>
 
               <div className="mt-2">
-                <div className="flex flex-row space-x-3 text-sm text-muted-foreground mb-4">
+                <div className="flex flex-row space-x-3 text-sm text-muted-foreground ">
                   <a
                     href={`https://github.com/${contributor.github}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center hover:text-primary"
                   >
-                    <Github className="w-10 h-5 mr-2" />
+                    <Github className="w-5 h-5" />
                   </a>
                   {contributor.linkedin && (
                     <a

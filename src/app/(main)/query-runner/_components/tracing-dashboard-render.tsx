@@ -23,6 +23,18 @@ import {
   YAxis,
 } from "recharts";
 
+// Define colors for charts
+const colors = [
+  "#8884d8",
+  "#82ca9d",
+  "#ffc658",
+  "#d0ed57",
+  "#a4de6c",
+  "#8dd1e1",
+  "#83a6ed",
+  "#8e4585",
+];
+
 export default function QueryDashboard({
   tracingInfo,
 }: {
@@ -182,18 +194,6 @@ export default function QueryDashboard({
     // Set total source elapsed time
     setTotalSourceElapsed(maxSourceElapsed);
   }, [data]);
-
-  // Define colors for charts
-  const colors = [
-    "#8884d8",
-    "#82ca9d",
-    "#ffc658",
-    "#d0ed57",
-    "#a4de6c",
-    "#8dd1e1",
-    "#83a6ed",
-    "#8e4585",
-  ];
 
   return (
     <div className="container mx-auto p-4 overflow-y-auto">

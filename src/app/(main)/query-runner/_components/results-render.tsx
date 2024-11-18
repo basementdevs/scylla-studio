@@ -96,10 +96,12 @@ const ResultsRenderComponent = ({
       <ScrollArea>
         <ScrollBar orientation="horizontal" />
         <Table>
-          <TableHeader className="sticky top-0 dark:bg-background">
+          <TableHeader className="sticky top-0 dark:bg-background ">
             <TableRow>
               {headers.map((header) => (
-                <TableHead key={header}>{header}</TableHead>
+                <TableHead key={header} className="pl-4">
+                  {header}
+                </TableHead>
               ))}
             </TableRow>
           </TableHeader>
@@ -108,7 +110,7 @@ const ResultsRenderComponent = ({
               // biome-ignore lint/suspicious/noArrayIndexKey: it needs to be
               <TableRow key={rowIndex}>
                 {headers.map((header) => (
-                  <TableCell key={`${rowIndex}-${header}`}>
+                  <TableCell key={`${rowIndex}-${header}`} className="pl-4">
                     {row[header] === undefined ? "N/A" : String(row[header])}
                   </TableCell>
                 ))}
