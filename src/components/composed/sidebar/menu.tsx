@@ -35,7 +35,7 @@ const triggerCtrlK = () => {
   document.dispatchEvent(keyEvent);
 };
 
-const isMacEnvironment = getIsMacEnviroment(window.navigator.userAgent);
+const isMacEnvironment = getIsMacEnviroment(navigator.platform.toUpperCase());
 
 export function Menu({ isOpen }: MenuProperties) {
   const pathname = usePathname();

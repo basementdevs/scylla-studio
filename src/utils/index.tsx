@@ -1,3 +1,3 @@
 export const getIsMacEnviroment = (OS: string) => {
-  return OS.includes("Mac") ? true : false;
+  return OS.includes("MAC") ? true : false;
 };

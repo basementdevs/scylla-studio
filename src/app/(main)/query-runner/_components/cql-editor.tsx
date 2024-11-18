@@ -46,7 +46,7 @@ enum ExecuteType {
   CURRENT = 1,
 }
 
-const isMacEnviroment = getIsMacEnviroment(window.navigator.userAgent);
+const isMacEnviroment = getIsMacEnviroment(navigator.platform.toUpperCase());
 
 export function CqlEditor() {
   const [code, setCode] = useState("");
