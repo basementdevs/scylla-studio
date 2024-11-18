@@ -125,14 +125,6 @@ function DashboardKeyFeatures() {
               </CustomTooltip>
             </CardContent>
           </Card>
-          // <li key={index} className="flex items-center space-x-2">
-          //   {feature.status === "done" ? (
-          //     <CheckCircle className="h-5 w-5 text-green-500" />
-          //   ) : (
-          //     <Circle className="h-5 w-5 text-yellow-500" />
-          //   )}
-          //   <span>{feature.name}</span>
-          // </li>
         ))}
       </ul>
     </div>
