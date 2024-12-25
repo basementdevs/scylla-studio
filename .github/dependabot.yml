@@ -4,17 +4,19 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+    pull-request-branch-name:
+      separator: _
     ignore:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major"
     groups:
-      prod-dependencies:
+      prod:
         dependency-type: production
         patterns:
           - "*"
-      dev-dependencies:
+      dev:
         dependency-type: development
         patterns:
           - "*"
@@ -23,6 +25,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    pull-request-branch-name:
+      separator: _
     ignore:
       - dependency-name: "*"
         update-types:
