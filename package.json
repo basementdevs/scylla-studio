@@ -36,7 +36,7 @@
     "@radix-ui/react-slot": "1.1.1",
     "@radix-ui/react-tabs": "1.1.2",
     "@radix-ui/react-tooltip": "1.1.6",
-    "better-sqlite3": "11.7.0",
+    "better-sqlite3": "11.7.2",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "cmdk": "1.0.4",
@@ -55,7 +55,7 @@
     "tailwind-merge": "2.6.0",
     "tailwindcss-animate": "1.0.7",
     "zod": "3.24.1",
-    "zod-form-data": "2.0.4",
+    "zod-form-data": "2.0.5",
     "zustand": "5.0.2"
   },
   "devDependencies": {
