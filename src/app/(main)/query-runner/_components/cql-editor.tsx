@@ -6,6 +6,8 @@ import { executeQueryAction } from "@scylla-studio/actions/execute-query";
 import { queryKeyspaceAction } from "@scylla-studio/actions/query-keyspaces";
 import { cqlCompletionItemProvider } from "@scylla-studio/app/(main)/query-runner/_components/cql-autocompleter";
 import { cql_language } from "@scylla-studio/app/(main)/query-runner/_components/cql-language";
+import { Button } from "@scylla-studio/components/ui/button";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,8 +19,9 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@scylla-studio/components/ui/resizable";
-import { Skeleton } from "@scylla-studio/components/ui/skeleton";
+
 import { useCqlFilters } from "@scylla-studio/hooks/use-cql-filters";
+import { useCqlQueryHistory } from "@scylla-studio/hooks/use-cql-query-history";
 import type { AvailableConnections } from "@scylla-studio/lib/connections";
 import type { TracingResult } from "@scylla-studio/lib/execute-query";
 import { getIsMacEnviroment } from "@scylla-studio/utils";
@@ -33,6 +36,7 @@ import type {
 import { useAction } from "next-safe-action/hooks";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { CqlEditorHistory } from "./cql-editor-history";
 import { CqlResultPanel } from "./cql-resultpanel";
 import { ResultFilters } from "./result-filters";
 import {
@@ -73,6 +77,8 @@ export function CqlEditor() {
   const editorReference = useRef<editor.IStandaloneCodeEditor | null>(null);
   const decorationsReference =
     useRef<editor.IEditorDecorationsCollection | null>(null);
+
+  const { history, addQueryToHistory } = useCqlQueryHistory();
 
   const queryExecutor = useAction(executeQueryAction, {
     onSuccess: ({ data }) => {
@@ -241,7 +247,10 @@ export function CqlEditor() {
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
       const fullQuery = getFullQueryAtCursor(editor, monaco);
 
-      if (fullQuery?.query) executeQuery(fullQuery.query);
+      if (fullQuery?.query) {
+        addQueryToHistory(fullQuery.query);
+        executeQuery(fullQuery.query);
+      }
     });
 
     // Shift+Enter to execute all queries
@@ -251,7 +260,11 @@ export function CqlEditor() {
         ?.getValue()
         .split(";")
         .filter((stmt) => stmt.trim() !== "");
-      statements?.forEach(executeQuery);
+      if (statements) {
+        statements.forEach(executeQuery);
+        console.log(statements.join(""));
+        addQueryToHistory(statements.join(""));
+      }
     });
   };
 
@@ -261,12 +274,16 @@ export function CqlEditor() {
     switch (executeType) {
       case ExecuteType.CURRENT: {
         const fullQuery = getFullQueryAtCursor(editorReference.current, monaco);
-        if (fullQuery?.query) executeQuery(fullQuery.query);
+        if (fullQuery?.query) {
+          addQueryToHistory(fullQuery.query);
+          executeQuery(fullQuery.query);
+        }
         break;
       }
       case ExecuteType.ALL: {
         const statements = code.split(";").filter((stmt) => stmt.trim() !== "");
         statements.forEach((stmt) => executeQuery(stmt));
+        addQueryToHistory(statements.join(""));
         break;
       }
     }
@@ -323,33 +340,43 @@ export function CqlEditor() {
         >
           <div className="flex justify-between px-4 sm:px-8 border-t bg-background/60 py-1">
             <ResultFilters />
-            <DropdownMenu>
-              <DropdownMenuTrigger className="bg-green-600 rounded p-1">
-                <Play size={16} />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem
-                  className="flex justify-between"
-                  onClick={() => handleExecute(ExecuteType.CURRENT)}
-                >
-                  <span>Run current query</span>
-                  <kbd className="ml-2 pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
-                    <span className="text-xs">
-                      {isMacEnviroment ? "⌘" : "Ctrl"} + Enter
-                    </span>
-                  </kbd>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="flex justify-between"
-                  onClick={() => handleExecute(ExecuteType.ALL)}
-                >
-                  <span>Run all</span>
-                  <kbd className="ml-2 pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
-                    <span className="text-xs">Shift + Enter</span>
-                  </kbd>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="flex gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    className="bg-green-600 text-white"
+                  >
+                    <Play size={16} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem
+                    className="flex justify-between"
+                    onClick={() => handleExecute(ExecuteType.CURRENT)}
+                  >
+                    <span>Run current query</span>
+                    <kbd className="ml-2 pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                      <span className="text-xs">
+                        {isMacEnviroment ? "⌘" : "Ctrl"} + Enter
+                      </span>
+                    </kbd>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="flex justify-between"
+                    onClick={() => handleExecute(ExecuteType.ALL)}
+                  >
+                    <span>Run all</span>
+                    <kbd className="ml-2 pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                      <span className="text-xs">Shift + Enter</span>
+                    </kbd>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <CqlEditorHistory history={history} />
+            </div>
           </div>
           {currentConnection && isFetchedKeys && (
             <Editor
